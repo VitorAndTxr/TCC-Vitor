@@ -1,0 +1,739 @@
+%%%% REFERÊNCIAS
+%%
+%% Conjunto padronizado de elementos descritivos retirados de um documento, que permite sua identificação individual.
+%%
+%% Cada entrada no arquivo BibTeX segue um formato padrão. Este formato muda ligeiramente baseado no tipo de entrada, mas a sintaxe
+%% continua a mesma.
+%%
+%% O rótulo de cada entrada não pode conter caracteres especiais, acentuados ou cedilha.
+%%
+%% A formatação do texto no campo "AUTHOR" deve obedecer algumas regras:
+%%   - Acento agudo:        "á = {\'a}".
+%%   - Acento crase:        "à = {\`a}".
+%%   - Acento til:          "ã = {\~a}".
+%%   - Acento circunflexo:  "ê = {\^e}".
+%%   - Acento trema:        "ü = {\"u}".
+%%   - Acento na letra i:   "í = {\'\i}".
+%%   - Cedilha:             "ç = {\c{c}}".
+%%   - Sobrenome composto:  "Santos, Filho, Jos{\'e} C. S.; da Silva, Erivanildo Lopes".
+%%   - Nome de organização: "{\mbox IONA Technologies PLC}".
+%%
+%% A formatação do texto no campo "TITLE" deve obedecer algumas regras (também válidas para o texto no campo "AUTHOR"):
+%%   - MAIÚSCULAS: "REAL = {REAL}".
+%%   - Minúsculas: "real = {real}".
+%%   - CamelCase:  "Real = {R}eal".
+
+%% TIPOS DE ENTRADA
+%%
+%% Ao inserir uma referência no banco de dados, a primeira coisa a decidir é o tipo de entrada. Existem vários tipos de entrada, mas
+%% não são completas, porém são suficientes para o BibTeX fornecer entradas para lidar com praticamente qualquer tipo de referência
+%% razoavelmente bem.
+
+%% ARTICLE - Um artigo de um jornal ou revista.
+%%   - Campos requeridos: AUTHOR, TITLE, JOURNAL e YEAR.
+%%   - Campos opcionais: VOLUME, NUMBER, PAGES, MONTH e NOTE.
+
+@CONFERENCE{StorageBIT,
+  AUTHOR       = {Carlos Carreiras and Hugo Silva and André Lourenço and Ana Fred},
+  TITLE        = {StorageBIT - A Metadata-aware, Extensible, Semantic and Hierarchical Database for Biosignals},
+  BOOKTITLE    = {Proceedings of the International Conference on Health Informatics - Volume 1: HEALTHINF, (BIOSTEC 2013)},
+  YEAR         = {2013},
+  EDITOR       = {INSTICC},
+  PAGES        = {65--74},
+  MONTH        = sep,
+  PUBLISHER    = {SciTePress}
+}
+
+@INPROCEEDINGS{ComparativeReviewofFormatsandDatabases,
+  author={Rodrigues, João and Gamboa, Hugo and Kublanov, Vladimir and Dolganov, Anton},
+  booktitle={2019 International Multi-Conference on Engineering, Computer and Information Sciences (SIBIRCON)}, 
+  title={Storage of Biomedical Signals: Comparative Review of Formats and Databases}, 
+  year={2019},
+  pages={0652-0656},
+  keywords={Reviews;Databases;Medical services;Metadata;Electrocardiography;Market research;Electroencephalography;Brain-computer interfaces;Bioinformatics;Standards;review;biomedical signals;storage;databases;formats},
+  doi={10.1109/SIBIRCON48586.2019.8958222}}
+
+@INPROCEEDINGS{ExtensibleBiosignalMetadata,
+  author={Brooks, David},
+  booktitle={2009 Annual International Conference of the IEEE Engineering in Medicine and Biology Society}, 
+  title={Extensible biosignal metadata a model for physiological time-series data}, 
+  year={2009},
+  pages={3881-3884},
+  keywords={Biological system modeling;Standards development;Software libraries;Electroencephalography;Brain modeling;XML;Resource description framework;ISO standards;Software tools;Ontologies},
+  doi={10.1109/IEMBS.2009.5332642}}
+
+@INPROCEEDINGS{BioSignalMLMetaModel,
+  author={Brooks, David J. and Hunter, Peter J. and Smaill, Bruce H. and Titchener, Mark R.},
+  booktitle={2011 Annual International Conference of the IEEE Engineering in Medicine and Biology Society}, 
+  title={BioSignalML — A meta-model for biosignals}, 
+  year={2011},
+  pages={5670-5673},
+  keywords={Ontologies;Biological system modeling;Resource description framework;Physiology;Bioinformatics;Software},
+  doi={10.1109/IEMBS.2011.6091372}}
+
+@Inbook{BiosignalsAndCompressionStandards,
+author="Hadjileontiadis, Leontios J.",
+editor="Istepanian, Robert S. H.
+and Laxminarayan, Swamy
+and Pattichis, Constantinos S.",
+title="Biosignals and Compression Standards",
+bookTitle="M-Health: Emerging Mobile Health Systems",
+year="2006",
+publisher="Springer US",
+address="Boston, MA",
+pages="277--292",
+abstract="Electric, mechanical or chemical signals of biological origin delivered by living things can always be of interest for diagnosis, patient monitoring, and biomedical research. Such biological signals, namely biosignals, as electrocardiogram (ECG), electroencephalogram (EEG), surface electromyogram (SEMG), bioacoustic signals (lung, heart, and bowel sounds), are usually presented by large amounts of data when digitized for storage and analysis within a signal processing framework. On the contrary, other medical information, i.e., drug description, demographic and anamnestic data, result in substantially smaller data archives. To this end, it is noteworthy the 80 kbytes data equivalence of 10 sec digitized resting ECG of 8/12 leads to 40 pages of text of an encyclopedic dictionary! (Zywietz, 1998). As a result, data reduction and compression processes are of great interest to biosignal analysis, especially when data transmission (e.g. in telemedicine applications) or long-term recordings (e.g. in sleep laboratories, intensive care) are involved. With appropriate processing of biosignals, the redundant data stream could be reduced to the most significant parameters that could efficiently contribute to medical decision making. In this way, high density storage could be achieved. In the same vein, reduction of the number of bits required to describe a biosignal could facilitate the data transmission, but it must be done with great care if it results in a loss of information. Although new emerging data compression techniques with very promising results are seen in the recent years, some problems have not been entirely addressed. In particular, the following items are still under consideration",
+isbn="978-0-387-26559-9",
+doi="10.1007/0-387-26559-7_21",
+url="https://doi.org/10.1007/0-387-26559-7_21"
+}
+
+@article{TheEffectsofDataQuality,
+  title={The effects of data quality on machine learning performance on tabular data},
+  author={Mohammed, Sedir and Budach, Lukas and Feuerpfeil, Moritz and Ihde, Nina and Nathansen, Andrea and Noack, Nele and Patzlaff, Hendrik and Naumann, Felix and Harmouch, Hazar},
+  journal={Information Systems},
+  volume={132},
+  pages={102549},
+  year={2025},
+  publisher={Elsevier}
+}
+
+@ARTICLE{ResponsibleandRegulatoryConformMachineLearning,
+  author={Petersen, Eike and Potdevin, Yannik and Mohammadi, Esfandiar and Zidowitz, Stephan and Breyer, Sabrina and Nowotka, Dirk and Henn, Sandra and Pechmann, Ludwig and Leucker, Martin and Rostalski, Philipp and Herzog, Christian},
+  journal={IEEE Access}, 
+  title={Responsible and Regulatory Conform Machine Learning for Medicine: A Survey of Challenges and Solutions}, 
+  year={2022},
+  volume={10},
+  number={},
+  pages={58375-58418},
+  keywords={Machine learning;Regulation;Ethics;Artificial intelligence;Medical diagnostic imaging;Privacy;Medical services;Algorithmic fairness;ethical machine learning;explainability;medical device regulation;medical machine learning;privacy;reliability;robustness;safety;security;transparency},
+  doi={10.1109/ACCESS.2022.3178382}}
+
+@INPROCEEDINGS{StorageofBiomedicalSignals,
+  author={Rodrigues, João and Gamboa, Hugo and Kublanov, Vladimir and Dolganov, Anton},
+  booktitle={2019 International Multi-Conference on Engineering, Computer and Information Sciences (SIBIRCON)}, 
+  title={Storage of Biomedical Signals: Comparative Review of Formats and Databases}, 
+  year={2019},
+  volume={},
+  number={},
+  pages={0652-0656},
+  keywords={Reviews;Databases;Medical services;Metadata;Electrocardiography;Market research;Electroencephalography;Brain-computer interfaces;Bioinformatics;Standards;review;biomedical signals;storage;databases;formats},
+  doi={10.1109/SIBIRCON48586.2019.8958222}}
+
+@MISC{RDNS,
+  TITLE        = {{Rede Nacional de Dados em Saúde}},
+  YEAR         = {2020},
+  Author = {Minist\'erio da Sa\'ude},
+  URL          = {https://www.gov.br/saude/pt-br/composicao/seidigi/rnds},
+  URLACCESSDATE = {15 set. 2025}
+}
+
+@ARTICLE{Falcão_Rachid_Fornazin_2024, 
+    title={AI innovation in healthcare and state platforms under a rights-based perspective: the case of Brazillian RNDS}, 
+    volume={6}, 
+    DOI={10.1017/dap.2024.70}, 
+    journal={Data &#38; Policy}, 
+    author={Falcão, Matheus Zuliane and Rachid, Raquel and Fornazin, Marcelo}, 
+    year={2024}, 
+    pages={e70}
+}
+
+@MISC{USCDI,
+  TITLE        = {{United States Core Data for Interoperability}},
+  YEAR         = {2020},
+  Author = {Office of the National Coordinator for Health IT},
+  URL          = {https://www.healthit.gov/isp/united-states-core-data-interoperability-uscdi},
+  URLACCESSDATE = {18 set. 2025}
+}
+
+@MISC{EHDS,
+  TITLE        = {{European Health Data Space Regulation}},
+  YEAR         = {2025},
+  Author = {European Commission},
+  URL          = {https://health.ec.europa.eu/ehealth-digital-health-and-care/european-health-data-space-regulation-ehds_en},
+  URLACCESSDATE = {18 set. 2025}
+}
+
+@MISC{EHDS_Implementation_and_governance,
+  TITLE        = {{European Health Data Space: Implementation and governance – who does what?}},
+  YEAR         = {2025},
+  Author = {European Commission},
+  URL          = {https://health.ec.europa.eu/events/european-health-data-space-implementation-and-governance-who-does-what-2025-03-06_en},
+  URLACCESSDATE = {18 set. 2025}
+}
+
+@MISC{NHS,
+  TITLE        = {{NHS Data Model and Dictionary Service}},
+  YEAR         = {2005},
+  Author       = {National Health System},
+  URL          = {https://www.datadictionary.nhs.uk/},
+  URLACCESSDATE = {19 set. 2025}
+}
+
+@MISC{SNOMEDCT,
+  TITLE        = {{SNOMED CT}},
+  YEAR         = {2002},
+  Author       = {SNOMED International},
+  URL          = {https://www.snomed.org/what-is-snomed-ct},
+  URLACCESSDATE = {19 set. 2025}
+}
+
+@MISC{SNOMEDCTOverview ,
+  TITLE        = {{Overview of SNOMED CT}},
+  YEAR         = {2016},
+  Author       = {National Library of Medicine},
+  URL          = {https://www.nlm.nih.gov/healthit/snomedct/snomed_overview.html},
+  URLACCESSDATE = {19 set. 2025}
+}
+
+@MISC{SharedPan-CanadianInteroperability,
+  TITLE        = {{Shared Pan-Canadian Interoperability Roadmap}},
+  YEAR         = {2023},
+  Author       = {Canada Health Infoway},
+  URL          = {https://www.infoway-inforoute.ca/en/component/edocman/6444-connecting-you-to-modern-health-care-shared-pan-canadian-interoperability-roadmap/view-document?Itemid=103},
+  URLACCESSDATE = {19 set. 2025}
+}
+
+@MISC{CanadaHealthInfoway ,
+  TITLE        = {{Canada Health Infoway}},
+  YEAR         = {2002},
+  Author       = {Canada Health Infoway},
+  URL          = {https://www.infoway-inforoute.ca/en/},
+  URLACCESSDATE = {20 set. 2025}
+}
+
+@MISC{ConnectedCareAct ,
+  TITLE        = {{Connected Care for Canadians Act }},
+  YEAR         = {2024},
+  Author       = {Canada Health Infoway},
+  URL          = {https://www.infoway-inforoute.ca/en/},
+  URLACCESSDATE = {20 set. 2025}
+}
+
+@misc{MyHealthRecord,
+  TITLE        = {{My Health Record}},
+  YEAR         = {2012},
+  Author       = {Autralian Digital Health Agency},
+  URL          = {https://www.digitalhealth.gov.au/},
+  URLACCESSDATE = {21 set. 2025}
+}
+
+@misc{AustralianCoreDataforInteroperability,
+  TITLE        = {{Australian Core Data for Interoperability}},
+  YEAR         = {2024},
+  Author       = {Autralian Digital Health Agency},
+  URL          = {https://developer.digitalhealth.gov.au/standards/australian-core-data-for-interoperability-release-1},
+  URLACCESSDATE = {21 set. 2025}
+}
+
+@book{van2017distributed,
+  title={Distributed systems},
+  author={Van Steen, Maarten and Tanenbaum, Andrew S},
+  year={2017},
+  publisher={Maarten van Steen Leiden, The Netherlands}
+}
+
+@article{astley2001middleware,
+  title={Middleware},
+  author={Astley, Mark and Sturman, Daniel C and Agha, Gul A},
+  journal={Communications of the ACM},
+  volume={44},
+  number={5},
+  pages={99},
+  year={2001}
+}
+
+@incollection{hadjileontiadis2006biosignals,
+  title={Biosignals and compression standards},
+  author={Hadjileontiadis, Leontios J},
+  booktitle={M-Health: Emerging mobile health systems},
+  pages={277--292},
+  year={2006},
+  publisher={Springer}
+}
+@book{liang2012biosignal,
+  title={Biosignal processing: principles and practices},
+  author={Liang, Hualou and Bronzino, Joseph D and Peterson, Donald R},
+  year={2012},
+  publisher={CRC Press}
+}
+
+@article{de2006decomposition,
+  title={Decomposition of surface EMG signals},
+  author={De Luca, Carlo J and Adam, Alexander and Wotiz, Robert and Gilmore, L Donald and Nawab, S Hamid},
+  journal={Journal of neurophysiology},
+  volume={96},
+  number={3},
+  pages={1646--1657},
+  year={2006},
+  publisher={American Physiological Society}
+}
+
+@article{hof1984emg,
+  title={EMG and muscle force: an introduction},
+  author={Hof, Altinus Lucilus},
+  journal={Human Movement Science},
+  volume={3},
+  number={1-2},
+  pages={119--153},
+  year={1984},
+  publisher={Elsevier}
+}
+
+@online{dicionário,
+  title = {{Michaelis Dicionário Brasileiro da Língua Portuguesa}},
+  organization = {{Editora Melhoramentos} / {UOL}},
+  url = {https://michaelis.uol.com.br/moderno-portugues/},
+  URLACCESSDATE = {2 set. 2025},
+  year = {2009}, 
+  note = {Disponível em: \url{https://michaelis.uol.com.br/moderno-portugues/}}
+}
+
+%% BOOK - Um livro com uma editora explícita.
+%%   - Campos requeridos: AUTHOR ou EDITOR, TITLE, PUBLISHER e YEAR.
+%%   - Campos opcionais: VOLUME ou NUMBER, SERIES, ADDRESS, EDITION, MONTH e NOTE.
+
+@book{Coulouris2013,
+  title={Sistemas Distribu{\'\i}dos},
+  subtitle={conceitos e projeto},
+  author={Coulouris, George and Dollimore, Jean and Kindberg, Tim and Blair, Gordon},
+  isbn={9788582600542},
+  url={https://books.google.com.br/books?id=6WU3AgAAQBAJ},
+  year={2013},
+  publisher={Bookman Editora},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+
+@book{Pressman2009,
+  title={Engenharia de Software - 7.ed.},
+  author={Pressman, Roger S.},
+  pages = {107},
+  isbn={9788580550443},
+  url={https://books.google.com.br/books?id=y0rH9wuXe68C},
+  year={2009},
+  publisher={McGraw Hill Brasil},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+@BOOK{Pedrycz1998,
+  AUTHOR    = {Pedrycz, Witold and Gomide, Fernando A. C.},
+  TITLE     = {An Introduction to Fuzzy Sets},
+  PUBLISHER = {MIT Press},
+  YEAR      = {1998},
+  ADDRESS   = {Massachusetts, USA},
+  MONTH     = apr,
+  PAGES     = {465},
+  SUBTITLE  = {analysis and design (complex adaptive systems)}
+}
+
+%% BOOKLET - Uma obra impressa mas sem uma editora ou instituição patrocinadora.
+%%   - Campos requeridos: TITLE.
+%%   - Campos opcionais: AUTHOR, HOWPUBLISHED, ADDRESS, MONTH, YEAR e NOTE.
+
+@BOOKLET{Thompson2001,
+  TITLE        = {X-Ray Data Booklet},
+  AUTHOR       = {Thompson, Albert C. and Vaughan, Douglas},
+  HOWPUBLISHED = {Lawrence Berkeley National Laboratory, University of California},
+  ADDRESS      = {California, USA},
+  MONTH        = jan,
+  YEAR         = {2001},
+  PAGES        = {457}
+}
+
+%% CONFERENCE - O mesmo que "INPROCEEDINGS", incluído para compatibilidade de escrita.
+%%   - Campos requeridos: AUTHOR, TITLE, BOOKTITLE e YEAR.
+%%   - Campos opcionais: EDITOR, VOLUME ou NUMBER, SERIES, PAGES, ADDRESS, MONTH, ORGANIZATION, PUBLISHER e NOTE.
+
+@CONFERENCE{Alt1995,
+  AUTHOR       = {Alt, Martin and Martin, Florian},
+  TITLE        = {Generation of Efficient Interprocedural Analyzers with {PAG}},
+  BOOKTITLE    = {SAS'95, Static Analysis Symposium},
+  YEAR         = {1995},
+  EDITOR       = {Mycroft, Alan},
+  PAGES        = {33--50},
+  MONTH        = sep,
+  PUBLISHER    = {Springer}
+}
+
+%% INBOOK - Uma parte de um livro, que pode ser um capítulo e/ou um intervalo de páginas.
+%%   - Campos requeridos: AUTHOR ou EDITOR, TITLE, CHAPTER ou PAGES, PUBLISHER e YEAR.
+%%   - Campos opcionais: VOLUME ou NUMBER, SERIES, TYPE, ADDRESS, EDITION, MONTH, NOTE.
+
+@BOOK{Santos2000,
+  AUTHOR    = {Santos, Euripedes P. and von Zuben, Fernando J.},
+  TITLE     = {Recurrent Neural Networks},
+  CHAPTER   = {3},
+  PAGES     = {47--75},
+  PUBLISHER = {CRC Press},
+  YEAR      = {2000},
+  VOLUME    = {13},
+  ADDRESS   = {USA},
+  SERIES    = {International Series on Computational Intelligence},
+  SUBTITLE  = {design, applications}
+}
+
+%% INCOLLECTION - Uma parte de um livro com o seu próprio título.
+%%   - Campos requeridos: AUTHOR, TITLE, BOOKTITLE, PUBLISHER e YEAR.
+%%   - Campos opcionais: EDITOR, VOLUME OR NUMBER, SERIES, TYPE, CHAPTER, PAGES, ADDRESS, EDITION, MONTH e NOTE.
+
+@INCOLLECTION{Pinto2000,
+  AUTHOR    = {Pinto, Alexandre S. and Faina, Luis F. and Cardozo, Eleri},
+  TITLE     = {A {TINA}-Based Distributed Environment for Mobile Multimedia Applications},
+  BOOKTITLE = {Managing QoS in Multimedia Networks, Services},
+  PUBLISHER = {Kluwer Academic Publishers},
+  YEAR      = {2000},
+  EDITOR    = {de Souza, Jos{\'e} Neuman and Boutaba, Raouf},
+  PAGES     = {163--175}
+}
+
+%% INPROCEEDINGS - Um artigo nos anais de uma conferência.
+%%   - Campos requeridos: AUTHOR, TITLE, BOOKTITLE e YEAR.
+%%   - Campos opcionais: EDITOR, VOLUME ou NUMBER, SERIES, PAGES, ADDRESS, MONTH, ORGANIZATION, PUBLISHER e NOTE.
+
+@INPROCEEDINGS{Faina2001,
+  AUTHOR       = {Faina, Luis F. and Pinto, Rossano P. and Guimar{\~a}es, Eliane G. and Cardozo, Eleri},
+  TITLE        = {Mobile Agents for Supporting Ubiquity in Telecommunication Services},
+  BOOKTITLE    = {Second Latin American Network Operation, Management Symposium (LANOMS)},
+  YEAR         = {2001},
+  EDITOR       = {Loureiro, A. and Nogueira, J.},
+  PAGES        = {50--61},
+  ADDRESS      = {Belo Horizonte},
+  MONTH        = aug
+}
+
+%% MANUAL - Uma documentação técnica.
+%%   - Campos requeridos: TITLE.
+%%   - Campos opcionais: AUTHOR, ORGANIZATION, ADDRESS, EDITION, MONTH, YEAR e NOTE.
+
+@MANUAL{IONA1999,
+  TITLE        = {Orbix Programming Reference},
+  AUTHOR       = {{\mbox IONA Technologies PLC}},
+  ORGANIZATION = {IONA Technologies PLC},
+  ADDRESS      = {Dublin, Ireland},
+  MONTH        = oct,
+  YEAR         = {1999}
+}
+
+@MANUAL{NBR6024:2012,
+  TITLE         = {{NBR} 6024},
+  AUTHOR        = {{ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS}},
+  ORGANIZATION  = {Associação Brasileira de Normas Técnicas},
+  ADDRESS       = {Rio de Janeiro},
+  MONTH         = feb,
+  YEAR          = {2012},
+  DATE-ADDED    = {2012-12-15 21:24:06 +0000},
+  DATE-MODIFIED = {2012-12-15 21:24:28 +0000},
+  ORG-SHORT     = {ABNT},
+  PAGES         = {4},
+  SUBTITLE      = {numeração progressiva das seções de um documento}
+}
+
+@MANUAL{NBR14724:2011,
+  TITLE         = {{NBR} 14724},
+  AUTHOR        = {{ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS}},
+  ORGANIZATION  = {Associação Brasileira de Normas Técnicas},
+  ADDRESS       = {Rio de Janeiro},
+  MONTH         = mar,
+  YEAR          = {2011},
+  NOTE          = {},
+  DATE-ADDED    = {2012-12-15 20:34:08 +0000},
+  DATE-MODIFIED = {2012-12-15 20:35:25 +0000},
+  ORG-SHORT     = {ABNT},
+  PAGES         = {15},
+  SUBTITLE      = {informação e documentação -- trabalhos acadêmicos -- apresentação}
+}
+
+@MANUAL{NBR10520:2002,
+  TITLE         = {{NBR} 10520},
+  AUTHOR        = {{ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS}},
+  ORGANIZATION  = {Associação Brasileira de Normas Técnicas},
+  ADDRESS       = {Rio de Janeiro},
+  MONTH         = aug,
+  YEAR          = {2002},
+  DATE-ADDED    = {2012-12-15 21:43:38 +0000},
+  DATE-MODIFIED = {2013-01-12 22:17:20 +0000},
+  ORG-SHORT     = {ABNT},
+  PAGES         = {7},
+  SUBTITLE      = {informação e documentação -- apresentação de citações em documentos}
+}
+
+@MANUAL{abnTeX2:2013,
+  TITLE         = {A classe abntex2},
+  AUTHOR        = {abnTeX2 and Araujo, Lauro C{\'e}sar},
+  ORGANIZATION  = {Equipe abnTeX2},
+  YEAR          = {2013},
+  BDSK-URL-1    = {http://code.google.com/p/abntex2/},
+  DATE-ADDED    = {2013-01-09 10:37:38 +0000},
+  DATE-MODIFIED = {2013-04-05 11:03:48 +0000},
+  URL           = {http://www.abntex.net.br/},
+  SUBTITLE      = {{modelo canônico de trabalhos acadêmicos brasileiros compatível com as normas ABNT NBR 14724:2011, ABNT NBR 6024:2012 e outras}},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+@MANUAL{abnTeX2:2013Cite,
+  TITLE         = {O pacote abntex2cite},
+  AUTHOR        = {abnTeX2 and Araujo, Lauro C{\'e}sar},
+  ORGANIZATION  = {Equipe abnTeX2},
+  YEAR          = {2013},
+  BDSK-URL-1    = {http://code.google.com/p/abntex2/},
+  DATE-ADDED    = {2013-01-09 10:37:45 +0000},
+  DATE-MODIFIED = {2013-04-05 10:47:36 +0000},
+  URL           = {http://www.abntex.net.br/},
+  SUBTITLE      = {{estilos bibliográficos compatíveis com a ABNT NBR 6023}},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+@MANUAL{abnTeX2:2013CiteAlf,
+  TITLE         = {O pacote abntex2cite},
+  AUTHOR        = {abnTeX2 and Araujo, Lauro C{\'e}sar},
+  ORGANIZATION  = {Equipe abnTeX2},
+  YEAR          = {2013},
+  BDSK-URL-1    = {http://code.google.com/p/abntex2/},
+  DATE-ADDED    = {2013-01-09 10:37:45 +0000},
+  DATE-MODIFIED = {2013-04-05 11:03:05 +0000},
+  URL           = {http://www.abntex.net.br/},
+  SUBTITLE      = {{tópicos específicos da ABNT NBR 10520:2002 e o estilo bibliográfico alfabético (sistema autor-data)}},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+@MANUAL{UTFPR2008,
+  TITLE        = {Orientação para a entrega de trabalhos acadêmicos},
+  AUTHOR       = {UTFPR},
+  ORGANIZATION = {Universidade Tecnológica Federal do Paraná},
+  ADDRESS      = {Curitiba},
+  EDITION      = {1a},
+  YEAR         = {2021},
+  URL          = {http://www.utfpr.edu.br/biblioteca/trabalhos-academicos/discentes},
+  URLACCESSDATE = {08 nov. 2021}
+}
+
+@MANUAL{Wilson2010,
+  TITLE         = {The Memoir Class for Configurable Typesetting - User Guide},
+  AUTHOR        = {Wilson, Peter and Madsen, Lars},
+  ORGANIZATION  = {The Herries Press},
+  ADDRESS       = {Normandy Park, WA, USA},
+  YEAR          = {2010},
+  BDSK-URL-1    = {http://ctan.tche.br/macros/latex/contrib/memoir/memman.pdf},
+  DATE-ADDED    = {2013-01-09 10:37:50 +0000},
+  DATE-MODIFIED = {2013-03-21 13:23:25 +0000},
+  URL           = {http://mirrors.ctan.org/macros/latex/contrib/memoir/memman.pdf},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+%% MASTERSTHESIS - Uma dissertação de mestrado.
+%%   - Campos requeridos: AUTHOR, TITLE, SCHOOL e YEAR.
+%%   - Campos opcionais: TYPE, ADDRESS, MONTH e NOTE.
+
+@MASTERSTHESIS{SantosFilho2003,
+  AUTHOR  = {Santos, Filho, Jos{\'e} C. S.},
+  TITLE   = {Combinação por Ganho Igual em Ambiente com Desvanecimento Arbitrário},
+  SCHOOL  = {Faculdade de Engenharia Elétrica e de Computação, Universidade Estadual de Campinas},
+  YEAR    = {2003},
+  ADDRESS = {Campinas},
+  MONTH   = aug,
+  PAGES   = {150}
+}
+
+@MASTERSTHESIS{Araujo2012,
+  AUTHOR        = {Araujo, Lauro C{\'e}sar},
+  TITLE         = {Configuração},
+  SCHOOL        = {Universidade de Brasília},
+  YEAR          = {2012},
+  ADDRESS       = {Brasília},
+  DATE-ADDED    = {2013-01-09 11:04:42 +0000},
+  DATE-MODIFIED = {2013-01-09 11:04:42 +0000},
+  SUBTITLE      = {uma perspectiva de arquitetura da informação da escola de {B}rasília}
+}
+
+%% MISC - Use esse tipo quando nada mais se encaixa.
+%%   - Campos requeridos: "NENHUM".
+%%   - Campos opcionais: AUTHOR, TITLE, HOWPUBLISHED, MONTH, YEAR e NOTE.
+
+
+@MISC{Larsson2003,
+  AUTHOR        = {Larsson, Alexander},
+  TITLE         = {Dia's Homepage},
+  HOWPUBLISHED  = {Lysator, The Academic Computer Society},
+  MONTH         = aug,
+  YEAR          = {2003},
+  URL           = {http://www.lysator.liu.se/~alla/dia/dia.html},
+  urlaccessdate = {28 nov. 2003}
+}
+
+@book{date2004,
+  title = {Introdução a sistemas de bancos de dados},
+  author = {Date, C.J.},
+  isbn = {9788535212730},
+  url = {https://books.google.com.br/books?id=xBeO9LSlK7UC},
+  year = {2004},
+  publisher = {ELSEVIER EDITORA},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+@MISC{Hadian1982,
+  AUTHOR       = {Hadian, R.},
+  TITLE        = {{Fotografia da erupção vulcânica em 1982 do Galungung, Indonésia (com descargas de raios), produzida pelo Serviço Geológico dos Estados Unidos da América}},
+  MONTH        = dec,
+  YEAR         = {1982},
+  NOTE         =  {Galunggung, Indonesia; 07.25 S 108.05 E; 2,168 m. His image is in the public domain because it contains materials that originally came from the U.S. National Oceanic and Atmospheric Administration, taken or made as part of an employee's official duties.},
+  ORGANIZATION = {U.S. National Oceanic and Atmospheric Administration},
+  URL          = {http://www.ngdc.noaa.gov/seg/hazard/img/200_res/30/30_603.tif},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+@MISC{Sartore2013,
+  AUTHOR       = {Sartore, Joel},
+  TITLE        = {{Camaleão pantera fotografado por Joel Sartore, National Geographic}},
+  MONTH        = mar,
+  YEAR         = {2013},
+  NOTE         = {Published March 5, 2013},
+  ORGANIZATION = {National Geographic},
+  URL          = {http://images.nationalgeographic.com/wpf/media-live/photos/000/649/cache/08-tedx-photo-ark-panther-chameleon_64915_600x450.jpg},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+@MISC{daSilva2009,
+  AUTHOR       = {da Silva, Erivanildo Lopes and Bahia, Marcus Vinicius},
+  TITLE        = {Compostos orgânicos: fórmulas estruturais e principais classes},
+  HOWPUBLISHED = {Site UOL Educação},
+  MONTH        = feb,
+  YEAR         = {2009},
+  ORGANIZATION = {Universidade Federal da Bahia},
+  URL          = {http://educacao.uol.com.br/disciplinas/quimica/compostos-organicos-formulas-estruturais-e-principais-classes.htm},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+@MISC{Smallen2014,
+  AUTHOR       = {Smallen, Shava},
+  TITLE        = {My \LaTeX\ notes},
+  HOWPUBLISHED = {San Diego Supercomputer Center},
+  MONTH        = feb,
+  YEAR         = {2014},
+  URL          = {http://users.sdsc.edu/~ssmallen/},
+  URLACCESSDATE = {21 ago. 2014}
+}
+
+%% PHDTHESIS - Uma tese de doutorado.
+%%   - Campos requeridos: AUTHOR, TITLE, SCHOOL e YEAR.
+%%   - Campos opcionais: TYPE, ADDRESS, MONTH e NOTE.
+
+@PHDTHESIS{Faina2000,
+  AUTHOR  = {Faina, Luis F.},
+  TITLE   = {Uma Arquitetura para Suporte à Ubiquidade dos Serviços de Telecomunicações Baseada na Arquitetura {TINA} e em Agentes Móveis},
+  SCHOOL  = {Faculdade de Engenharia Elétrica e de Computação, Universidade Estadual de Campinas},
+  YEAR    = {2000},
+  ADDRESS = {Campinas},
+  MONTH   = dec,
+  PAGES   = {150}
+}
+
+%% PROCEEDINGS - As deliberações de uma conferência.
+%%   - Campos requeridos: TITLE e YEAR.
+%%   - Campos opcionais: EDITOR, VOLUME ou NUMBER, SERIES, ADDRESS, MONTH, ORGANIZATION, PUBLISHER e NOTE.
+
+@PROCEEDINGS{Pirmez2002,
+  TITLE        = {{Anais do XX Simpósio Brasileiro de Redes de Computadores}},
+  YEAR         = {2002},
+  EDITOR       = {Pirmez, Luci and Carmo, Luis Fernando and Mac{\^e}do, Raimundo Jos{\'e}},
+  ADDRESS      = {Rio de Janeiro},
+  MONTH        = may,
+  ORGANIZATION = {Sociedade Brasileira de Computação},
+  PUBLISHER    = {Núcleo de Computação Eletrônica da UFRJ}
+}
+
+%% TECHREPORT - Um relatório publicado por uma escola ou uma outra instituição, geralmente dentro de uma série numerada.
+%%   - Campos requeridos: AUTHOR, TITLE, INSTITUTION e YEAR.
+%%   - Campos opcionais: TYPE, NUMBER, ADDRESS, MONTH e NOTE.
+
+@TECHREPORT{OMG2000,
+  AUTHOR      = {{OMG}},
+  TITLE       = {Audio/Video Streams, Version 1.0},
+  INSTITUTION = {Object Management Group (OMG)},
+  YEAR        = {2000},
+  TYPE        = {OMG Specification},
+  ADDRESS     = {Massachusetts, USA},
+  MONTH       = jan,
+  NOTE        = {formal/2000-01-03},
+  URL         = {http://www.omg.org/},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+%% UNPUBLISHED - Um documento com um autor e um título, mas não publicado formalmente.
+%%   - Campos requeridos: AUTHOR, TITLE e NOTE.
+%%   - Campos opcionais: MONTH e YEAR.
+
+@UNPUBLISHED{Sichman2002,
+  AUTHOR = {Sichman, Jaime S.},
+  TITLE  = {Sobre Agentes Móveis e Fixos},
+  NOTE   = {Comunicação pessoal por e-mail},
+  MONTH  = mar,
+  YEAR   = {2002}
+}
+
+%% CAMPOS
+%%
+%% Os tipos de entradas bibliográficas contém alguns subconjuntos padrões de entradas de dados:
+%%   - ADDRESS: Endereço da editora (normalmente, apenas a cidade, mas pode ser o endereço completo para editoras menos conhecidas).
+%%   - ANNOTE: Uma anotação para estilos bibliográficos adotados (não típico).
+%%   - AUTHOR: O(s) nome(s) do(s) autor(es) (no caso de haver mais de um autor, separá-los por "and").
+%%   - BOOKTITLE: O título do livro, mesmo que apenas parte dele esteja sendo citado.
+%%   - CHAPTER: O número do capítulo.
+%%   - CROSSREF: A chave de entrada da referência cruzada.
+%%   - EDITION: A edição de um livro, forma longa (como o "primeiro" ou "segundo").
+%%   - EDITOR: O(s) nome(s) do(s) editor(es).
+%%   - EPRINT: A especificação de uma publicação eletrônica, muitas vezes um "preprint" ou um relatório técnico.
+%%   - HOWPUBLISHED: Como ele foi publicado, se o método de publicação não é típico.
+%%   - INSTITUTION: A instituição que esteve envolvida na publicação, mas não é necessariamente a editora.
+%%   - JOURNAL: O jornal ou a revista onde o trabalho foi publicado.
+%%   - KEY: Um campo oculto utilizado para especificar ou colocar em ordem alfabética as entradas (quando o campos "autor" e
+%%     "editor" estão em falta). Note que isto é muito diferente da chave (mencionados apenas após esta lista) que é usado para
+%%     citar ou fazer uma referência cruzada à entrada.
+%%   - MONTH: O mês de publicação (ou, se não publicado, no mês de criação).
+%%   - NOTE: Diversas informações extras.
+%%   - NUMBER: O "número" de um jornal, uma revista, ou um relatório técnico, se aplicável. (A maioria das publicações tem um campo
+%%     "volume", mas não o campo "número").
+%%   - ORGANIZATION: A organização patrocinadora.
+%%   - PAGES: números de página, separados por vírgulas ou hifens duplo. Para os livros, o número total de páginas.
+%%   - PUBLISHER: O nome da editora.
+%%   - SCHOOL: A escola onde a tese ou dissertação foi escrita.
+%%   - SERIES: A série de livros onde foi publicado em (por exemplo: "A Hardy Boys" ou "Lecture Notes in Computer Science").
+%%   - TITLE: o título do trabalho.
+%%   - TYPE: O tipo de relatório técnico, por exemplo, "Nota de Investigação".
+%%   - URL: O endereço da web.
+%%   - VOLUME: O volume de uma revista ou de um livro com vários volumes.
+%%   - YEAR: O ano de publicação (ou, se não publicado, o ano de criação).
+%%
+%% Além disto, cada entrada contém uma chave (rótulo) que é usada para citar ou uma entrada de referência cruzada. Esta chave é o
+%% primeiro item em uma entrada BibTeX, e não faz parte de qualquer domínio.
+
+@article{tomasulo:algorithm:5392028,
+  author = {Tomasulo, R. M.},
+  title = {An Efficient Algorithm for Exploiting Multiple Arithmetic Units},
+  journal = {IBM Journal of Research and Development},
+  year = {1967},
+  month = {Jan},
+  number = {1},
+  pages = {25-33},
+  volume = {11},
+  doi = {10.1147/rd.111.0025},
+  ISSN = {0018-8646}
+}
+
+@article{Cruz2003,
+  author = {Cruz, Renato},
+  title = {Padrão Brasileiro de {TV} Enfrenta Oposição},
+  journal = {O Estado de São Paulo},
+  ADDRESS  = {São Paulo},
+  year = {2003},
+  month = {fev},
+  day = {2}
+}
+
+@misc{Moore:2000:CMC:333067.333074,
+ author = {Moore, Gordon E.},
+ title = {Readings in Computer Architecture},
+ year = {2000},
+ url = {http://dl.acm.org/citation.cfm?id=333067.333074},
+ URLACCESSDATE = {21 ago. 2013}
+}
