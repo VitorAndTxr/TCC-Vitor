@@ -4,39 +4,55 @@
 
 Este capítulo descreve como ocorreu o processo de desenvolvimento deste trabalho, esmiuçando os algoritmos, as interfaces e os processos internos de comunicação que orquestram a interação entre partes envolvidas. Além disso, esse capítulo irá demostrar o processo de adaptação e integração de um projeto existente ao PRISM para que o mesmo seja validado através da realização de uma coleta de dados, que serão usados para testar o funcionamento do processo de compartilhamento de dados entre NPIs.
 
-\section{Escopo do sistema}\label{sec:escopoSistema}
-
-Apresenta o escopo do sistema (contendo entre dois ou cinco parágrafos) de forma bastante sucinta, considerando aspectos técnicos e conceituais. O escopo define o que é o sistema, consistindo das funcionalidades e características que o sistema deve conter. É importante apresentar também o escopo negativo, ou seja, as funcionalidades e características que o sistema não irá conter. 
-Exemplo:
-
-O sistema XYZ deve gerenciar todos os processos de uma livraria virtual, desde a aquisição até a venda dos livros para o consumidor final. O acesso dos compradores e gerentes deve ser feito por meio de um site WEB, incluindo a possibilidade de acesso por outras tecnologias (ex. celular, tablet). Os clientes poderão fazem as compras pagando com cartão de crédito ou depósito bancário. Existem promoções eventuais pelas quais os livros podem ser comprados com desconto.
-
-De início, a livraria vai trabalhar apenas com livros novos a serem adquiridos de editoras que tenham sistema automatizado de aquisição. Desta forma, o sistema a ser desenvolvido deve conectar-se aos sistemas das editoras para efetuar as compras.
-
-O sistema deve calcular o custo de entrega baseado no peso dos livros e na distância do ponto de entrega. Eventualmente podem haver promoções do tipo “entrega gratuita” para determinadas localidades.
-
-O sistema deve permitir a um gerente emitir relatórios de livros mais vendidos, e compradores mais assíduos, bem como sugerir compras para compradores baseadas em seus interesses anteriores.
-
-
 \section{Nó de Pesquisa Interoperável}\label{sec:DesenvolvimentoNPI}
-Falar sobre escolhas técnicas para montar o projeto do nó e principais estruturas
 
-Falar sobre escolhas técnicas para montar o projeto do nó e principais estruturas
+A figura \ref{fig:NPIArquitetura} mostra como é organizado o NPI internamente, a camada de middleware do PRISM envelopa todas as requisições recebidas e devolvidas pela camada de controller do nó. A camada de serviço é responsável por armazenar as regras de negócio relacionadas a armazenamento e busca das informações dentro do NPI. Os repositórios são as camadas de abstração responsáveis pela implementação das operações busca e persistência nos bancos de dados e arquivos da aplicação, foi utilizado a ferramenta Entity Framework para fazer a modelagem do banco de dados na camada de repositórios.
 
-Falar sobre o que será e um resumo da estrutura do projeto
+\begin{figure}[htpb]%% Ambiente figure
+\captionsetup{width=0.43\textwidth}
+\caption{Arquitetura do NPI}%% Legenda
+\label{fig:NPIArquitetura}%% Rótulo
+\includegraphics[scale=0.5]{figuras/Desenvolvimento/NPI/ArquiteturaNPI.png}%% Dimensões e localização
+\fonte{}%% Fonte
+\end{figure}
 
-falar sobre o back-end do Nó e tecnologias usadas
+\subsection{PRISM Middleware}
 
+O processo de criação de canal seguro, registro e identificação do solicitante é mediado pelo middleware em dois níveis, aplicação e usuário. O nível de aplicação permite que um NPI ou outra aplicação cliente de um NPI possa se registrar e autenticar de forma segura sem a intervenção de um usuário para rotinas de sincronização de dados entre nó, uma vez que o administrador do NPI autorize a aplicação cliente. Esse envelopamento garante que a troca de informações entre cliente e servidor serão criptografadas e dificultam o roubo de informações sensíveis. As figuras \ref{fig:auth-fase-1}, \ref{fig:auth-fase-2} e \ref{fig:auth-fase-3} mostram as fases do processo de inicialização da conexão com um NPI.
 
-\subsection{Arquitetura}
+\begin{figure}[htpb]%% Ambiente figure
+\captionsetup{width=0.43\textwidth}
+\caption{Abertura de canal criptografado}%% Legenda
+\label{fig:auth-fase-1}%% Rótulo
+\includegraphics[scale=0.35]{figuras/Desenvolvimento/auth/fase-1.png}%% Dimensões e localização
+\fonte{}%% Fonte
+\end{figure}
 
-\subsection{Autenticação, Identificação e Liberação}
+\begin{figure}[htpb]%% Ambiente figure
+\captionsetup{width=0.43\textwidth}
+\caption{Registro e identificação do nó}%% Legenda
+\label{fig:auth-fase-2}%% Rótulo
+\includegraphics[scale=0.3]{figuras/Desenvolvimento/auth/fase-2.png}%% Dimensões e localização
+\fonte{}%% Fonte
+\end{figure}
+
+\begin{figure}[htpb]%% Ambiente figure
+\captionsetup{width=0.43\textwidth}
+\caption{Autenticação mútua por Desafio-Resposta}%% Legenda
+\label{fig:auth-fase-3}%% Rótulo
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/auth/fase-3.png}%% Dimensões e localização
+\fonte{}%% Fonte
+\end{figure}
+
+\newpage
+
+A nível de usuário, uma vez a aplicação cliente possuindo uma uma sessão aberta com o servidor, permite os
 
 \subsection{Troca de dados}
 
 
 
-
+\newpage
 \section{Interface de Pesquisa Interoperável}\label{sec:desenvolvimentoProjetoExemplo}
 
 falar sobre as aplicações bases que serão adicionadas ao nó(Gestão de Acessos, Gestão de pacientes e outras funcionalidades para garantir a facil reusabilidade do projeto
@@ -50,7 +66,13 @@ falar sobre as aplicações bases que serão adicionadas ao nó(Gestão de Acess
 
 \section{Integração do Projeto Exemplo}\label{sec:desenvolvimentoProjetoExemplo}
 
+
+O projeto exemplo usado é o NeuroEstimulator, um sistema funcional que 
 Explicar sobe o antigo projeto e apontar as modificações que foram necessárias para que se adaptasse as funcionalidades do projeto e exemplificar como integrar com hardware e projetos existente
+
+\subsection{Neuro}
+
+- Adaptei o código para rodar na taxa fixa de 860hz reduzido para 215hz por média devido a uma limitação do ADC 
 
 
 \section{Modelagem do sistema}\label{sec:modelagemSistema}

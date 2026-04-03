@@ -7,22 +7,36 @@
 
 Esta seção descreve os principais tópicos teóricos envolvidos neste trabalho.
 
+\begin{comment}
 \section{Sistemas}
 
-Um sistema, de acordo com o dicionário "Conjunto de elementos distintos, com características e funções específicas, organizadas de forma natural ou por meios artificiais"\cite{dicionário} é muito utilizado para nomear uma ampla gama de eventos naturais e artefatos artificiais criados a partir das interações de múltiplos componentes individuais com funções normalmente distintas com um efeito ou objetivo. Por exemplo, o sistema digestivo é composto por vários 
+Um sistema é definido no dicionário como "Conjunto de elementos distintos, com características e funções específicas, organizadas de forma natural ou por meios artificiais" \cite{dicionário}, e a palavra tem como origem no latim systema e no grego sýstema significando “aquilo que permanece junto”. 
 
-É comum atribuir a ideia de "sistema" a artefatos que são construídos pois esse termo é amplamente utilizado meio técnico para se referir a conceitos e cargos relacionados a área de computação. "Sistemas de informação", "analise de sistemas", "sistemas distribuídos" não são estranhos para profissionais da área e isso faz com que o termo acabe se tornando um sinônimo para software
-\section{Hardware}
+O termo é utilizado para referenciar o processo ou a construção de uma ampla gama de eventos naturais e artefatos artificiais que são constituídos por interações de múltiplos componentes individuais com funções distintas. Por exemplo, o sistema digestivo é composto por vários órgãos e microflora responsáveis pela quebra e absorção dos nutrientes consumidos por um ser vivo durante a alimentação \cite{DIBNER200486} ou um sistema eletrônico, que com vários componentes eletrônicos e um software de operação, se apresenta para o usuário como uma ferramenta com função específica.
 
-\section{Software}
+As funcionalidades apresentadas por esses componentes individuais muitas vezes são frutos da cooperação de sub-partes deste componente que se apresentam como um subsistema do sistema principal. Assim como células individuais formam tecidos, que constroem os órgãos, que constituem os seres vivos; transistores formam portas lógicas, que formam circuitos combinacionais e sequenciais, que fazem parte da construção de
+microprocessadores, que unidos com sensores e atuadores, emergem artefatos capazes de metrificar e interagir com o ambiente dentro de um conjunto de funcionalidades e restrições intrínsecas ao processo de abstração e redução dos processos que constituem as dinâmicas do ambiente.
 
-
+Foto detalhada do corpo humano do lado de uma placa-mãe?
+\end{comment}
 
 \section{Sistemas Distribu\'idos}\label{sec:sistemasDistribuidos}
 
-Sistemas Distribuídos são aplicações constituídas de elementos computacionais independentes, também conhecidos como nós, que cooperam entre si para fornecer um conjunto de funcionalidades que se apresentam para o usuário como um único sistema coerente\cite{van2017distributed}. Segundo essa definição, destacam-se duas características desses sistemas: a autonomia dos componentes(nós) que podem ser constituídos de processos de software ou dispositivos de hardware, e a necessidade de colaboração entre eles para criar a ilusão de um único sistema para quem o usa.
+Sistemas Distribuídos são aplicações constituídas de elementos computacionais independentes, também conhecidos como nós, que cooperam entre si para fornecer um conjunto de funcionalidades que se apresentam para o usuário como um único sistema coerente\cite{van2017distributed}, onde a comunicação entre os componentes do sistema ocorre através da troca de mensagens pela rede que os interliga.
 
-A necessidade de construir sistemas distribuídos emerge quando dois requisitos de projeto se mostram fundamentais: desempenho/escalabilidade e confiabilidade/disponibilidade. O primeiro requisito visa garantir que a aplicação vai ser capaz de atender uma grande quantidade de usuários ou aumente a complexidade computacional de suas funcionalidades sem que a mesma sofra com gargalos de desempenho. Quando distribuímos a carga computacional entre múltiplos nós, evita-se que um servidor seja sobrecarregado, evitando uma indisponibilidade completa do sistema devido a um ponto único de falha. O segundo objetivo é aprimorar a tolerância a falhas do sistema, onde a falha de um único nó (falha parcial) necessariamente compromete a disponibilidade total do serviço. Esse objetivo é atingido ao aplicarmos técnicas que gerarem redundância no sistema, dando capacidade ao mesmo de mascarar falhas e recuperar automaticamente a execução da operação do usuário final sem que ele perceba a interrupção. Esse princípio é conhecido como transparência de falhas.
+O desenvolvimento de sistemas distribuídos modernos se baseia nas experiências obtidas no projeto e construção de sistemas anteriores, as falhas apresentadas por esses sistemas e as soluções encontradas para superá-las \cite{burns2024designing}. A necessidade de uso deste paradigma computacional surge quando é necessário garantir dois requisitos do projeto sejam atendidos: escalabilidade e confiabilidade  \cite{Coulouris2013}. 
+
+\begin{figure}[htb]%% Ambiente figure
+    %\captionsetup{width=0.55\textwidth}%% Largura da legenda
+    \caption{Uma parte típica da Internet}%% Legenda
+    \label{fig:middleware}%% Rótulo
+    \includegraphics[scale=0.6]{figuras/conceitos/sistema-distribuido.png}%% Dimensões e localização
+    \fonte{Adaptado de \citeonline{Coulouris2013}}%% Fonte
+\end{figure}
+
+ A \textit{escalabilidade} busca garantir que a aplicação será capaz de atender uma quantidade crescente de usuários sem que a mesma sofra com gargalos de desempenho ou indisponibilidade \cite{kleppmann2017designing}. Quando distribuímos a carga computacional entre múltiplos nós, reduz-se a carga computacional sobre um servidor, evitando uma indisponibilidade completa do sistema devido a um ponto único de falha. 
+ 
+ A \textit{confiabilidade} busca aprimorar a tolerância a falhas do sistema, onde a falha de um único nó (falha parcial) não deve comprometer a disponibilidade total do serviço. Esse objetivo é atingido ao aplicarmos técnicas que geram redundância no sistema, dando capacidade ao mesmo de mascarar falhas e recuperar automaticamente a execução da operação do usuário final sem que ele perceba a interrupção. Esse princípio é conhecido como transparência de falhas \cite{Coulouris2013}.
 
 \subsection{Middleware}\label{subsec:middleware}
 
@@ -41,22 +55,21 @@ O \textit{middleware} atua de forma análoga a um sistema operacional para um co
 Além do gerenciamento de recursos, o \textit{middleware} oferece um conjunto de serviços gerais para evitar que cada aplicação precise reimplementá-los. Esses serviços incluem:
 
 \begin{itemize}
-    \item Facilidades para comunicação entre aplicações;
-    \item Serviços de segurança e confiabilidade;
-    \item Mecanismos para mascarar e se recuperar de falhas;
-    \item Suporte para a execução de transações atômicas distribuídas.
+    \item Protocolos de comunicação entre aplicações;
+    \item Processos de segurança e confiabilidade;
+    \item Mecanismos para mascarar e se recuperar de falhas.
 \end{itemize}
-
-\subsection{Interoperabilidade}\label{subsec:interoperabilidade}
 
 \subsection{Criptografia Assimétrica}\label{subsec:criptografiaAssimetrica}
     
 \subsection{Engenharia Biomédica}\label{subsec:engBioMed}
-\subsection{Biossinais}\label{subsec:ontologias}
+
+\section{Biossinais}\label{subsec:biossinais}
 
 "Sinais elétricos, mecânicos e químicos originados por seres vivos podem sempre ser de interesse para diagnósticos, monitoramento de pacientes e pesquisa biomédica"\cite{hadjileontiadis2006biosignals}. Esses Biossinais "carregam informação que é útil para a compreensão de mecanismos patológicos complexos subjacente ao comportamento dos sistemas vivos"\cite{liang2012biosignal}.
 
-\subsection{Eletromiografia}\label{subsec:biossinais}
+
+\subsection{Eletromiografia}\label{subsec:eletromiografia}
 
  O sinal de eletromiografia é composto pela variação potencial de grupos de fibras musculares organizadas em unidades funcionais chamada \textit{unidades motoras}\cite{de2006decomposition}. Esse sinal pode ser detectado através de métodos invasivos com eletrodos posicionados diretamente no tecido muscular, ou através de métodos não-invasivos com sensores posicionados na superfície da pele. 
 
@@ -67,14 +80,9 @@ Sinais elétricos relacionados à despolarização da fibra podem, portanto, ser
 
 Este último processo é muito mais lento que a despolarização elétrica, que dura apenas 2 ms. Após uma única despolarização, a força máxima não é atingida antes de 20-150 ms, e o declínio gradual da força, devido à reabsorção dos íons de cálcio liberados, leva pelo menos o dobro desse tempo. \cite[p. 120-121]{hof1984emg}.
 \end{citacao}
+%A ativação da fibra muscular acontece através do neurônio motor, o qual irá gerar uma despolarização da mesma e consequentemente sinais elétricos relacionados à despolarização. Estes sinais podem ser registrados por eletrodos a alguma distância da fibra já que o tecido entre e ao redor da fibra ativa é eletricamente condutor. 
 
 \subsection{Eletromiografia de Superfície(sEMG)}
-
-\section{Normas, Padronizações e Leis}\label{sec:normas}
-
-    \subsection{NBRISO 18308:2013}\label{subsec:NBRISO18308}
-    
-    \subsection{NBRISO/HL7 10781:2017}\label{subsec:NBRISO10781}
 
 
 
