@@ -14,30 +14,30 @@ Existem várias propostas de semântica e estruturação de dados disponíveis \
 
 Quando a pesquisa envolve o ambiente clínico hospitalar, grande parte do esforço envolve organização, garantia de conformidade e gestão das informações disponibilizadas pelos envolvidos. Um desafio apresentado na integração de datasets médicos existentes é o fato de eles serem "\textit{pequenos e confinados a silos de dados isolados, recheados de erros de rotulação e viés}" \cite{ResponsibleandRegulatoryConformMachineLearning}, efeito da falta de processos difundidos para o tratamento de registros e metadados das informações médicas adquiridas. A falta de padrões adequados significa que, por vezes, arquivos CSV (valores separados por vírgula) foram usados para armazenar e trocar dados de sinais, resultando na perda de metadados armazenados por falhas humanas no processo de gestão dessas informações\cite{ExtensibleBiosignalMetadata}. 
 
-Sendo assim, parte significativa do esforço é despendida no processo de obtenção e normalização das anotações de laboratório dos projetos, que normalmente não compartilham nem de estrutura e nem de semântica, aumentando o tempo de pesquisa e podendo até inviabilizá-la devido à perda de informações por falta de diretivas compartilhadas entre instituições e projetos \cite{BioSignalMLMetaModel}. A figura \ref{fig:exemplo1} ilustra o fluxo de dados em projetos de pesquisas de biossinais.
+Sendo assim, parte significativa do esforço é despendida no processo de obtenção e normalização das anotações de laboratório dos projetos, que normalmente não compartilham nem de estrutura e nem de semântica, aumentando o tempo de pesquisa e podendo até inviabilizá-la devido à perda de informações por falta de diretivas compartilhadas entre instituições e projetos \cite{BioSignalMLMetaModel}. A figura \ref{fig:fluxo-consumo-pesquisa} ilustra o fluxo de dados em projetos de pesquisas de biossinais.
 
 \begin{figure}[htb]%% Ambiente figure
     %\captionsetup{width=0.55\textwidth}%% Largura da legenda
     \caption{Exemplo de fluxo de consumo de dados em pesquisa envolvendo biossinais}%% Legenda
-    \label{fig:exemplo1}%% Rótulo
+    \label{fig:fluxo-consumo-pesquisa}%% Rótulo
     \includegraphics[scale=0.4]{figuras/introducao/exemplo-atual-fluxo-de-trabalho.png}%% Dimensões e localização
-    \fonte{Autoria própria (2025)}%% Fonte
+    \fonte{Autoria própria (2026)}%% Fonte
 \end{figure}
 
-Esse deficit de diretivas é extremamente danoso, pois, além de todas as dificuldades que causa no processo de pesquisa e desenvolvimento, lança desconfiança sobre sistemas e soluções construídas a partir dos dados extraídos. Esse fato dificulta a aceitação e difusão de projetos que se baseiam na sintetização de informações presentes em grandes quantidades de dados, como o caso de soluções desenvolvidas a partir de ML.
+Esse deficit de diretivas é extremamente danoso, pois, além do risco de retrabalho, gera esforço extra para a pesquisa em normalização dos dados para cada nova fonte de dados. lança desconfiança sobre sistemas e soluções construídas a partir dos dados extraídos. Esse fato dificulta a aceitação e difusão de projetos que se baseiam na sintetização de informações presentes em grandes quantidades de dados, como o caso de soluções desenvolvidas a partir de ML.
 
 O financiamento de pesquisas de desenvolvimento e a difusão de soluções que usam ML na área de engenharia biomédica é dependente da capacidade das mesmas de se provarem confiáveis, seguras e robustas para uso clínico. O método de ML exige acesso a uma grande quantidade de dados representativos e de alta qualidade para atingir os resultados esperados, principalmente devido à alta dimensionalidade do espaço de entrada do domínio que normalmente possuem.
 
 Para que modelos baseados em ML possam realizar inferências confiáveis, é extremamente necessário que esteja disponível para o seu desenvolvimento uma amostra significativa e diversificada para evitar que o sistema sofra com vieses. Na prática, é provado que o desempenho de sistemas baseados em IA está vinculado à qualidade dos dados usados para treinamento \cite{TheEffectsofDataQuality}. Mesmo quando o desempenho esperado é alcançado, a explicabilidade do resultado é prejudicada, afetando a confiança e transparência da utilização do modelo pela comunidade médica, tornando-se o principal desafio a garantia de qualidade dos dados oferecidos para o treinamento do modelo.
 
-Dado a situação atual, uma proposta de diretivas aplicadas para a organização, requisitos e integração de sistemas e projetos de pesquisa biomédicos se mostra fundamental para fomentar o compartilhamento de bases de dados médicas normalizadas entre projetos e instituições, possibilitando a criação de silos de dados médicos semânticos e facilmente integráveis, que por sua vez, reduzem custos e tempo na construção de bases de dados com múltiplas fontes causado pelo processo de normalização. Buscando cumprir essa proposta, o presente trabalho apresenta o Padrão de Rótulos e Interfaces para Sistemas Médicos (PRISM), uma série de requisitos e processos esperados de um projeto de pesquisa clínica que orquestra a comunicação entre dois ou mais Nós de Pesquisa Interoperáveis que possam operar numa estrutura descrita na figura \ref{fig:introducao-proposta}.
+Dado a situação atual, uma proposta de diretivas aplicadas para a organização, requisitos e integração de sistemas e projetos de pesquisa biomédicos se mostra fundamental para fomentar o compartilhamento de bases de dados médicas normalizadas entre projetos e instituições, possibilitando a criação de silos de dados médicos semânticos e facilmente integráveis, que por sua vez, reduzem custos e tempo na construção de bases de dados com múltiplas fontes causado pelo processo de normalização. Buscando cumprir essa proposta, o presente trabalho apresenta o Padrão de Rótulos e Interfaces para Sistemas Médicos (PRISM), uma série de requisitos e processos esperados de um projeto de pesquisa clínica que orquestra a comunicação entre dois ou mais Nós de Pesquisa Interoperáveis que possam operar numa estrutura descrita na figura \ref{fig:modelo-proposto-fig} .
 
 \begin{figure}[htb]%% Ambiente figure
     %\captionsetup{width=0.55\textwidth}%% Largura da legenda
-    %\caption{Exemplo de fluxo de pesquisa envolvendo biossinais}%% Legenda
-    \label{fig:introducao-proposta}%% Rótulo
+    \caption{Proposta do autor}%% Legenda
+    \label{fig:modelo-proposto-fig}%% Rótulo
     \includegraphics[scale=0.15]{figuras/introducao/proposta.png}%% Dimensões e localização
-    \fonte{Autoria própria (2025)}%% Fonte
+    \fonte{Autoria própria (2026)}%% Fonte
 \end{figure}
 
 \section{Objetivos}\label{sec:objetivos}
