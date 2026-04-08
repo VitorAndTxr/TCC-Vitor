@@ -3,9 +3,6 @@
 %% O autor deve registrar seu conhecimento sobre a literatura básica do assunto, discutindo e comentando a informação já publicada.
 %% A revisão deve ser apresentada, preferencialmente, em ordem cronológica e por blocos de assunto, procurando mostrar a evolução do tema.
 %% Título e rótulo de capítulo (rótulos não devem conter caracteres especiais, acentuados ou cedilha)
-\chapter{Referencial te\'orico}\label{cap:referencialTeorico}
-
-Esta seção descreve os principais tópicos teóricos envolvidos neste trabalho.
 
 \begin{comment}
 \section{Sistemas}
@@ -19,6 +16,10 @@ microprocessadores, que unidos com sensores e atuadores, emergem artefatos capaz
 
 Foto detalhada do corpo humano do lado de uma placa-mãe?
 \end{comment}
+
+\chapter{Referencial te\'orico}\label{cap:referencialTeorico}
+
+Esta seção descreve os principais tópicos teóricos envolvidos neste trabalho.
 
 \section{Sistemas Distribu\'idos}\label{sec:sistemasDistribuidos}
 
@@ -61,8 +62,26 @@ Além do gerenciamento de recursos, o \textit{middleware} oferece um conjunto de
 \end{itemize}
 
 \subsection{Criptografia}\label{subsec:criptografia}
+
+A Criptografia é a ciência que estuda mecanismos de construção e troca de mensagens secretas. Em computação, tem o objetivo de proteger o conteúdo de mensagens por meio de mecanismos digitais de assinatura e cifragem que buscam garantir:
+
+\begin{itemize}
+    \item \textbf{Autenticação}: O Destinatário deve ser capaz de garantir que a mensagem foi enviada pelo remetente legítimo que ele acredita ser;
+    \item \textbf{Integridade}: O Destinatário deve ser capaz de verificar que a mensagem não foi modificada ou substituída por um terceiro;
+    \item \textbf{Não-repúdio}: A impossibilidade de o remetente negar a autoria da mensagem após o envio.
+\end{itemize}
+
+
+\textit{Funções Hash} são funções matemáticas unidirecionais que produzem uma saída de tamanho fixo para qualquer entrada de qualquer tamanho. Ser unidirecional significa ser simples de calcular o \textit{f(x)}, mas extremamente custoso calcular o valor de \textit{x} a partir de \textit{f(x)}. Além disso, a mesma entrada sempre deve produzir a mesma saída (determinismo), pequenas alterações na entrada devem causar um grande efeito na saída (efeito avalanche) e baixa ocorrência de entradas diferentes que geram saídas iguais (resistência a colisões). 
+
+\textit{Criptografia Simétrica} se baseia no compartilhamento de uma chave secreta pelos usuários que é usada para criptografar o conteúdo das mensagens e depende da confidencialidade da chave para manter a informação segura. 
+
+A \textit{Criptografia Assimétrica} se baseia em um par de chaves pública e privada de cada usuário, a chave pública pode ser distribuída por todos os usuários da rede, a chave privada é segredo de cada usuário. Para criptografia de mensagens, usa-se a chave pública do destinatário para criptografar uma mensagem enviada que só possa ser descriptografada pelo destinatário usando sua chave privada. Para garantir autenticidade da informação, a chave privada do usuário é processada com o conteúdo da mensagem para gerar uma cadeia de caracteres derivada que ser usada como verificação de autoria através da chave pública do remetente. 
+
+Esses conceitos são empregados neste
+
     
-\subsection{Transações}\label{subsec:engBioMed}
+\subsection{Transações}\label{subsec:transações}
 
 \section{Biossinais}\label{subsec:biossinais}
 
@@ -82,7 +101,6 @@ Este último processo é muito mais lento que a despolarização elétrica, que 
 \end{citacao}
 %A ativação da fibra muscular acontece através do neurônio motor, o qual irá gerar uma despolarização da mesma e consequentemente sinais elétricos relacionados à despolarização. Estes sinais podem ser registrados por eletrodos a alguma distância da fibra já que o tecido entre e ao redor da fibra ativa é eletricamente condutor. 
 
-\subsection{Eletromiografia de Superfície(sEMG)}
 
 
 
