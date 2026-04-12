@@ -23,7 +23,7 @@ Esta seção descreve os principais tópicos teóricos envolvidos neste trabalho
 
 \section{Sistemas Distribu\'idos}\label{sec:sistemasDistribuidos}
 
-Sistemas distribuídos são aplicações constituídas de elementos computacionais independentes, também conhecidos como nós, que cooperam entre si para fornecer um conjunto de funcionalidades apresentadas ao usuário como um único sistema coerente ~\cite{van2025distributed}. A comunicação entre os componentes do sistema ocorre por meio da troca de mensagens pela rede que os interliga.
+Sistemas distribuídos são aplicações constituídas de elementos computacionais independentes, também conhecidos como nós, que cooperam entre si para fornecer um conjunto de funcionalidades apresentadas ao usuário como um único sistema coerente \cite{van2025distributed}. A comunicação entre os componentes do sistema ocorre por meio da troca de mensagens pela rede que os interliga.
 
 O desenvolvimento de sistemas distribuídos modernos baseia-se nas experiências obtidas no projeto e na construção de sistemas anteriores, nas falhas observadas nesses sistemas e nas soluções encontradas para superá-las ~\cite{burns2024designing}. A necessidade de uso desse paradigma computacional surge quando é necessário garantir que dois requisitos do projeto sejam atendidos: escalabilidade e confiabilidade ~\cite{Coulouris2013}. A Figura~\ref{fig:internet} ilustra, de forma simplificada, a estrutura de redes, sub-redes e computadores que operam como um único sistema, apresentando-se ao usuário como a Internet.
 
@@ -37,9 +37,9 @@ O desenvolvimento de sistemas distribuídos modernos baseia-se nas experiências
 
  A \textbf{escalabilidade} busca assegurar a capacidade da aplicação de atender a uma quantidade crescente de usuários sem sofrer gargalos de desempenho ou indisponibilidade \cite{kleppmann2017designing}. Ao distribuir a carga computacional entre múltiplos nós, reduz-se a demanda sobre um servidor individual, evitando a indisponibilidade completa causada por um ponto único de falha (\textit{single point of failure}, SPOF). 
  
- A \textbf{confiabilidade} busca aprimorar a tolerância a falhas do sistema, de modo que a falha de um único nó (falha parcial) não comprometa a disponibilidade total do serviço. Esse requisito é cumprido pela aplicação de técnicas que geram redundância na solução, conferindo ao sistema a capacidade de mascarar falhas e de recuperar automaticamente a operação em curso sem que o usuário final perceba a interrupção. Esse princípio é conhecido como transparência de falhas ~\cite{Coulouris2013}.
+ A \textbf{confiabilidade} busca aprimorar a tolerância a falhas do sistema, de modo que a falha de um único nó (falha parcial) não comprometa a disponibilidade total do serviço. Esse requisito é cumprido pela aplicação de técnicas que geram redundância na solução, conferindo ao sistema a capacidade de mascarar falhas e de recuperar automaticamente a operação em curso sem que o usuário final perceba a interrupção. Esse princípio é conhecido como transparência de falhas \cite{Coulouris2013}.
 
- A \textbf{manutenibilidade} busca facilitar a manutenção do sistema, de modo que as atualizações e correções possam ser realizadas de forma eficiente e com mínimo impacto sobre o funcionamento do mesmo. Isso é alcançado através da utilização de práticas e ferramentas que promovem a modularidade, a reutilização de componentes e a documentação adequada ~\cite{kleppmann2017designing}.
+ A \textbf{manutenibilidade} busca facilitar a manutenção do sistema, de modo que as atualizações e correções possam ser realizadas de forma eficiente e com mínimo impacto sobre o funcionamento do mesmo. Isso é alcançado através da utilização de práticas e ferramentas que promovem a modularidade, a reutilização de componentes e a documentação adequada \cite{kleppmann2017designing}.
 
 \subsection{Middleware}\label{subsec:middleware}
 
@@ -57,18 +57,18 @@ O middleware atua de forma análoga a um sistema operacional para um computador:
     \fonte{Adaptado de \citeonline{van2025distributed}}%% Fonte
 \end{figure}
 
-Além do gerenciamento de recursos, o middleware oferece um conjunto de serviços gerais para evitar que cada aplicação precise reimplementá-los. Esses serviços incluem:
+Além do gerenciamento de recursos, o middleware oferece um conjunto de serviços gerais para evitar que cada aplicação precise reimplementá-los. Esses serviços incluem \cite{van2025distributed}:
 
 \begin{itemize}
     \item Protocolos de comunicação entre aplicações;
     \item Processos de segurança;
     \item Processos de autenticação;    
     \item Mecanismos para mascarar e se recuperar de falhas.
-\end{itemize}\cite{van2025distributed}
+\end{itemize}
 
 \subsection{Criptografia}\label{subsec:criptografia}
 
-A \textbf{criptografia} é a ciência que estuda mecanismos de construção e troca de mensagens secretas, com usos documentados datando 1900 A.C \cite{KesslerCryptographyOverview}. Em computação, tem o objetivo de proteger o conteúdo de mensagens por meio de mecanismos digitais de assinatura e cifragem que buscam garantir:
+A \textbf{criptografia} é a ciência que estuda mecanismos de construção e troca de mensagens secretas, com usos documentados datando 1900 A.C. \cite{KesslerCryptographyOverview}. Em computação, tem o objetivo de proteger o conteúdo de mensagens por meio de mecanismos digitais de assinatura e cifragem que buscam garantir:
 
 \begin{description}
     \item[Confidencialidade:] O conteúdo da mensagem deve ser protegido contra acesso não autorizado por terceiros;
@@ -77,26 +77,74 @@ A \textbf{criptografia} é a ciência que estuda mecanismos de construção e tr
     \item[Não repúdio:] O remetente é impossibilitado de negar a autoria da mensagem após o envio.
 \end{description}
 
-Os mecanismos criptográficos podem ser classificados em três categorias principais: funções hash, criptografia simétrica e criptografia assimétrica.
+Os mecanismos criptográficos podem ser classificados em três categorias principais: funções \textit{hash}, criptografia simétrica e criptografia assimétrica.
 
-As \textbf{funções hash} são funções matemáticas unidirecionais que produzem uma saída de tamanho fixo para qualquer entrada de qualquer tamanho. Uma função unidirecional implica baixo custo computacional no cálculo de $f(x)$, mas computacionalmente inviável calcular o valor de $x$ a partir de $f(x)$ \cite{stallings2005cryptography,paar2010understanding}. Além disso, espera-se que (i) a mesma entrada sempre produza a mesma saída (determinismo); (ii) pequenas alterações na entrada causem um grande efeito na saída (efeito avalanche); e (iii)seja computacionalmente inviável encontrar duas entradas distintas que produzam a mesma saída (resistência a colisões). 
+As funções hash são funções matemáticas unidirecionais que produzem uma saída de tamanho fixo para qualquer entrada de qualquer tamanho. Uma função unidirecional implica baixo custo computacional no cálculo de $f(x)$, mas torna computacionalmente inviável calcular o valor de $x$ a partir de $f(x)$ \cite{stallings2005cryptography,paar2010understanding}. Além disso, espera-se que (i) a mesma entrada sempre produza a mesma saída (determinismo); (ii) pequenas alterações na entrada causem um grande efeito na saída (efeito avalanche); e (iii) seja computacionalmente inviável encontrar duas entradas distintas que produzam a mesma saída (resistência a colisões). 
 
-A \textbf{criptografia simétrica} baseia-se no compartilhamento de uma chave secreta pelos usuários que é usada para cifrar o conteúdo das mensagens e depende da confidencialidade da chave para manter a informação segura. 
+A \textbf{criptografia simétrica} baseia-se no compartilhamento de uma chave secreta pelos usuários que é usada para cifrar o conteúdo das mensagens e depende da confidencialidade da chave para manter a informação segura \cite{barker2020nist}. 
 
-A \textbf{criptografia assimétrica} baseia-se em um par de chaves, pública e privada, pertencente a cada usuário, a chave pública pode ser distribuída pela rede, a chave privada é segredo de cada usuário. Para criptografia de mensagens, usa-se a chave pública do destinatário para cifrar uma mensagem enviada que só possa ser decifrada pelo destinatário usando sua chave privada. Já para garantir autenticidade da informação, a chave privada do usuário é processada com o conteúdo da mensagem para gerar uma assinatura digital derivada que será usada como verificação de autoria através da chave pública do remetente \cite{barker2020nist}. 
+A \textbf{criptografia assimétrica} baseia-se em um par de chaves, pública e privada, pertencente a cada usuário. A chave pública pode ser distribuída pela rede, a chave privada é o segredo de cada usuário. Para criptografia de mensagens, usa-se a chave pública do destinatário para cifrar uma mensagem enviada que só possa ser decifrada pelo destinatário usando sua chave privada. Já para garantir autenticidade da mensagem, a chave privada do usuário é processada com o conteúdo da mensagem para gerar uma assinatura digital derivada que será usada como verificação de autoria através da chave pública do remetente \cite{barker2020nist}. 
 
-Cada objetivo de segurança pode ser alcançado por meio de um ou mais mecanismos criptográficos, e a escolha do mecanismo mais adequado depende do contexto específico e dos requisitos de segurança do sistema em questão. Para garantir a confidencialidade, uma mensagem pode ser cifrada usando criptografia simétrica ou assimétrica com chaves e cifras criadas a partir de funções hash. Para garantir a autenticidade, uma mensagem pode ser assinada digitalmente usando criptografia assimétrica, na qual o remetente usa sua chave privada para criar uma assinatura a partir de um hash gerado com o conteúdo da mensagem que pode ser verificada pelo destinatário usando a chave pública do remetente. Para garantir a integridade, uma função hash pode ser aplicada ao conteúdo da mensagem para gerar um valor de hash que é enviado junto com a mensagem, permitindo ao destinatário verificar se o conteúdo foi alterado durante a transmissão. Para garantir o não repúdio, uma assinatura digital pode ser usada para vincular a autoria da mensagem ao remetente, impedindo que ele negue ter enviado a mensagem posteriormente \cite{van2025distributed,stallings2005cryptography}.
+Cada objetivo de segurança pode ser alcançado por meio de um ou mais mecanismos criptográficos, e a escolha do mecanismo mais adequado depende do contexto específico e dos requisitos de segurança do sistema em questão. A confidencialidade é conquistada quando uma mensagem pode ser cifrada usando criptografia simétrica ou assimétrica com chaves e cifras criadas a partir de funções hash. A autenticidade é alcançada quando uma mensagem pode ser assinada digitalmente usando criptografia assimétrica, na qual o remetente usa sua chave privada para criar uma assinatura a partir de um hash gerado com o conteúdo da mensagem que pode ser verificada pelo destinatário usando a chave pública do remetente. Para garantir a integridade, uma função hash pode ser aplicada ao conteúdo da mensagem para gerar um valor de hash que é enviado junto com a mensagem, permitindo ao destinatário verificar se o conteúdo foi alterado durante a transmissão. Para garantir o não repúdio, uma assinatura digital pode ser usada para vincular a autoria da mensagem ao remetente, impedindo que ele negue ter enviado a mensagem posteriormente \cite{van2025distributed,stallings2005cryptography}.
 
-\subsection{Transações}\label{subsec:transações}
+\subsection{Transações}\label{subsec:transacoes}
+
+Qualquer consulta ou modificação em uma base de dados é feita através de alguma linguagem que é mapeada para uma sequência de comandos básicos de leitura e escrita de dados \cite{santos1992efetivacao}. Manipular dados em um ambiente com múltiplos usuários requer cuidados para evitar comportamentos indevidos do sistema, como leituras sujas e atualizações perdidas. Quando o usuário faz operações não instantâneas com os dados, pode sofrer com a alteração dos valores de entrada invalidando o valor final da operação \cite{harder1983principles}. Uma \textbf{transação} é uma sequência de operações sobre dados que deve ser realizada como uma unidade indivisível pelos nós que gerenciam esses dados. Servidores do sistema precisam garantir a execução de todas as alterações para garantir a efetivação(\textit{commit}) da transação em caso de sucesso, e reverter alterações não consolidadas(\textit{rollback}) em caso de falha em alguma operação \cite{Coulouris2013}.
+
+\begin{sourcecode}[htb]
+\caption{\label{code:transacao}Exemplo de código}
+\begin{lstlisting}[frame=single, language=SQL]
+--inicia a transação
+BEGIN TRANSACTION;
+
+-- lê_dado Saldo_A
+SELECT @SA = saldo FROM contas WHERE id = 'A'; 
+
+ -- escreve_dado Saldo_A = Saldo_A - X
+UPDATE contas SET saldo = @SA - @X WHERE id = 'A';  
+
+-- lê_dado Saldo_B
+SELECT @SB = saldo FROM contas WHERE id = 'B';
+
+-- escreve_dado Saldo_B = Saldo_B + X
+UPDATE contas SET saldo = @SB + @X WHERE id = 'B';   
+
+--Efetiva a transação
+COMMIT;
+\end{lstlisting}
+\fonte{Adaptado de \citeonline{santos1992efetivacao}}
+\end{sourcecode}
+
+O código fonte \ref{code:transacao} ilustra um exemplo clássico de transação, onde é realizada a transferência de valores entre duas contas correntes em um banco. Um determinado montante $X$ deve ser transferido da conta $A$ para a conta $B$. Essa transação é dividida em duas etapas, na primeira é realizado o débito da conta $A$, onde é necessário buscar o valor atual da conta $Saldo_A$ e substituí-lo pelo novo valor $Saldo_A - X$. Na segunda etapa, é necessário atualizar o valor da conta $B$ com o crédito, buscando o valor atual da conta $Saldo_B$ e substituí-lo pelo valor $Saldo_B + X$ \cite{santos1992efetivacao}.
+
+A confiabilidade transacional das operações é garantida pelas seguintes características \cite{harder1983principles, weikum2002transactional}:
+
+\begin{description}
+    \item[Atomicidade:] Na visão do usuário e da aplicação, operações de uma transação não são parcialmente executadas, sem exceção;
+    \item[Consistência:] Uma transação deve transportar o sistema de um estado válido para outro, preservando as restrições de integridade do esquema e a correção lógica da aplicação;
+    \item[Isolação:] O efeito de transações concorrentes é equivalente ao de alguma execução serial dessas mesmas transações;
+    \item[Durabilidade:] Após a efetivação da transação, todas as modificações devem ter garantia de sobrevivência em caso de falhas de hardware ou software.
+\end{description}
 
 \section{Biossinais}\label{subsec:biossinais}
 
-"Sinais elétricos, mecânicos e químicos originados por seres vivos podem sempre ser de interesse para diagnósticos, monitoramento de pacientes e pesquisa biomédica"\cite{hadjileontiadis2006biosignals}. Esses Biossinais "carregam informação que é útil para a compreensão de mecanismos patológicos complexos subjacente ao comportamento dos sistemas vivos"\cite{liang2012biosignal}.
+Seres vivos são compostos por vários sistemas componentes e sub-sistemas que são responsáveis por determinados processos fisiológicos. \textbf{Processos fisiológicos} são fenômenos complexos de entrada e saída que podem ser na forma de material biológico, informação ou ação na forma mecânica, elétrica ou química. Esses processos normalmente tem como produto primário ou secundário de seu funcionamento a manifestação de sinais que refletem seus mecanismos e natureza \cite{rangayyan2002biomedical}. 
 
+Esses sinais de naturezas distintas produzidos por seres vivos em seus processos fisiológicos podem sempre ser de interesse para diagnósticos, monitoramento de pacientes e pesquisa biomédica \cite{Hadjileontiadis2006}, pois doenças e defeitos em um sistema biológico geram alterações no funcionamento normal de seus processos fisiológicos, desenvolvendo um processo patológico que afeta a saúde e bem estar do indivíduo \cite{rangayyan2002biomedical}. A figura \ref{fig:biosig} mostra a generalização de um sistema de instrumentação médica que captura um biossinal que converte uma forma de energia ou informação do mesurando em outra forma, normalmente elétrica.
+
+\begin{figure}[htb]%% Ambiente figure
+    %\captionsetup{width=0.55\textwidth}%% Largura da legenda
+    \caption{Generalização de um sistema de instrumentação médica que captura um biossinal}%% Legenda
+    \label{fig:biosig}%% Rótulo
+    \includegraphics[scale=0.3]{figuras/conceitos/instrument_bio_sinal.png}%% Dimensões e localização
+    \fonte{Adaptado de \citeonline{webster2009medical}}%% Fonte
+\end{figure}
+
+Sistemas de instrumentação médica são diferenciados de sistemas de instrumentação convencionais apenas pelo fato de a fonte do sinal ou o alvo da ação aplicada ser tecido vivo. O \textbf{mensurando} é a propriedade física afetada pelo processo fisiológico que se quer estudar. O mesurando é obtido pelo sistema de instrumentação através de \textbf{sensores} que minimizam a energia extraída do ser vivo enquanto tentam ser minimamente invasivos ao capturar apenas informações referentes ao processo. O \textbf{condicionamento do sinal} busca filtrar, amplificar ou apenas casar a impedância do sensor e a \textbf{interface de saída}, externalizando a medição de forma que um operador humano possa utiliza-lá \cite{webster2009medical}. 
 
 \subsection{Eletromiografia}\label{subsec:eletromiografia}
 
- O sinal de eletromiografia é composto pela variação potencial de grupos de fibras musculares organizadas em unidades funcionais chamada \textit{unidades motoras}\cite{de2006decomposition}. Esse sinal pode ser detectado através de métodos invasivos com eletrodos posicionados diretamente no tecido muscular, ou através de métodos não-invasivos com sensores posicionados na superfície da pele. 
+ O sinal de eletromiografia é composto pela variação potencial de grupos de fibras musculares organizadas em unidades funcionais chamada \textit{unidades motoras} \cite{de2006decomposition}. Esse sinal pode ser detectado através de métodos invasivos com eletrodos posicionados diretamente no tecido muscular, ou através de métodos não-invasivos com sensores posicionados na superfície da pele. 
 
  \begin{citacao}
 Os ramos de uma fibra nervosa ativam a placa motora final de uma fibra muscular. Isso induz duas ondas de despolarização que viajam a uma velocidade de 3-6 m/s para cada extremidade da fibra muscular. O tecido entre e ao redor da fibra ativa é eletricamente condutor.
