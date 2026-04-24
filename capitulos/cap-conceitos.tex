@@ -79,7 +79,7 @@ A \textbf{criptografia} é a ciência que estuda mecanismos de construção e tr
 
 Os mecanismos criptográficos podem ser classificados em três categorias principais: funções \textit{hash}, criptografia simétrica e criptografia assimétrica.
 
-As funções hash são funções matemáticas unidirecionais que produzem uma saída de tamanho fixo para qualquer entrada de qualquer tamanho. Uma função unidirecional implica baixo custo computacional no cálculo de $f(x)$, mas torna computacionalmente inviável calcular o valor de $x$ a partir de $f(x)$ \cite{stallings2005cryptography,paar2010understanding}. Além disso, espera-se que (i) a mesma entrada sempre produza a mesma saída (determinismo); (ii) pequenas alterações na entrada causem um grande efeito na saída (efeito avalanche); e (iii) seja computacionalmente inviável encontrar duas entradas distintas que produzam a mesma saída (resistência a colisões). 
+As \textbf{funções hash} são funções matemáticas unidirecionais que produzem uma saída de tamanho fixo para qualquer entrada de qualquer tamanho. Uma função unidirecional implica baixo custo computacional no cálculo de $f(x)$, mas torna computacionalmente inviável calcular o valor de $x$ a partir de $f(x)$ \cite{stallings2005cryptography,paar2010understanding}. Além disso, espera-se que (i) a mesma entrada sempre produza a mesma saída (determinismo); (ii) pequenas alterações na entrada causem um grande efeito na saída (efeito avalanche); e (iii) seja computacionalmente inviável encontrar duas entradas distintas que produzam a mesma saída (resistência a colisões). 
 
 A \textbf{criptografia simétrica} baseia-se no compartilhamento de uma chave secreta pelos usuários que é usada para cifrar o conteúdo das mensagens e depende da confidencialidade da chave para manter a informação segura \cite{barker2020nist}. 
 
@@ -126,11 +126,11 @@ A confiabilidade transacional das operações é garantida pelas seguintes carac
     \item[Durabilidade:] Após a efetivação da transação, todas as modificações devem ter garantia de sobrevivência em caso de falhas de hardware ou software.
 \end{description}
 
-\section{Biossinais}\label{subsec:biossinais}
+\section{Biossinais}\label{sec:biossinais}
 
-Seres vivos são compostos por vários sistemas componentes e sub-sistemas que são responsáveis por determinados processos fisiológicos. \textbf{Processos fisiológicos} são fenômenos complexos de entrada e saída que podem ser na forma de material biológico, informação ou ação na forma mecânica, elétrica ou química. Esses processos normalmente tem como produto primário ou secundário de seu funcionamento a manifestação de sinais que refletem seus mecanismos e natureza \cite{rangayyan2002biomedical}. 
+Seres vivos são compostos por diversos sistemas e subsistemas que são responsáveis por determinados processos fisiológicos. \textbf{Processos fisiológicos} são fenômenos complexos de entrada e saída que podem assumir a forma de material biológico, informação ou ação na forma mecânica, elétrica ou química. Esses processos normalmente têm como produto primário ou secundário de seu funcionamento a manifestação de sinais que refletem seus mecanismos e natureza \cite{rangayyan2002biomedical}. 
 
-Esses sinais de naturezas distintas produzidos por seres vivos em seus processos fisiológicos podem sempre ser de interesse para diagnósticos, monitoramento de pacientes e pesquisa biomédica \cite{Hadjileontiadis2006}, pois doenças e defeitos em um sistema biológico geram alterações no funcionamento normal de seus processos fisiológicos, desenvolvendo um processo patológico que afeta a saúde e bem estar do indivíduo \cite{rangayyan2002biomedical}. A figura \ref{fig:biosig} mostra a generalização de um sistema de instrumentação médica que captura um biossinal que converte uma forma de energia ou informação do mesurando em outra forma, normalmente elétrica.
+\textbf{Biossinais} são sinais de naturezas distintas produzidos por seres vivos em seus processos fisiológicos, podendo ser de interesse para diagnósticos, monitoramento de pacientes e pesquisa biomédica \cite{Hadjileontiadis2006}. Doenças e defeitos em um sistema biológico geram alterações no funcionamento normal de seus processos fisiológicos, desenvolvendo um processo patológico que afeta a saúde e o bem-estar do indivíduo \cite{rangayyan2002biomedical}. Para que biossinais possam ser utilizados clinicamente, é necessário capturá-los por meio de sistemas de instrumentação médica. Sistemas de instrumentação médica são diferenciados de sistemas de instrumentação convencionais fundamentalmente pelo fato de a fonte do sinal ou o alvo da ação aplicada ser tecido vivo  \cite{webster2009medical}. A Figura~\ref{fig:biosig} apresenta a generalização de um sistema de instrumentação médica que captura um biossinal, convertendo uma forma de energia ou informação em outra, normalmente elétrica.
 
 \begin{figure}[htb]%% Ambiente figure
     %\captionsetup{width=0.55\textwidth}%% Largura da legenda
@@ -140,20 +140,31 @@ Esses sinais de naturezas distintas produzidos por seres vivos em seus processos
     \fonte{Adaptado de \citeonline{webster2009medical}}%% Fonte
 \end{figure}
 
-Sistemas de instrumentação médica são diferenciados de sistemas de instrumentação convencionais apenas pelo fato de a fonte do sinal ou o alvo da ação aplicada ser tecido vivo. O \textbf{mensurando} é a propriedade física afetada pelo processo fisiológico que se quer estudar. O mesurando é obtido pelo sistema de instrumentação através de \textbf{sensores} que minimizam a energia extraída do ser vivo enquanto tentam ser minimamente invasivos ao capturar apenas informações referentes ao processo. O \textbf{condicionamento do sinal} busca filtrar, amplificar ou apenas casar a impedância do sensor e a \textbf{interface de saída}, externalizando a medição de forma que um operador humano possa utiliza-lá \cite{webster2009medical}. 
+ Conforme ilustrado na Figura~\ref{fig:biosig}, o \textbf{mensurando} é a propriedade física afetada pelo processo fisiológico que se deseja estudar. O mensurando é obtido pelo sistema de instrumentação por meio de \textbf{sensores} que buscam extrair o mínimo de energia do ser vivo de forma pouco invasiva, capturando apenas informações referentes ao processo. O \textbf{condicionamento do sinal} visa filtrar, amplificar ou casar a impedância do sensor com a \textbf{interface de saída}, externalizando a medição de forma que um operador humano possa utilizá-la \cite{webster2009medical}. 
 
 \subsection{Eletromiografia}\label{subsec:eletromiografia}
 
- O sinal de eletromiografia é composto pela variação potencial de grupos de fibras musculares organizadas em unidades funcionais chamada \textit{unidades motoras} \cite{de2006decomposition}. Esse sinal pode ser detectado através de métodos invasivos com eletrodos posicionados diretamente no tecido muscular, ou através de métodos não-invasivos com sensores posicionados na superfície da pele. 
+A movimentação dos músculos é controlada por sinais elétricos que viajam entre os músculos e o sistema nervoso central e periférico \cite{Henneberg2000capitulo14}. Os músculos esqueléticos são organizados em \textbf{unidades motoras} que são compostas por um neurônio motor conectado às fibras musculares que controla. A unidade motora é a menor unidade que pode ser ativada por um esforço volitivo, ou seja, por um comando motor central gerado voluntariamente, que recruta o neurônio motor e, por consequência, todas as fibras musculares por ele inervadas \cite{webster2009medical}. A Figura \ref{fig:emg-esquema-motor} mostra um diagrama da organização de uma unidade motora.
 
- \begin{citacao}
-Os ramos de uma fibra nervosa ativam a placa motora final de uma fibra muscular. Isso induz duas ondas de despolarização que viajam a uma velocidade de 3-6 m/s para cada extremidade da fibra muscular. O tecido entre e ao redor da fibra ativa é eletricamente condutor.
+ \begin{figure}[htb]%% Ambiente figure
+    %\captionsetup{width=0.55\textwidth}%% Largura da legenda
+    \caption{Diagrama de uma unidade motora única, que consiste de um único neurônio motor e um grupo de fibras musculares esqueléticas que são inervadas por ele.}%% Legenda
+    \label{fig:emg-esquema-motor}%% Rótulo
+    \includegraphics[scale=0.3]{figuras/conceitos/emg_esquema_motor.png}%% Dimensões e localização
+    \fonte{Adaptado de \citeonline{webster2009medical}}%% Fonte
+\end{figure}
 
-Sinais elétricos relacionados à despolarização da fibra podem, portanto, ser registrados por eletrodos a alguma distância da fibra: o EMG. A onda de despolarização também é conduzida para o interior da fibra por túbulos transversais muito finos, onde libera íons de cálcio que iniciam o processo de contração mecânica.
+A \textbf{eletromiografia} (EMG) é o registro do sinal elétrico gerado pela contração muscular \cite{hof1984emg}. O sinal é formado pela sobreposição dos potenciais de ação das unidades motoras ativadas simultaneamente e corresponde à corrente gerada pelo fluxo de íons através da membrana das fibras musculares que se propaga pelos tecidos intermediários até alcançar a superfície do eletrodo de medição \cite{deluca2006}. Pode ser adquirido através de eletrodos posicionados na superfície da pele --- eletromiografia de superfície (sEMG) --- ou eletrodos inseridos diretamente no músculo, configuração conhecida como EMG intramuscular (iEMG) \cite{najarian2012biomedical, deluca2006}. A Figura \ref{fig:emg-sinal} ilustra um registro de sEMG.
 
-Este último processo é muito mais lento que a despolarização elétrica, que dura apenas 2 ms. Após uma única despolarização, a força máxima não é atingida antes de 20-150 ms, e o declínio gradual da força, devido à reabsorção dos íons de cálcio liberados, leva pelo menos o dobro desse tempo. \cite[p. 120-121]{hof1984emg}.
-\end{citacao}
-%A ativação da fibra muscular acontece através do neurônio motor, o qual irá gerar uma despolarização da mesma e consequentemente sinais elétricos relacionados à despolarização. Estes sinais podem ser registrados por eletrodos a alguma distância da fibra já que o tecido entre e ao redor da fibra ativa é eletricamente condutor. 
+ \begin{figure}[htb]%% Ambiente figure
+    %\captionsetup{width=0.55\textwidth}%% Largura da legenda
+    \caption{O sinal EMG registrado com eletrodos de superfície posicionados sobre a pele, acima do músculo primeiro interósseo dorsal da mão. O sinal aumenta em amplitude à medida que a força produzida pelo músculo aumenta.}%% Legenda
+    \label{fig:emg-sinal}%% Rótulo
+    \includegraphics[scale=0.8]{figuras/conceitos/emg_sinal.png}%% Dimensões e localização
+    \fonte{Adaptado de \citeonline{deluca2006}}%% Fonte
+\end{figure}
+
+A análise desses sinais tem aplicação clínica direta: quando uma patologia afeta o sistema motor, seja no músculo ou no sistema nervoso, as características do sinal EMG sofrem alterações mensuráveis, que podem ser usadas para diagnóstico e acompanhamento  \cite{Henneberg2000capitulo14}. 
 
 
 

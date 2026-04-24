@@ -4,21 +4,24 @@
 
 Este capítulo descreve como ocorreu o processo de desenvolvimento deste trabalho, esmiuçando os algoritmos, as interfaces e os processos internos de comunicação que orquestram a interação entre partes envolvidas. Além disso, esse capítulo irá demostrar o processo de adaptação e integração de um projeto existente ao PRISM para que o mesmo seja validado através da realização de uma coleta de dados, que serão usados para testar o funcionamento do processo de compartilhamento de dados entre NPIs.
 
+\section{Visão Geral}\label{sec:desenvolvimentoVisaoGeral}
+
+Para
 \section{Nó de Pesquisa Interoperável}\label{sec:DesenvolvimentoNPI}
 
-A figura \ref{fig:NPIArquitetura} mostra como é organizado o NPI internamente, a camada de middleware do PRISM envelopa todas as requisições recebidas e devolvidas pela camada de controller do nó. A camada de serviço é responsável por armazenar as regras de negócio relacionadas a armazenamento e busca das informações dentro do NPI. Os repositórios são as camadas de abstração responsáveis pela implementação das operações busca e persistência nos bancos de dados e arquivos da aplicação, foi utilizado a ferramenta Entity Framework para fazer a modelagem do banco de dados na camada de repositórios.
+A figura \ref{fig:NPIArquitetura} mostra como é organizado o NPI internamente, a camada de middleware do PRISM envelopa todas as requisições recebidas e devolvidas pela camada de controller do nó. A camada de serviço é responsável por armazenar as regras de negócio relacionadas a armazenamento e busca das informações dentro do NPI. Os repositórios são as camadas de abstração responsáveis pela implementação das operações busca e persistência nos bancos de dados e arquivos da aplicação. Para modelagem do banco relacional foi utilizado a técnica de mapeamento de objetos relacionais (\textit{Object-Relational Mapping} — ORM) \cite{ColleyORM} através da implementação da biblioteca \textit{Entity Framework}.
 
 \begin{figure}[htpb]%% Ambiente figure
 \captionsetup{width=0.43\textwidth}
 \caption{Arquitetura do NPI}%% Legenda
 \label{fig:NPIArquitetura}%% Rótulo
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/NPI/ArquiteturaNPI.png}%% Dimensões e localização
+\includegraphics[scale=0.3]{figuras/Desenvolvimento/NPI/ArquiteturaNPI.png}%% Dimensões e localização
 \fonte{}%% Fonte
 \end{figure}
 
 \subsection{PRISM Middleware}
 
-O processo de criação de canal seguro, registro e identificação do solicitante é mediado pelo middleware em dois níveis, aplicação e usuário. O nível de aplicação permite que um NPI ou outra aplicação cliente de um NPI possa se registrar e autenticar de forma segura sem a intervenção de um usuário para rotinas de sincronização de dados entre nó, uma vez que o administrador do NPI autorize a aplicação cliente. Esse envelopamento garante que a troca de informações entre cliente e servidor serão criptografadas e dificultam o roubo de informações sensíveis. As figuras \ref{fig:auth-fase-1}, \ref{fig:auth-fase-2} e \ref{fig:auth-fase-3} mostram as fases do processo de inicialização da conexão com um NPI.
+O processo de criação de canal seguro, registro e identificação do solicitante é mediado pelo middleware em dois níveis, aplicação e usuário. O nível de aplicação permite que um NPI ou outra aplicação cliente de um NPI possa se registrar e autenticar de forma segura sem a intervenção de um usuário para rotinas de sincronização de dados entre nó, uma vez que o administrador do NPI autorize a aplicação cliente. Esse envelopamento garante que a troca de informações entre cliente e servidor serão criptografadas visando dificultar o roubo de informações sensíveis, mesmo em redes insegura. As figuras \ref{fig:auth-fase-1}, \ref{fig:auth-fase-2} e \ref{fig:auth-fase-3} mostram as fases do processo de inicialização da conexão com um NPI.
 
 \begin{figure}[htpb]%% Ambiente figure
 \captionsetup{width=0.43\textwidth}
@@ -46,14 +49,14 @@ O processo de criação de canal seguro, registro e identificação do solicitan
 
 \newpage
 
-A nível de usuário, uma vez a aplicação cliente possuindo uma uma sessão aberta com o servidor, permite os
+A nível de usuário, uma vez a aplicação cliente tenha criado uma uma sessão aberta com o servidor, o usuário da aplicação precisa se autenticar para adicionar e modificar dados presentes no NPI, além de alterar configurações de conexões com outros nós e solicitar
 
 \subsection{Troca de dados}
 
 
 
 \newpage
-\section{Interface de Pesquisa Interoperável}\label{sec:desenvolvimentoProjetoExemplo}
+\section{Interoperable Research Interface System - IRIS}\label{sec:desenvolvimentoProjetoExemplo}
 
 falar sobre as aplicações bases que serão adicionadas ao nó(Gestão de Acessos, Gestão de pacientes e outras funcionalidades para garantir a facil reusabilidade do projeto
 
@@ -64,7 +67,8 @@ falar sobre as aplicações bases que serão adicionadas ao nó(Gestão de Acess
 \subsection{Front-End}
 
 
-\section{Integração do Projeto Exemplo}\label{sec:desenvolvimentoProjetoExemplo}
+\section{IRIS - Mobile}\label{sec:desenvolvimentoProjetoExemplo}
+\section{Adaptação do NeuroEstimulator}\label{sec:desenvolvimentoProjetoExemplo}
 
 
 O projeto exemplo usado é o NeuroEstimulator, um sistema funcional que 

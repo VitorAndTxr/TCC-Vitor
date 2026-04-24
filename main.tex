@@ -103,7 +103,7 @@
 \begin{document}%% Não comente esta linha
 
 %% Formatação de páginas de elementos pré-textuais
-\pretextual%% Não comente esta linha
+%%\pretextual%% Não comente esta linha
 
 %% Capa
 %\incluircapa%% Comente para remover este item
@@ -125,9 +125,9 @@
 
 %% Folha de aprovação
 %\incluirfolhaaprovacao
-\approvalpage
+%\approvalpage
 %\incluirfolhadeaprovacao%% Para adicionar no formato de texto
-%\includepdf[scale=1.0,pages=1]{./PreTexto/folha-aprovacao.pdf} % para adicionar o pdf enviado pelo professor apenas substitua o documento folha-aprovacao.pdf dentro da pasta PreTexto
+\includepdf[scale=1.0,pages=1]{./PreTexto/folha-aprovacao.pdf} % para adicionar o pdf enviado pelo professor apenas substitua o documento folha-aprovacao.pdf dentro da pasta PreTexto
 
 %% Dedicatória
 \include{./PreTexto/dedicatoria}%% Comente para remover este item
@@ -145,7 +145,7 @@
 \include{./PreTexto/abstract}%% Comente para remover este item
 
 %% Lista de algoritmos
-%\incluirlistadealgoritmos%% Comente para remover este item
+\incluirlistadealgoritmos%% Comente para remover este item
 
 %% Lista de ilustrações
 \incluirlistadeilustracoes%% Comente para remover este item
@@ -166,7 +166,7 @@
 \incluirlistadecodigosfonte
 
 %% Lista de abreviaturas, siglas e acrônimos
-%\incluirlistadeacronimos{glossaries}%% Opções: "glossaries" (pacote) ou "file" (arquivo) ou "none" (desabilita)
+\incluirlistadeacronimos{glossaries}%% Opções: "glossaries" (pacote) ou "file" (arquivo) ou "none" (desabilita)
 
 %% Lista de símbolos
 \incluirlistadesimbolos{nomencl}%% Opções: "nomencl" (pacote) ou "file" (arquivo) ou "none" (desabilita)
@@ -190,7 +190,7 @@
 %%\include{./capitulos/cap-trabalhos-relacionados}%% Comente para remover este item
 
 %% Capítulo
-\include{./capitulos/cap-proposta}%% Comente para remover este item
+%%\include{./capitulos/cap-proposta}%% Comente para remover este item
 
 %% Capítulo
 \include{./capitulos/cap-metodologia}%% Comente para remover este item
@@ -206,15 +206,15 @@
 % \part{Conclusão}%% Comente para remover este item
 
 %% Capítulo
-\include{./capitulos/cap-conclusoes}%% Comente para remover este item
+%%\include{./capitulos/cap-conclusoes}%% Comente para remover este item
 
 %% Capítulos após este comando criam marcadores do pdf na raiz
 % \phantompart%% Comente para remover este item
 
-\include{./capitulos/citacoes}%% Comente para remover este item
+%%\include{./capitulos/citacoes}%% Comente para remover este item
 
 %% Formatação de páginas de elementos pós-textuais
-\postextual%% Não comente esta linha
+%%\postextual%% Não comente esta linha
 
 %% Arquivos de referências
 \arquivosdereferencias{%% Arquivos bibtex sem a extensão .bib e separados por vírgula - Não comente esta linha
@@ -226,12 +226,12 @@
 %\incluirglossario %% Comente para remover este item
 
 %% Arquivos de apêndices
- \begin{arquivosdeapendices}%% Os arquivos de apêndices devem se incluídos neste ambiente - Não comente esta linha
+ %%\begin{arquivosdeapendices}%% Os arquivos de apêndices devem se incluídos neste ambiente - Não comente esta linha
 %   %\partapendices%% Página de início dos apêndices - adiciona uma página com o título Apêndices
 %   %% Capítulo de exemplo
-   \include{./PosTexto/apendicea}%% Apêndice - Comente para remover este item
-   \include{./PosTexto/apendiceb}%% Apêndice - Comente para remover este item
- \end{arquivosdeapendices}%% Não comente esta linha
+   %%\include{./PosTexto/apendicea}%% Apêndice - Comente para remover este item
+   %%\include{./PosTexto/apendiceb}%% Apêndice - Comente para remover este item
+ %%\end{arquivosdeapendices}%% Não comente esta linha
 
 
 % \begin{apendicesenv}%% Ambiente apendicesenv
@@ -244,12 +244,12 @@
 % \end{apendicesenv}
 
 %% Arquivos de anexos
-\begin{arquivosdeanexos}%% Os arquivos de anexos devem se incluídos neste ambiente - Não comente esta linha
+%%\begin{arquivosdeanexos}%% Os arquivos de anexos devem se incluídos neste ambiente - Não comente esta linha
   %\partanexos%% Página de início dos anexos - adiciona uma página com o título Anexos
 
-  \include{./PosTexto/anexoa}%% Anexo - Comente para remover este item
-  \include{./PosTexto/anexob}%% Anexo - Comente para remover este item
-\end{arquivosdeanexos}%% Não comente esta linha
+  %%\include{./PosTexto/anexoa}%% Anexo - Comente para remover este item
+  %%\include{./PosTexto/anexob}%% Anexo - Comente para remover este item
+%%\end{arquivosdeanexos}%% Não comente esta linha
 
 %% Índice - Adiciona um índice remissivo.
 %\incluirindice%% Comente para remover este item
