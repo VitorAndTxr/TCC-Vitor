@@ -6,7 +6,33 @@ Este capítulo descreve como ocorreu o processo de desenvolvimento deste trabalh
 
 \section{Visão Geral}\label{sec:desenvolvimentoVisaoGeral}
 
-Para
+Para testar a hipótese de interoperabilidade através da troca de dados estruturados entre dois NPIs, propõe-se a simulação de uma estrutura institucional descrita pela Figura \ref{fig:estruturaSimulada}. Uma universidade que possui um projeto de pesquisa integrado com o padrão do PRISM compartilhando dados para um novo NPI. Para simplificar o diagrama, ligações tracejadas vermelhas foram usadas para simbolizar comunicação construida sobre o PRISM Middleware.
+
+\begin{figure}[htpb]%% Ambiente figure
+    \captionsetup{width=1\textwidth}
+    \caption{Estrutura institucional simulada para validação do PRISM.}%% Legenda
+    \label{fig:estruturaSimulada}%% Rótulo
+    \includegraphics[scale=0.12]{figuras/Desenvolvimento/visaoGeral/estrutura-simulada.png}%% Dimensões e localização
+    \fonte{Autoria própria (2026)}%% Fonte
+\end{figure}
+
+Dentro desse cenário, este trabalho estrutura o fluxo de consumo dos dados de pesquisa de uma instituição por outra. As fontes de dado e as principais comunicações previstas pelo modelo são apresentadas na Figura \ref{fig:fluxo-simulado}, na qual pesquisadores criam e utilizam rótulos para adicionar contexto aos biossinais obtidos durante as coletas.
+
+\begin{figure}[htpb]%% Ambiente figure
+\captionsetup{width=1\textwidth}
+\caption{Fluxo de dados pretendido entre as instituições simuladas.}%% Legenda
+\label{fig:fluxo-simulado}%% Rótulo
+\includegraphics[scale=0.12]{figuras/Desenvolvimento/visaoGeral/fluxo-simulado.png}%% Dimensões e localização
+\fonte{Autoria própria (2026)}%% Fonte
+\end{figure}
+
+A materialização desse cenário exigiu o desenvolvimento de quatro artefatos, cada um responsável por validar uma característica específica do padrão. O \textbf{NPI} é a API que serve de base à infraestrutura de interoperabilidade e aplica as regras de identificação e autenticação definidas pelo PRISM, sendo responsável por provar a viabilidade da camada de \textit{middleware}. O \textbf{IRIS} é a interface gráfica web que permite ao usuário operar o NPI e configurar suas conexões e dados, evidenciando a integração de aplicações generalistas ao padrão. O \textbf{IRIS Mobile} é a aplicação móvel que substitui a interface anteriormente utilizada pelo NeuroEstimulator, demonstrando que clientes em plataformas heterogêneas consomem o mesmo contrato do NPI. Por fim, o firmware do \textbf{NeuroEstimulator} foi refatorado para fornecer aumentar a taxa de amostragem e expor um fluxo contínuo de biossinal sobre o protocolo Bluetooth do dispositivo, ilustrando a adaptabilidade de dispositivos legados ao padrão.
+
+A delimitação acima resulta das restrições de equipe (um único autor) e de prazo (ciclo acadêmico de um ano) aplicadas ao trabalho. Nessas condições, priorizou-se a profundidade do NPI — componente central da hipótese — em detrimento da amplitude do padrão: optou-se por uma única modalidade de biossinal (sEMG), um único projeto-exemplo e federação entre apenas dois nós. Essas escolhas preservam a capacidade do experimento de testar a hipótese, uma vez que o contrato do NPI foi implementado de forma agnóstica ao tipo de biossinal, mantendo o padrão extensível a outras modalidades sem alteração da camada de \textit{middleware}.
+
+O restante deste capítulo detalha cada um dos artefatos apresentados nesta visão geral, na ordem em que se conectam ao fluxo de dados ilustrado na Figura \ref{fig:fluxo-simulado}. A Seção \ref{sec:DesenvolvimentoNPI} descreve a arquitetura interna do Nó de Pesquisa Interoperável, com ênfase na camada de \textit{PRISM Middleware} responsável pelas rotinas de identificação, autenticação e troca segura entre nós. A Seção \ref{sec:desenvolvimentoIRIS} apresenta o IRIS, a interface web generalista que opera sobre o NPI e materializa o papel de aplicação no modelo PRISM. A Seção \ref{sec:desenvolvimentoIRISMobile} estende essa discussão para a versão móvel do IRIS, especializada na captura de biossinais e no comando do dispositivo. Por fim, a Seção \ref{sec:adaptacaoNeuroEstimulator} documenta as modificações aplicadas ao firmware do NeuroEstimulator que viabilizaram sua integração ao ecossistema, demonstrando o caminho de adaptação de dispositivos legados ao padrão.
+
+
 \section{Nó de Pesquisa Interoperável}\label{sec:DesenvolvimentoNPI}
 
 A figura \ref{fig:NPIArquitetura} mostra como é organizado o NPI internamente, a camada de middleware do PRISM envelopa todas as requisições recebidas e devolvidas pela camada de controller do nó. A camada de serviço é responsável por armazenar as regras de negócio relacionadas a armazenamento e busca das informações dentro do NPI. Os repositórios são as camadas de abstração responsáveis pela implementação das operações busca e persistência nos bancos de dados e arquivos da aplicação. Para modelagem do banco relacional foi utilizado a técnica de mapeamento de objetos relacionais (\textit{Object-Relational Mapping} — ORM) \cite{ColleyORM} através da implementação da biblioteca \textit{Entity Framework}.
@@ -56,41 +82,20 @@ A nível de usuário, uma vez a aplicação cliente tenha criado uma uma sessão
 
 
 \newpage
-\section{Interoperable Research Interface System - IRIS}\label{sec:desenvolvimentoProjetoExemplo}
+\section{Interoperable Research Interface System - IRIS}\label{sec:desenvolvimentoIRIS}
 
 falar sobre as aplicações bases que serão adicionadas ao nó(Gestão de Acessos, Gestão de pacientes e outras funcionalidades para garantir a facil reusabilidade do projeto
 
-\subsection{Arquitetura}
-
-\subsection{Back-End}
-
-\subsection{Front-End}
-
-
-\section{IRIS - Mobile}\label{sec:desenvolvimentoProjetoExemplo}
-\section{Adaptação do NeuroEstimulator}\label{sec:desenvolvimentoProjetoExemplo}
+\section{IRIS - Mobile}\label{sec:desenvolvimentoIRISMobile}
+\section{Adaptação do NeuroEstimulator}\label{sec:adaptacaoNeuroEstimulator}
 
 
 O projeto exemplo usado é o NeuroEstimulator, um sistema funcional que 
 Explicar sobe o antigo projeto e apontar as modificações que foram necessárias para que se adaptasse as funcionalidades do projeto e exemplificar como integrar com hardware e projetos existente
 
-\subsection{Neuro}
-
 - Adaptei o código para rodar na taxa fixa de 860hz reduzido para 215hz por média devido a uma limitação do ADC 
 
 
-\section{Modelagem do sistema}\label{sec:modelagemSistema}
-
-A modelagem do sistema inclui os diagramas e as descrições textuais para representar o problema e a solução.
-
-Sendo assim, primeiramente esse item deve apresentar diagramas utilizados para a modelagem de negócios (ex. diagramas de atividade e estado), se esses tenham sido necessários.
-Em seguida esse item deve conter a descrição dos requisitos obtidos do usuário, contendo sua respectiva classificação (funcionais e não funcionais). Sugere-se o uso de um modelo formal sugerido por autores (ex. Wazlawick, Bezerra) para a apresentação dessa classificação.
-
-Se utilizada orientação a objetos e a UML, nesta seção ainda são apresentados, por exemplo, os diagramas de casos de uso, com suas descrições suplementares, os diagramas de classe de análise (ou modelo conceitual), de sequência e/ou comunicação, diagrama de classes de projeto.
-
-Nesta seção também estão os diagramas da modelagem de banco de dados, como entidade-relacionamento. Nesse item pode ser apresentada a descrição de cada uma das classes do modelo de classes apresentado acima, assim como a descrição das tabelas do banco de dados. Também podem estar documentados modelos e padronizações utilizados para a interface, diagramas de navegação, a representação da arquitetura do sistema e dos padrões de projeto utilizados.
-
-\section{Apresentação do sistema}\label{sec:apresentacaoSistema}
 
 Apresenta as funcionalidades e o uso de recursos tecnológicos do sistema por meio de suas telas, enfatizando a interação com o sistema. A apresentação do sistema é feita sob a forma de texto, com telas e definição de padrões que forem relevantes ao contexto do trabalho. As telas são tratadas como figuras, cópias (print screen) de relatórios ou consultas também são figuras.
 
@@ -104,21 +109,6 @@ A \autoref{fig:cadastroPaciente} exibe a tela de acesso ao Cadastro de Pacientes
 \fonte{}%% Fonte
 \end{figure}
 
-\section{Implementação do sistema}\label{sec:implementacaoSistema}
-
-Nesta seção é documentada a implementação do sistema com partes relevantes ou exemplos de código, rotinas, funções. Inclui, ainda, a descrição técnica do uso de recursos (componentes, bibliotecas, etc.) da linguagem. Ressalta-se que cada orientador avaliará juntamente com seu orientado o que poderá ser descrito nesta seção. Isso sem que sejam revelados detalhes do sistema que possam comprometer seu uso comercial ou científico ou que a descrição fique muito sucinta ou superficial.
-
-Em materiais e método estão quais os recursos utilizados, neste capítulo é reportado como esses recursos foram utilizados para resolver o problema.
-
-Sugere-se colocar listagens curtas de código, enfatizando aspectos específicos das tecnologias utilizadas ou da implementação. Sugere-se, ainda, que o código não seja apresentado sob a forma de print screen, e sim copiado e colado no texto, mantendo, se possível, a formatação. Todas as listagens de código devem ser devidamente explicadas. A explicação deve ser técnica, fundamentada em aspectos conceituais e boas práticas de programação.
-
-Enfatizar os diferenciais do sistema: procedimentos armazenados, consultas SQL, uso de componentes, uso de padrões de projeto, a forma de uso dos recursos da linguagem. Esses diferenciais são no sentido de explicitar as vantagens, desvantagens, dificuldades e facilidades que esses recursos impetraram no desenvolvimento do sistema em termos técnicos. Esses diferenciais servirão para avaliar pela utilização ou não desses recursos, pelo menos para sistemas iguais ou semelhantes ao reportado no trabalho.
-
-Reportar a forma como o sistema foi verificado e validado. No sentido de verificar se os requisitos definidos para o mesmo foram atendidos. Os testes podem ser realizados pelo professor orientador, pelos professores que compõem a banca, por pessoas que serviram de base para as informações para o sistema e etc. Os testes podem ser realizados com base em um plano de testes elaborado juntamente com a análise e projeto do sistema. Para validar a implementação podem ser desenvolvidas rotinas de teste unitário.
-
-Se houver implantação do sistema, mesmo que seja para teste, reportar a forma como isso foi feito, a geração de instaladores, os problemas com ambiente e sistema operacional, incluindo banco de dados e outros. Deixar explícito o procedimento para instalar e usar o sistema.
-
-Quando for necessário, citar no texto do trabalho nomes de campos, tabelas ou rotinas específicas utilizadas na implementação de um software, utilizar a fonte courier new para destacar esses nomes.
 
 Um exemplo de listagem de código fonte pode ser observado na \autoref{codigo:classeFoo}, que representa a classe Aluno.
 
@@ -141,9 +131,3 @@ public class Foo {
 \end{lstlisting}
 \fonte{}
 \end{sourcecode}
-
-\section{Discussões (opcional)}\label{sec:discussoes} 
-
-O trabalho contém esta seção quando considerado que há resultados (em termos de dados) e discussões relevantes ou suficientes para justificar uma seção. Se existentes e não justificarem uma seção, eles podem estar na seção que relata a implementação do sistema.
-
-Nesta seção estão os resultados obtidos da realização de testes quantitativos e qualitativos, independentemente da quantidade, tipo e volume de testes realizados. Os resultados dos testes são discutidos tendo como base o referencial teórico e os objetivos pretendidos com o trabalho. Esses testes podem resultar de implantação e testes de uso do sistema. 
