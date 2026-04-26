@@ -1,0 +1,78 @@
+%% ============================================================
+%% Fluxo de sincronizacao entre NPIs orquestrada pelo IRIS
+%% Referenciado em: cap-experimentos-resultados.tex (4.3.3.4)
+%% Label: fig:IRISFluxoSync
+%% ============================================================
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant IRIS as IRIS<br/>(NodeConnectionsScreen<br/>+ SyncProgressModal)
+    participant ADP as NodeSyncServiceAdapter
+    participant MW as ResearchNodeMiddleware
+    participant A as NPI-A (local)
+    participant B as NPI-B (remoto)
+
+    Note over U,IRIS: (i) Listagem de conexoes federadas
+    U->>IRIS: Abre tela de conexoes
+    IRIS->>A: GET /api/node/GetActiveNodeConnectionsPaginated
+    A-->>IRIS: lista de ResearchNodeConnection
+
+    U->>IRIS: Clica "Sincronizar" em conexao<br/>AUTHORIZED + READ_WRITE
+    IRIS->>IRIS: abre SyncProgressModal
+
+    Note over IRIS,B: (ii) Pre-visualizacao (preview)
+    IRIS->>ADP: preview(connection)
+    ADP->>MW: invoke(POST /api/sync/preview,<br/>{ remoteNodeId, since: null })
+
+    rect rgba(220,220,255,0.35)
+        Note over MW,B: Handshake 4-fases (transparente ao usuario)
+        MW->>B: ECDH P-384 (canal cifrado AES-256-GCM)
+        MW->>B: Identificacao X.509 (fingerprint SHA-256)
+        MW->>B: Challenge-response RSA-2048
+        B-->>MW: Token JWT (TTL 1h)
+    end
+
+    A->>B: GET /api/sync/manifest
+    B-->>A: SyncManifest{SNOMED, Volunteers,<br/>Research, Sessions, Recordings}
+    A-->>MW: SyncPreviewResponse
+    MW-->>ADP: SyncPreviewResponse
+    ADP-->>IRIS: contagens por entidade
+    IRIS-->>U: exibe manifesto e aguarda confirmacao
+
+    U->>IRIS: Confirma sincronizacao
+    IRIS->>ADP: pull(connection, since)
+    ADP->>MW: invoke(POST /api/sync/pull,<br/>{ remoteNodeId, since })
+
+    rect rgba(200,255,200,0.25)
+        Note over A,B: (iii) Transacao ACID em NPI-A
+        A->>A: BeginTransactionAsync()
+
+        Note over A,B: (iii.a) Metadados paginados
+        loop Enquanto page <= totalPages
+            A->>B: GET /api/sync/sessions<br/>?since=&page=N&pageSize=100
+            B-->>A: PagedSyncResult{Sessions +<br/>Records + Channels + Annotations}
+        end
+
+        Note over A,B: (iii.b) Arquivos binarios por canal
+        loop Para cada RecordChannel.Id
+            A->>B: GET /api/sync/recordings/{id}/file
+            B-->>A: { ContentBase64, ContentType,<br/>FileName, BlobPath }
+            A->>A: grava blob local (Azurite)
+        end
+
+        A->>A: UPSERT idempotente em DB local<br/>(SaveChangesAsync)
+
+        alt Sucesso em todas as etapas
+            A->>A: SyncLog.status = "completed"
+            A->>A: CommitAsync()
+        else Falha em qualquer etapa
+            A->>A: DeleteBlobIfExistsAsync(uploadedBlobs)
+            A->>A: RollbackAsync()
+            A->>A: SyncLog.status = "failed"<br/>+ ErrorMessage
+        end
+    end
+
+    A-->>MW: SyncResult{ status, entitiesReceived }
+    MW-->>ADP: SyncResult
+    ADP-->>IRIS: resultado final
+    IRIS-->>U: toast de sucesso ou erro,<br/>atualiza lastSyncedAt na lista

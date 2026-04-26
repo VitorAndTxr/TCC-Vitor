@@ -1,0 +1,97 @@
+%% ============================================================
+%% Arquitetura interna do IRIS e relacao com o NPI
+%% Referenciado em: cap-experimentos-resultados.tex (4.3.2)
+%% Label: fig:IRISArquitetura
+%% ============================================================
+graph TB
+    subgraph iris["IRIS (Aplicacao Web)"]
+        subgraph apresentacao["Camada de Apresentacao (apps/desktop/src/screens)"]
+            telaLogin["Tela de Login"]
+            telaHome["Home"]
+            telaUsers["Usuarios e Pesquisadores"]
+            telaVol["Voluntarios"]
+            telaRes["Pesquisas / Coletas"]
+            telaSNOMED["Vocabulario SNOMED"]
+            telaNode["Conexoes de NPI"]
+        end
+
+        subgraph designsystem["Camada de Design System (apps/desktop/src/design-system)"]
+            ds["16+ componentes proprios:<br/>Button, Input, Modal,<br/>DataTable, Sidebar, Toast..."]
+        end
+
+        subgraph servicos["Camada de Servicos (apps/desktop/src/services)"]
+            base["BaseService"]
+            sUser["UserService"]
+            sVol["VolunteerService"]
+            sRes["ResearchService"]
+            sNode["NodeConnectionService"]
+            sSync["NodeSyncServiceAdapter"]
+        end
+
+        subgraph mw["Camada de Middleware (packages/middleware)"]
+            rnm["ResearchNodeMiddleware<br/>(invoke)"]
+            cm["ChannelManager<br/>(ECDH P-384 + AES-256-GCM)"]
+            sm["SessionManager<br/>(JWT 1h, auto-refresh)"]
+            uas["UserAuthService"]
+        end
+
+        router["AppRouter<br/>(react-router-dom)"]
+    end
+
+    subgraph npi["NPI (Interoperable Research Node)"]
+        npiAuth["/api/auth/..."]
+        npiUsers["/api/users"]
+        npiVol["/api/volunteers"]
+        npiRes["/api/research/..."]
+        npiNode["/api/node/..."]
+        npiSync["/api/sync/preview<br/>/api/sync/pull<br/>/api/sync/log"]
+    end
+
+    subgraph storage["Storage Seguro do SO"]
+        keytar["keytar<br/>(credenciais e tokens)"]
+    end
+
+    router --> telaLogin
+    router --> telaHome
+    router --> telaUsers
+    router --> telaVol
+    router --> telaRes
+    router --> telaSNOMED
+    router --> telaNode
+
+    telaLogin --> ds
+    telaHome --> ds
+    telaUsers --> ds
+    telaVol --> ds
+    telaRes --> ds
+    telaSNOMED --> ds
+    telaNode --> ds
+
+    telaLogin -->|consome| uas
+    telaUsers -->|consome| sUser
+    telaVol -->|consome| sVol
+    telaRes -->|consome| sRes
+    telaNode -->|consome| sNode
+    telaNode -->|consome| sSync
+
+    sUser -->|herda| base
+    sVol -->|herda| base
+    sRes -->|herda| base
+    sNode -->|herda| base
+    sSync -->|herda| base
+
+    base -->|delega| rnm
+    uas -->|delega| rnm
+
+    rnm -->|estabelece canal| cm
+    rnm -->|gerencia sessao| sm
+
+    cm -->|requisicao cifrada| npiAuth
+    cm -->|requisicao cifrada| npiUsers
+    cm -->|requisicao cifrada| npiVol
+    cm -->|requisicao cifrada| npiRes
+    cm -->|requisicao cifrada| npiNode
+    cm -->|requisicao cifrada| npiSync
+
+    sm -->|persiste token| keytar
+    uas -->|persiste credenciais| keytar

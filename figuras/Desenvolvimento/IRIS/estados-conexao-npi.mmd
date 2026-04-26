@@ -1,0 +1,40 @@
+%% ============================================================
+%% Ciclo de vida de uma ResearchNodeConnection no IRIS
+%% Referenciado em: cap-experimentos-resultados.tex (4.3.3.4)
+%% Label: fig:IRISEstadosConexao
+%% ============================================================
+stateDiagram-v2
+    [*] --> UNKNOWN: POST /api/node/NewConnection
+
+    UNKNOWN --> PENDING: Submeter para aprovacao
+
+    PENDING --> AUTHORIZED: POST /api/node/{id}/approve
+    PENDING --> REVOKED: POST /api/node/{id}/reject
+
+    AUTHORIZED --> REVOKED: Revogar (admin local)
+    REVOKED --> AUTHORIZED: Reaprovar
+
+    AUTHORIZED --> AUTHORIZED: POST /api/sync/pull<br/>(atualiza lastSyncedAt)
+
+    note right of UNKNOWN
+        Conexao recem-criada
+        localmente. Aguarda
+        submissao.
+    end note
+
+    note right of PENDING
+        Visivel na aba Requests
+        do NodeConnectionsScreen.
+        Aguarda decisao do admin.
+    end note
+
+    note right of AUTHORIZED
+        Sincronizacao permitida apenas
+        se NodeAccessLevel for
+        READ_WRITE ou ADMIN.
+    end note
+
+    note right of REVOKED
+        Conexao bloqueada;
+        nao pode sincronizar.
+    end note
