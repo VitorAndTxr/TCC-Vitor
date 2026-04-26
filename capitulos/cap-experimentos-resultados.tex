@@ -46,11 +46,13 @@ A delimitação acima resulta das restrições de equipe (um único autor) e de 
 
 O restante deste capítulo detalha cada um dos artefatos apresentados nesta visão geral, na ordem em que se conectam ao fluxo de dados ilustrado na Figura \ref{fig:fluxo-simulado}. A Seção \ref{sec:DesenvolvimentoNPI} descreve a arquitetura interna do Nó de Pesquisa Interoperável, com ênfase na camada de \textit{PRISM Middleware} responsável pelas rotinas de identificação, autenticação e troca segura entre nós. A Seção \ref{sec:desenvolvimentoIRIS} apresenta o IRIS, a interface web generalista que opera sobre o NPI e materializa o papel de aplicação no modelo PRISM. A Seção \ref{sec:desenvolvimentoIRISMobile} estende essa discussão para a versão móvel do IRIS, especializada na captura de biossinais e no comando do dispositivo. Por fim, a Seção \ref{sec:adaptacaoNeuroEstimulator} documenta as modificações aplicadas ao firmware do NeuroEstimulator que viabilizaram sua integração ao ecossistema, demonstrando o caminho de adaptação de dispositivos legados ao padrão.
 
+\newpage
 % ======================================================================
 \section{Nó de Pesquisa Interoperável}\label{sec:DesenvolvimentoNPI}
 % ======================================================================
 
 O Nó de Pesquisa Interoperável é o componente central do PRISM, responsável por mediar a autenticação, o armazenamento e o compartilhamento dos dados de pesquisa entre as instituições participantes. Esta seção o descreve da estrutura interna ao protocolo externo, percorrendo, nesta ordem, sua arquitetura em camadas (Subseção~\ref{subsec:NPIArquitetura}), o modelo de dados (Subseção~\ref{subsec:NPIDados}), o \textit{middleware} de autenticação e canal seguro (Subseção~\ref{subsec:NPIMiddleware}), o contrato da API pública (Subseção~\ref{subsec:NPIAPI}), os protocolos de troca de dados entre nós (Subseção~\ref{subsec:NPITrocaDados}) e a estratégia de implantação (Subseção~\ref{subsec:NPIDeploy}).
+
 
 % ----------------------------------------------------------------------
 \subsection{Arquitetura interna}\label{subsec:NPIArquitetura}
@@ -452,7 +454,6 @@ A resolução de conflitos quando dois nós editam o mesmo recurso é, hoje, res
 %   coluna 4 -> Evolução proposta (referência cruzada à seção de trabalhos futuros)
 
 \newpage
-
 % ======================================================================
 \section{Interoperable Research Interface System --- IRIS}\label{sec:desenvolvimentoIRIS}
 % ======================================================================
@@ -623,12 +624,8 @@ Os \textbf{padrões de navegação} consolidam-se em três elementos: uma barra 
 
 Quanto à \textbf{acessibilidade}, a aplicação observa o conjunto mínimo de práticas exigido pela diretriz \textit{Web Content Accessibility Guidelines} --- WCAG no nível AA: uso de marcação semântica (\texttt{button}, \texttt{label}, \texttt{input}) em detrimento de elementos genéricos, atributos \texttt{aria-label} e \texttt{aria-describedby} em controles que demandem explicitação de propósito, contraste de cor verificado nos componentes do sistema de \textit{design} e suporte a navegação por teclado nos fluxos primários. A validação contínua dessas propriedades é apoiada pelo \textit{addon} de acessibilidade do \textit{Storybook}, integrado ao processo de desenvolvimento dos componentes. Embora a aplicação ainda não inclua um \textit{framework} de internacionalização, todas as cadeias de texto exibidas ao usuário estão centralizadas em arquivos de tela específicos, o que viabiliza, em trabalho futuro, a adoção de uma camada de tradução sem reescrita das telas.
 
+\newpage
 \section{IRIS --- Mobile}\label{sec:desenvolvimentoIRISMobile}
-% ======================================================================
-% Pré-requisito de inclusão: este arquivo é destinado a ser inserido em
-% capitulos/cap-experimentos-resultados.tex, logo após a Seção
-% \ref{sec:desenvolvimentoIRIS}.
-% As figuras referenciadas vivem em figuras/Desenvolvimento/IRISMobile/.
 
 O IRIS \textit{Mobile} é a aplicação cliente especializada do ecossistema PRISM responsável pela operação do dispositivo NeuroEstimulator em campo, pela captura do sinal de eletromiografia de superfície --- sEMG e pela contextualização desse sinal por meio de rótulos clínicos durante a coleta. Ao contrário do IRIS \textit{web} (Seção \ref{sec:desenvolvimentoIRIS}), generalista e desacoplado de qualquer modalidade de biossinal, o IRIS \textit{Mobile} ocupa o papel de \textit{aplicação especializada} previsto pelo padrão e substitui, no experimento conduzido neste trabalho, o aplicativo legado distribuído originalmente com o NeuroEstimulator. Sua presença no estudo é necessária para evidenciar que o mesmo contrato exposto pelo NPI pode ser consumido tanto por aplicações generalistas \textit{web} quanto por clientes nativos em plataformas heterogêneas, e que a tese central do PRISM --- a de que rótulos clínicos contextualizam o biossinal --- pode ser materializada já no instante da aquisição. Esta seção descreve o papel do IRIS \textit{Mobile} no ecossistema (Subseção \ref{subsec:IRISMobilePapel}), sua arquitetura interna (Subseção \ref{subsec:IRISMobileArquitetura}), o pareamento e a comunicação com o NeuroEstimulator (Subseção \ref{subsec:IRISMobileBT}), a estratégia de captura, \textit{buffering} e envio do sinal ao NPI (Subseção \ref{subsec:IRISMobileCaptura}), o mecanismo de etiquetagem em tempo real (Subseção \ref{subsec:IRISMobileRotulos}), as telas principais (Subseção \ref{subsec:IRISMobileTelas}) e, por fim, as limitações reconhecidas e os trabalhos futuros (Subseção \ref{subsec:IRISMobileLimitacoes}).
 
@@ -644,13 +641,12 @@ A justificativa para que a captura do sEMG seja conduzida por uma aplicação de
 \subsection{Arquitetura do aplicativo}\label{subsec:IRISMobileArquitetura}
 % ----------------------------------------------------------------------
 
-A Figura \ref{fig:IRISMobileArquitetura} sintetiza a organização interna do IRIS \textit{Mobile} e suas relações com o dispositivo NeuroEstimulator e com o NPI. A aplicação é construída em \texttt{TypeScript} sobre \textit{React Native}~\cite{ReferenciaReactNative} versão 0.76.9 e o ferramental \textit{Expo}~\cite{ReferenciaExpo} versão 52, com a arquitetura clássica de \textit{bridge} (\texttt{newArchEnabled = false}) e o motor JavaScript \textit{Hermes} habilitado. O projeto reside no monorepositório do IRIS, em \texttt{apps/mobile/}, e compartilha com o IRIS \textit{web} dois pacotes internos: \texttt{packages/domain}, que define os tipos de domínio comuns às duas aplicações, e \texttt{packages/middleware}, que encapsula o adaptador para o NPI. Essa partilha é deliberada: garantir que ambos os clientes operem sobre o mesmo modelo de dados elimina divergências silenciosas entre representações ao mesmo tempo em que mantém o NPI como única fonte de verdade do contrato.
+A Figura \ref{fig:IRISMobileArquitetura} sintetiza a organização interna do IRIS \textit{Mobile} e suas relações com o dispositivo NeuroEstimulator e com o NPI. A aplicação é construída em \texttt{TypeScript} sobre \textit{React Native}~\cite{ReferenciaReactNative} versão 0.76.9 e o ferramental \textit{Expo}~\cite{ReferenciaExpo} versão 52. O projeto reside no monorepositório do IRIS, em \texttt{apps/mobile/}, e compartilha com o IRIS \textit{web} dois pacotes internos: \texttt{packages/domain}, que define os tipos de domínio comuns às duas aplicações, e \texttt{packages/middleware}, que encapsula o adaptador para o NPI. Essa partilha é deliberada: garantir que ambos os clientes operem sobre o mesmo modelo de dados elimina divergências silenciosas entre representações ao mesmo tempo em que mantém o NPI como única fonte de verdade do contrato.
 
 \begin{figure}[htpb]
 \captionsetup{width=0.95\textwidth}
 \caption{Arquitetura interna do IRIS \textit{Mobile}, suas dependências nativas e relação com o NeuroEstimulator e o NPI.}
 \label{fig:IRISMobileArquitetura}
-% TODO: renderizar arquitetura-iris-mobile.mmd para .png antes da compilação final.
 \includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/arquitetura-iris-mobile.png}
 \fonte{Autoria própria (2026)}
 \end{figure}
@@ -675,7 +671,6 @@ A interação com o NeuroEstimulator é toda mediada pelo \texttt{BluetoothConte
 \captionsetup{width=0.95\textwidth}
 \caption{Fluxo de pareamento, captura e renderização do sinal sEMG no IRIS \textit{Mobile}.}
 \label{fig:IRISMobileFluxoCaptura}
-% TODO: renderizar fluxo-bt-streaming.mmd para .png antes da compilação final.
 \includegraphics[scale=0.28]{figuras/Desenvolvimento/IRISMobile/fluxo-bt-streaming.png}
 \fonte{Autoria própria (2026)}
 \end{figure}
@@ -706,7 +701,6 @@ A \textbf{política de envio ao NPI} é deliberadamente assíncrona e baseada em
 \captionsetup{width=0.95\textwidth}
 \caption{Ciclo de sincronização do IRIS \textit{Mobile} com o NPI: sessão, gravação (metadados e arquivo) e anotações.}
 \label{fig:IRISMobileFluxoSync}
-% TODO: renderizar fluxo-sync-mobile.mmd para .png antes da compilação final.
 \includegraphics[scale=0.28]{figuras/Desenvolvimento/IRISMobile/fluxo-sync-mobile.png}
 \fonte{Autoria própria (2026)}
 \end{figure}
@@ -723,7 +717,6 @@ A etiquetagem em tempo real é a subseção em que a tese central do PRISM --- a
 \captionsetup{width=0.85\textwidth}
 \caption{Fluxo de criação, vínculo à sessão e envio das anotações que contextualizam o sinal sEMG.}
 \label{fig:IRISMobileFluxoRotulagem}
-% TODO: renderizar fluxo-rotulagem.mmd para .png antes da compilação final.
 \includegraphics[scale=0.32]{figuras/Desenvolvimento/IRISMobile/fluxo-rotulagem.png}
 \fonte{Autoria própria (2026)}
 \end{figure}
@@ -791,76 +784,142 @@ A terceira limitação atinge a \textbf{visualização do sinal em tempo real}. 
 A quarta limitação é a \textbf{granularidade temporal das anotações}. Conforme discutido na Subseção \ref{subsec:IRISMobileRotulos}, o vínculo entre rótulo e trecho de sinal é estabelecido pelo \texttt{created\_at} da anotação e pelo \texttt{timestamp} dos quadros. Embora suficiente para o experimento conduzido, esse vínculo é insuficiente para usos clínicos que demandem precisão sub-segundo ou rótulos temporais fechados (com início e fim explícitos sobre o sinal). A evolução natural seria um modelo de anotação com intervalos temporais (\texttt{startedAt} e \texttt{endedAt} relativos ao início da gravação), com possível interface de marcação direta sobre o gráfico durante a coleta.
 
 A quinta e última limitação diz respeito à \textbf{cobertura de plataformas}. Como discutido na Subseção \ref{subsec:IRISMobileBT}, a dependência de Bluetooth Classic restringe o aplicativo, na prática, ao Android: a versão \textit{web} gerada pelo Expo opera apenas com BLE, e o iOS não expõe SPP a aplicativos de terceiros. A migração futura do firmware do NeuroEstimulator para um perfil BLE compatível com a especificação de \textit{streaming} --- ou a introdução de um \textit{gateway} intermediário --- abriria caminho para uma cobertura efetivamente multiplataforma sem reescrita das demais camadas do IRIS \textit{Mobile}.
-
-% ======================================================================
+\newpage
 \section{Adaptação do NeuroEstimulator}\label{sec:adaptacaoNeuroEstimulator}
-% ======================================================================
 
-% Parágrafo de abertura: lembrar que o dispositivo original já foi descrito na
-% Seção 3.3.1, e que esta seção foca exclusivamente nas MODIFICAÇÕES feitas
-% para integrá-lo ao PRISM.
+O NeuroEstimulator descrito na Seção~\ref{sec:coletaDeDados} foi adotado, no presente trabalho, como dispositivo-exemplo para validar a integração de equipamentos de aquisição de biossinais ao PRISM. A descrição original do projeto -- mecânica, eletrônica, escolha de componentes e arquitetura geral do firmware -- não é repetida aqui; esta seção concentra-se exclusivamente nas \textbf{modificações} introduzidas para tornar o dispositivo compatível com o fluxo de etiquetagem em tempo real previsto pelo IRIS Mobile e, consequentemente, com o modelo de coleta padronizado proposto pelo PRISM. As alterações foram restritas ao firmware e ao protocolo de comunicação Bluetooth: nenhuma modificação foi feita na placa de circuito impresso, no \textit{front-end} analógico, no transformador 1:10 ou nos elementos mecânicos do equipamento.
 
 % ----------------------------------------------------------------------
 \subsection{O dispositivo original}\label{subsec:NEOriginal}
 % ----------------------------------------------------------------------
 
-O projeto-exemplo utilizado é o NeuroEstimulator, sistema funcional descrito na Seção \ref{sec:coletaDeDados}. Recapitula-se aqui apenas os elementos relevantes para a adaptação: microcontrolador ESP32, \textit{front-end} analógico AD8232, conversor A/D ADS1115 (16~bits, máximo de 860~SPS), comunicação via Bluetooth Classic HC-06 e firmware sobre FreeRTOS.
+Para fins de contextualização, recapitulam-se aqui apenas os elementos do dispositivo original relevantes para a adaptação. O NeuroEstimulator é um sistema funcional de eletroestimulação descrito em detalhes na Seção~\ref{sec:coletaDeDados}, organizado em torno de um microcontrolador ESP32 (arquitetura Xtensa LX6 \textit{dual-core}), \textit{front-end} analógico AD8232 dedicado à condicionamento do sinal de eletromiografia de superfície (sEMG), conversor analógico-digital ADS1115 (16 bits de resolução, taxa máxima de 860 amostras por segundo na configuração utilizada) e módulo Bluetooth Classic HC-06 acoplado à UART2. O \textit{firmware} originalmente embarcado opera sobre o sistema operacional de tempo real FreeRTOS, distribuindo entre os dois núcleos do ESP32 as tarefas de gestão de sessão, geração de pulsos de estimulação elétrica funcional (FES, do inglês \textit{Functional Electrical Stimulation}) e leitura periódica do sEMG.
+
+% Imagem sugerida: foto do dispositivo montado (caixa MDF + PCB + suportes).
+% Este placeholder permite reutilizar a Figura~7 do relatório técnico do
+% Workshop de Integração 3 (NeuroEstimulator, 2023) ou capturar uma nova
+% fotografia atualizada do equipamento.
+%
+% \begin{figure}[htb]
+%     \caption{Visão externa do NeuroEstimulator utilizado como dispositivo-exemplo}
+%     \label{fig:neuroEstimuladorExterno}
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{figuras/Desenvolvimento/NeuroEstimulator/neuroestimulador-foto.jpg}
+%     \fonte{}
+% \end{figure}
 
 % ----------------------------------------------------------------------
 \subsection{Diferencial pretendido para o trabalho}\label{subsec:NERequisitos}
 % ----------------------------------------------------------------------
 
-% TODO: enumerar os REQUISITOS que motivaram a refatoração:
-%   - Aumentar a taxa efetiva de amostragem de sEMG entregue ao app;
-%   - Substituir o protocolo comando-resposta por streaming contínuo;
-%   - Tornar o contrato de comunicação compatível com a etiquetagem em tempo real
-%     prevista pelo IRIS Mobile;
-%   - Manter compatibilidade com o hardware existente (sem alterar a placa).
+A adoção do NeuroEstimulator como dispositivo-exemplo do PRISM exigiu uma reformulação parcial do \textit{firmware} para satisfazer requisitos que não eram contemplados pelo projeto original. Esses requisitos derivam diretamente do modelo de coleta proposto, em que o sinal de sEMG precisa ser exibido e etiquetado em tempo real pelo IRIS Mobile durante a sessão. As principais diretrizes que motivaram a refatoração foram:
+
+\begin{enumerate}
+    \item \textbf{Maximizar a taxa efetiva de amostragem entregue ao aplicativo}, aproximando-a do limite teórico do conversor empregado e estabilizando-a em um valor previsível. Na implementação anterior do \textit{firmware}, o pareamento entre o temporizador de amostragem e a leitura síncrona do ADS1115 causava bloqueios da ordem de milissegundos, fazendo com que apenas uma fração das amostras nominalmente programadas chegasse efetivamente ao aplicativo;
+    \item \textbf{Substituir o protocolo do tipo comando-resposta} por uma transmissão contínua orientada a fluxo (\textit{streaming}), de modo que cada amostra coletada seja entregue ao consumidor sem necessidade de requisição explícita;
+    \item \textbf{Tornar o contrato de comunicação compatível com a etiquetagem em tempo real} prevista pelo IRIS Mobile, agregando carimbo de tempo (\textit{timestamp}) consistente em cada bloco de amostras e reduzindo a sobrecarga de transporte para que o canal serial Bluetooth não se tornasse o gargalo do sistema;
+    \item \textbf{Manter a compatibilidade com o \textit{hardware} existente}, sem qualquer alteração na placa, no \textit{front-end} analógico, no estágio de potência da estimulação ou no módulo Bluetooth Classic já instalado.
+\end{enumerate}
+
+Os três primeiros requisitos pertencem ao domínio do \textit{software} embarcado e do protocolo. O quarto é uma restrição de projeto que limita o universo de soluções possíveis -- em particular, ele inviabiliza a substituição do ADS1115 por um conversor de taxa mais alta e impede a troca do HC-06 por um módulo Bluetooth Low Energy ou Wi-Fi de maior largura de banda.
 
 % ----------------------------------------------------------------------
 \subsection{Modificações no firmware}\label{subsec:NEFirmware}
 % ----------------------------------------------------------------------
 
-\subsubsection{Aquisição contínua a 860 SPS e decimação para 215 SPS}
-
-% TODO: transformar o fato bruto do rascunho ("Adaptei o código para rodar na
-% taxa fixa de 860 Hz reduzido para 215 Hz por média devido a uma limitação
-% do ADC") em parágrafo argumentativo:
-%   - Por que 860 SPS é o teto do ADS1115 na configuração escolhida;
-%   - Por que aplicar média móvel decimando para 215 SPS (redução de ruído
-%     vs perda de banda útil);
-%   - Implicações para sEMG: a banda útil de sEMG vai de ~10 a ~500 Hz;
-%     pelo critério de Nyquist, 215 SPS limita a banda capturada a ~107 Hz.
-%     Discutir HONESTAMENTE essa limitação e o impacto sobre a interpretação
-%     dos resultados (pode ser revisitado no capítulo de Resultados).
-
-\subsubsection{Reorganização das tarefas FreeRTOS}
-
-% TODO:
-%   - Como as tasks foram reestruturadas para suportar streaming contínuo;
-%   - Prioridades e relação produtor-consumidor entre task de aquisição,
-%     task de processamento (média) e task de envio Bluetooth;
-%   - Tamanho de filas e estratégia de tratamento de overflow.
-
-\subsubsection{Protocolo Bluetooth: do comando-resposta ao \textit{streaming}}
-
-% TODO:
-%   - Formato anterior das mensagens (comando-resposta);
-%   - Formato novo (frames contínuos com timestamp);
-%   - Compatibilidade retroativa? Foi descartada?
-%   - Tabela com os campos do novo frame.
+As modificações no \textit{firmware} foram organizadas em três frentes complementares, descritas nas próximas subseções: a reconfiguração do estágio de aquisição para operar em modo contínuo com decimação interna; a reorganização das tarefas FreeRTOS em um pipeline produtor-consumidor; e a substituição do protocolo Bluetooth comando-resposta por um \textit{streaming} binário com cabeçalho fixo.
 
 % ----------------------------------------------------------------------
-\subsection{Validação da cadeia de aquisição}\label{subsec:NEValidacao}
+\subsubsection{Aquisição contínua a 860 SPS e decimação para 215 SPS}\label{subsubsec:NEDecimacao}
 % ----------------------------------------------------------------------
 
-% TODO: descrever o experimento mencionado na Seção 3.3.2 (entrada com
-% gerador de funções) sob a ótica do firmware adaptado:
-%   - Sinais de teste injetados (frequência, amplitude);
-%   - Métrica de comparação (erro, SNR, fidelidade espectral);
-%   - REMETER os resultados quantitativos para o capítulo correspondente
-%     (Resultados, ou Seção 4.6 se Opção B).
+A taxa efetiva de saída do estágio de aquisição foi fixada em 215 amostras por segundo (\textit{samples per second}, SPS), obtida a partir de uma operação contínua do ADS1115 a 860 SPS seguida de uma decimação 4:1 por média móvel. A escolha de 860 SPS como ponto de operação não é arbitrária: trata-se da maior taxa nominal disponível no ADS1115 quando configurado em modo de conversão contínua com a faixa de tensão de entrada utilizada pelo NeuroEstimulator. Operar abaixo desse teto deixaria capacidade ociosa do conversor; tentar ultrapassá-lo simplesmente não é suportado pelo \textit{hardware}.
 
+A decimação 4:1 por média foi adotada por três razões. A primeira é o seu efeito como filtro \textit{anti-aliasing} simples: o cálculo da média de quatro amostras consecutivas atenua componentes de alta frequência antes que o sinal seja entregue à etapa de filtragem digital, reduzindo a probabilidade de \textit{aliasing} causado por ruído eletromagnético do ambiente clínico. A segunda razão é a obtenção de uma relação 1:1 entre amostras lidas e amostras entregues que respeita os limites de banda exigidos pelo canal Bluetooth Classic: a 215 SPS, com codificação binária compacta, a vazão de saída fica em torno de 464 \textit{bytes} por segundo, o que corresponde a aproximadamente 4\% da capacidade nominal da UART2 configurada a 115\,200 \textit{baud}, deixando uma margem confortável para retransmissões e tráfego de controle. A terceira razão é simplificar a configuração do filtro digital: ao fixar a taxa de entrega em 215 SPS, os coeficientes do filtro Butterworth de segunda ordem (passa-faixa de 10\,Hz a 50\,Hz) e do \textit{notch} de 60\,Hz para rejeição de interferência da rede elétrica podem ser pré-calculados em tempo de compilação, eliminando uma fonte recorrente de erros que o \textit{firmware} original apresentava ao reconfigurar dinamicamente a taxa.
+
+É necessário, contudo, discutir honestamente a contrapartida dessa escolha. A literatura de eletromiografia indica que a banda útil do sEMG de superfície estende-se aproximadamente entre 10\,Hz e 500\,Hz. Pelo critério de Nyquist, uma taxa de amostragem efetiva de 215 SPS limita a banda passível de reconstrução fiel a aproximadamente 107,5\,Hz, valor inferior ao extremo superior da banda fisiológica do sEMG. A decisão arquitetural foi privilegiar a faixa entre 10\,Hz e 50\,Hz, onde se concentra a maior parte da energia do sinal mioelétrico utilizado para detecção de ativação muscular, em detrimento da captura de componentes de mais alta frequência. Esta limitação é uma decorrência direta da restrição de não modificar o \textit{hardware} (Subseção~\ref{subsec:NERequisitos}, requisito 4); ela é retomada no capítulo de discussão dos resultados à luz dos sinais efetivamente capturados, e deve ser entendida como uma limitação reconhecida do dispositivo-exemplo, não uma propriedade do PRISM.
+
+A Figura~\ref{fig:pipelineAquisicaoDecimacao} resume o caminho do dado desde o conversor analógico-digital até a saída pelo módulo Bluetooth.
+
+\begin{figure}[htb]
+    \caption{Pipeline de aquisição, decimação e filtragem do sEMG no \textit{firmware} adaptado}
+    \label{fig:pipelineAquisicaoDecimacao}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/Desenvolvimento/NeuroEstimulator/pipeline-aquisicao-decimacao.png}
+    \fonte{Autoria própria (2026)}
+\end{figure}
+
+% ----------------------------------------------------------------------
+\subsubsection{Reorganização das tarefas FreeRTOS}\label{subsubsec:NETarefas}
+% ----------------------------------------------------------------------
+
+A operação contínua do estágio de aquisição inviabilizou o modelo original do \textit{firmware}, no qual uma única função de \textit{callback} disparada por temporizador realizava a leitura síncrona do ADC, aplicava o filtro e empacotava o dado para envio via Bluetooth. Esse modelo monolítico bloqueava o núcleo durante o intervalo de leitura I$^2$C do ADS1115 e, sob carga (por exemplo, durante a transmissão de respostas JSON pela mesma UART), provocava perda sistemática de amostras. A solução foi decompor o caminho do dado em uma cadeia produtor-consumidor de três tarefas FreeRTOS distintas, distribuídas entre os dois núcleos do ESP32 e desacopladas por buffers circulares.
+
+No núcleo destinado às operações sensíveis a temporização do estímulo (\textit{Core 0}), permaneceram a tarefa de gestão da sessão de FES (prioridade 20) e a tarefa sensora legada empregada na detecção de gatilho mioelétrico para disparo do estímulo (prioridade 10). No núcleo dedicado à comunicação (\textit{Core 1}) passaram a coexistir três tarefas: a tarefa de tratamento de mensagens Bluetooth (prioridade 20), a tarefa de aquisição contínua do ADC (prioridade 18) e a tarefa de \textit{streaming} de sEMG (prioridade 15). A distribuição de prioridades reflete a hierarquia funcional desejada: o tratamento de comandos do aplicativo precede o consumo de dados do conversor, que por sua vez precede a entrega ao canal de saída. As três tarefas do núcleo de comunicação compartilham os recursos de \textit{hardware} por meio de dois \textit{mutexes}: o \texttt{i2cMutex}, que serializa o acesso ao barramento I$^2$C (compartilhado com o giroscópio MPU6050), e o \texttt{MutexBlu}, que serializa a escrita na UART2 entre a tarefa de \textit{streaming} e o tratador de mensagens, evitando entrelaçamento de \textit{bytes} no canal Bluetooth.
+
+O acoplamento entre as tarefas de aquisição e de \textit{streaming} é feito por um buffer circular de 512 amostras de 16 \textit{bits}, dimensionado para tolerar rajadas de mais de dois segundos sem perda; já o acoplamento entre a etapa de filtragem digital e a pacotização para Bluetooth utiliza um segundo buffer circular de 300 amostras, suficiente para absorver atrasos de transmissão de até aproximadamente 1,4\,segundo. Em ambos os buffers, a estratégia de tratamento de \textit{overflow} é o descarte da amostra mais antiga (\textit{drop-oldest}) com sinalização por \textit{log} limitada a uma ocorrência por segundo, escolha que privilegia a continuidade do fluxo em detrimento da bloqueio do produtor -- um dispositivo de aquisição de sEMG que pausa para esperar o consumidor é, na prática, indistinguível de um dispositivo defeituoso para o operador no aplicativo.
+
+A Figura~\ref{fig:tasksFreertos} apresenta a topologia resultante e destaca as relações produtor-consumidor entre as tarefas. Como melhoria adicional, o procedimento de encerramento das tarefas (\textit{shutdown} cooperativo) foi reescrito para sinalizar uma \textit{flag} volátil de saída e aguardar o término natural da iteração corrente antes de remover a tarefa, em substituição ao \texttt{vTaskDelete} direto que o \textit{firmware} original utilizava. A motivação foi eliminar uma classe específica de defeitos observada em sessões consecutivas de aquisição, na qual a remoção da tarefa em meio a uma transação I$^2$C corrompia o estado interno do barramento e exigia reinicialização física do dispositivo.
+
+\begin{figure}[htb]
+    \caption{Topologia das tarefas FreeRTOS no \textit{firmware} adaptado}
+    \label{fig:tasksFreertos}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/Desenvolvimento/NeuroEstimulator/tasks-freertos.png}
+    \fonte{Autoria própria (2026)}
+\end{figure}
+
+% ----------------------------------------------------------------------
+\subsubsection{Protocolo Bluetooth: do comando-resposta ao \textit{streaming}}\label{subsubsec:NEProtocolo}
+% ----------------------------------------------------------------------
+
+O protocolo de comunicação do \textit{firmware} original era inteiramente baseado em mensagens JSON encapsuladas em um envelope \verb|{"cd": <code>, "mt": "<method>", "bd": {...}}| trafegando sobre a UART2. Para a aquisição de sEMG, o aplicativo enviava periodicamente uma requisição de leitura e o \textit{firmware} respondia com um pequeno bloco de amostras codificado em JSON. Esse padrão tem dois inconvenientes em uma aplicação de \textit{streaming}: o aplicativo precisa manter um relógio sincronizado com o \textit{firmware} apenas para temporizar suas requisições, e a redundância textual do JSON (chaves de objeto, vírgulas, representação decimal de cada amostra como \textit{string}) consome largura de banda desproporcional à informação efetivamente transportada.
+
+No \textit{firmware} adaptado, o protocolo passou a ser dual: comandos de controle continuam em JSON, mantendo legibilidade e compatibilidade com ferramentas existentes; o fluxo de dados de sEMG, entretanto, é transmitido como uma sequência de pacotes binários enviados de forma autônoma pelo \textit{firmware} entre as transições \texttt{START\_STREAM} e \texttt{STOP\_STREAM}. O aplicativo abre o \textit{streaming} enviando \verb|{"cd":11,"mt":"x"}|, recebe um \textit{acknowledgment} \verb|{"cd":11,"mt":"a"}| e, a partir desse momento, recebe pacotes binários até enviar \verb|{"cd":12,"mt":"x"}| para encerrar. A transição inversa -- voltar a um modelo comando-resposta para o canal de dados -- foi descartada como design alternativo, em razão das desvantagens já discutidas; a configuração de taxa em tempo de execução, presente em uma versão intermediária do \textit{firmware} sob o código de mensagem \texttt{cd:14}, também foi removida, em favor da configuração fixa de 215\,SPS discutida na Subseção~\ref{subsubsec:NEDecimacao}. O Quadro~\ref{quad:campos-pacote-binario} descreve os campos do novo \textit{frame} de dados, e a Figura~\ref{fig:pacoteBinario} ilustra graficamente seu \textit{layout}.
+
+\begin{table}[htb]
+    \centering
+    \caption{Quadro -- Campos do pacote binário de \textit{streaming} de sEMG}\label{tab:campos-pacote-binario}
+    \begin{tabular}{|c|c|l|p{6cm}|}
+        \hline
+        \textbf{Offset} & \textbf{Tamanho} & \textbf{Campo} & \textbf{Descrição} \\
+        \hline
+        0 & 1 \textit{byte} & \texttt{magic} & Marcador de início de pacote (valor fixo \texttt{0xAA}). \\
+        \hline
+        1 & 1 \textit{byte} & \texttt{message\_code} & Código do tipo de mensagem (valor fixo \texttt{0x0D}, dados de \textit{stream}). \\
+        \hline
+        2 & 4 \textit{bytes} & \texttt{timestamp} & Valor de \texttt{millis()} no ESP32, em \textit{little-endian}. \\
+        \hline
+        6 & 2 \textit{bytes} & \texttt{sample\_count} & Número de amostras no \textit{payload} (tipicamente 50). \\
+        \hline
+        8 & 100 \textit{bytes} & \texttt{samples[]} & 50 valores \texttt{int16\_t} em \textit{little-endian} (1\,LSB $\equiv$ 1\,mV). \\
+        \hline
+        \multicolumn{2}{|c|}{\textbf{Total: 108 \textit{bytes}}} & \multicolumn{2}{l|}{\textit{Frame} fixo enviado a $\approx$\,4,3 pacotes/s.} \\
+        \hline
+    \end{tabular}
+    \fonte{Autoria própria (2026)}
+\end{table}
+
+\begin{figure}[htb]
+    \caption{\textit{Layout} binário do pacote de \textit{streaming}}
+    \label{fig:pacoteBinario}
+    \centering
+    \includegraphics[width=0.40\textwidth]{figuras/Desenvolvimento/NeuroEstimulator/pacote-binario.png}
+    \fonte{Autoria própria (2026)}
+\end{figure}
+
+A Figura~\ref{fig:protocoloStreaming} resume o diálogo completo entre o IRIS Mobile, o tratador de mensagens, as tarefas internas do \textit{firmware} e o canal Bluetooth durante uma sessão de aquisição.
+
+\begin{figure}[htb]
+    \caption{Diagrama de sequência do \textit{streaming} de sEMG entre o IRIS Mobile e o \textit{firmware} adaptado}
+    \label{fig:protocoloStreaming}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/Desenvolvimento/NeuroEstimulator/protocolo-streaming.png}
+    \fonte{Autoria própria (2026)}
+\end{figure}
+
+A escolha de codificar cada amostra em \texttt{int16\_t}, em vez de ponto flutuante, e de \textit{little-endian} como ordem de \textit{bytes} foi guiada por três critérios: a preservação da precisão útil do sinal (a granularidade do ADS1115 a 16~\textit{bits} permite representar tensões em milivolts inteiros sem perda significativa para a aplicação); a economia de banda em relação às alternativas textuais (a transmissão equivalente em JSON consumiria mais do que o triplo da capacidade do canal a 215\,SPS); e a interoperabilidade com a arquitetura nativa do ESP32 e dos dispositivos móveis modernos, que são predominantemente \textit{little-endian} -- o que evita conversões de ordem de \textit{byte} no consumidor. A compatibilidade retroativa com o protocolo JSON anterior para o canal de dados foi descartada de forma deliberada: aplicações que ainda dependam do formato textual podem consumir o canal de controle, mas o IRIS Mobile e o NPI consomem exclusivamente o protocolo binário aqui descrito.
+\newpage
 \section{Implantação}\label{subsec:NPIDeploy}
 % ----------------------------------------------------------------------
 
@@ -879,3 +938,5 @@ A composição do \textit{stack} foi dividida em duas camadas com ciclos de vida
 \end{figure}
 
 Para a validação experimental, todo esse \textit{stack} foi publicado em uma máquina virtual hospedada na nuvem \textit{Microsoft Azure}, conforme antecipado na Seção \ref{sec:ferramentas}. A escolha por uma única máquina virtual hospedando os dois NPIs simultaneamente deriva da delimitação do experimento (Seção \ref{sec:desenvolvimentoVisaoGeral}): o foco está em validar o contrato de sincronização entre nós, e não a operação geograficamente distribuída do padrão. Como as cargas de trabalho dos nós permanecem isoladas em redes, volumes e bancos próprios, a substituição da topologia atual por uma implantação multi-hospedeira --- na qual cada NPI residiria em sua própria máquina virtual ou cluster --- exigiria apenas a reconfiguração das variáveis de ambiente que apontam para os endpoints de persistência, sem qualquer alteração na imagem do NPI ou na lógica do \textit{middleware} descrita anteriormente.
+
+\newpage
