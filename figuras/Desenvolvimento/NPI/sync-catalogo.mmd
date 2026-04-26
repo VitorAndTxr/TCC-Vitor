@@ -1,0 +1,47 @@
+%% ============================================================
+%% Sincronizacao incremental do catalogo de rotulos SNOMED CT
+%% Referenciado em: cap-experimentos-resultados.tex (4.2.5.2)
+%% Label: fig:NPISyncCatalogo
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant B as NPI-B (consumidor)
+    participant LB as SyncLog (NPI-B)
+    participant A as NPI-A (produtor)
+    participant DA as Banco SNOMED (NPI-A)
+
+    Note over B,A: Pre-requisito: handshake das Fases 1-3 ja executado<br/>ChannelId e SessionToken vigentes (Subsecao 4.2.3.1)
+
+    B->>LB: GetLatestCompletedAsync(remoteNodeId)
+    LB-->>B: SyncLog{LastSyncedAt = T_w}
+    Note over B: resolvedSince = T_w
+
+    B->>B: SyncLog.Add{status="in_progress"}<br/>BeginTransactionAsync()
+
+    loop Para cada entityType em SnomedEntityTypes<br/>(body-regions, body-structures, lateralities,<br/>topographical-modifiers, clinical-conditions)
+        Note over B: page = 1, totalPages = 1
+        loop Enquanto page <= totalPages
+            B->>A: GET /api/sync/snomed/{entityType}<br/>?since=T_w&page=N&pageSize=100
+            A->>DA: WHERE UpdatedAt > T_w<br/>ORDER BY UpdatedAt<br/>SKIP (N-1)*100 TAKE 100
+            DA-->>A: items[], total
+            A-->>B: PagedSyncResult{Data, Page, TotalPages}
+            B->>B: payload.Snomed[entityType].AddRange(Data)
+            Note over B: totalPages = response.TotalPages<br/>page++
+        end
+    end
+
+    Note over B: ImportSnomedAsync(payload.Snomed)
+    loop Para cada entidade SNOMED recebida
+        B->>B: existing = FindAsync(SnomedCode)
+        alt existing == null
+            B->>B: INSERT entidade
+        else updatedAt > existing.UpdatedAt
+            B->>B: UPDATE campos + UpdatedAt
+        else
+            B->>B: skip (no-op)
+        end
+    end
+
+    B->>B: SaveChangesAsync()
+    B->>LB: SyncLog.Update{status="completed",<br/>LastSyncedAt=manifest.GeneratedAt}
+    B->>B: transaction.CommitAsync()

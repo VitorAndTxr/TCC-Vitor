@@ -1,0 +1,50 @@
+%% ============================================================
+%% Transferencia de metadados e payload binario de biossinais
+%% Referenciado em: cap-experimentos-resultados.tex (4.2.5.3)
+%% Label: fig:NPISyncBiossinais
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant B as NPI-B (consumidor)
+    participant DB as Banco local (NPI-B)
+    participant Blob as Blob storage local (Azurite)
+    participant A as NPI-A (produtor)
+
+    Note over B,A: Continuacao da janela de sincronizacao<br/>(catalogo SNOMED ja aplicado)
+
+    rect rgba(200,220,255,0.35)
+        Note over B,Blob: BeginTransactionAsync() - escopo ACID
+
+        Note over B,A: (i) Metadados paginados de RecordingSession
+        loop Enquanto page <= totalPages
+            B->>A: GET /api/sync/sessions<br/>?since=T_w&page=N&pageSize=100
+            A-->>B: PagedSyncResult{<br/>RecordSession + Records +<br/>RecordChannels + Annotations}
+            B->>B: payload.Sessions.AddRange(Data)
+        end
+
+        B->>B: ExtractRecordingChannelIds(payload.Sessions)<br/>=> [id_1, id_2, ..., id_n]
+
+        Note over B,A: (ii) Arquivos binarios por RecordChannel.Id
+        loop Para cada RecordChannel.Id
+            B->>A: GET /api/sync/recordings/{id}/file
+            A-->>B: {ContentBase64, ContentType,<br/>FileName, BlobPath}
+            B->>B: bytes = Base64Decode(ContentBase64)
+            B->>Blob: UploadAsync(stream, overwrite=true)<br/>container "recordings"
+            Blob-->>B: blobUri
+            B->>B: uploadedBlobs.Add(container, blobName)
+        end
+
+        Note over B,DB: ImportSessionsAsync + ImportRecordingsAsync
+        B->>DB: UPSERT sessions, records, channels<br/>channel.FileUrl = blobUri
+        B->>DB: SaveChangesAsync()
+
+        alt Sucesso em todas as etapas
+            B->>B: SyncLog.Update{status="completed"}
+            B->>B: transaction.CommitAsync()
+        else Falha em qualquer etapa
+            B->>Blob: DeleteBlobIfExistsAsync(uploadedBlobs)
+            Note over Blob: Compensating action:<br/>remove blobs ja enviados
+            B->>B: transaction.RollbackAsync()
+            B->>B: SyncLog.Update{status="failed",<br/>ErrorMessage=ex.Message}
+        end
+    end
