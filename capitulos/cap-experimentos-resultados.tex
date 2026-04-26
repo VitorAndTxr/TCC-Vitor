@@ -654,6 +654,8 @@ Quanto à \textbf{acessibilidade}, a aplicação observa o conjunto mínimo de p
 %   - Descoberta do dispositivo via Bluetooth Classic (HC-06);
 %   - Protocolo de mensagens próprio do NeuroEstimulator (referenciar a Seção 4.5.3.3);
 %   - Tratamento de desconexão.
+%   - Explicitar dificuldades em achar uma versão do ReactNative compativel com Bluetooth Classic, sendo necessário usar versões especificas do ReactNative e do Gradle para poder funcionar corretamente
+%   - Essa limitação impossilita o uso de dispositivos IPhone recentes e uso direto pela versão web gerada pelo aplicativo via chrome que são obrigatoriamente BLE
 
 % ----------------------------------------------------------------------
 \subsection{Captura, \textit{buffering} e envio do sinal sEMG ao NPI}\label{subsec:IRISMobileCaptura}
@@ -664,6 +666,7 @@ Quanto à \textbf{acessibilidade}, a aplicação observa o conjunto mínimo de p
 %   - Política de envio ao NPI (tempo real, batch ao final da coleta?);
 %   - Indicação de sincronização com o servidor para o usuário (UX).
 
+
 % ----------------------------------------------------------------------
 \subsection{Etiquetagem em tempo real}\label{subsec:IRISMobileRotulos}
 % ----------------------------------------------------------------------
@@ -673,6 +676,7 @@ Quanto à \textbf{acessibilidade}, a aplicação observa o conjunto mínimo de p
 %   - Como o pesquisador cria rótulos durante a coleta;
 %   - Como o rótulo é vinculado ao trecho temporal correto do sinal;
 %   - Como o rótulo é serializado e transmitido junto com o sinal.
+
 
 % ----------------------------------------------------------------------
 \subsection{Telas principais}\label{subsec:IRISMobileTelas}
@@ -688,7 +692,8 @@ Quanto à \textbf{acessibilidade}, a aplicação observa o conjunto mínimo de p
 % TODO: subseção curta. Listar honestamente o que ficou de fora:
 %   - Operação totalmente offline com fila de sincronização;
 %   - Suporte a múltiplos dispositivos simultâneos;
-%   - Visualização do sinal em tempo real com filtros configuráveis.
+%   - Visualização do sinal em tempo real com filtros configuráveis
+%   - Dificuldades em exibição suave do gráfico gerado pelo stream devido a alta taxa de re-render.
 
 % ======================================================================
 \section{Adaptação do NeuroEstimulator}\label{sec:adaptacaoNeuroEstimulator}
