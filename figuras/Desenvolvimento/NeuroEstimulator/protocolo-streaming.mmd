@@ -1,0 +1,35 @@
+sequenceDiagram
+    participant App as Aplicativo Mobile
+    participant MH as MessageHandler<br/>Core 1
+    participant ADC as ADC Task<br/>Core 1 - Prio 18
+    participant SEMG as sEMG Task<br/>Core 1 - Prio 15
+    participant BT as Bluetooth UART2
+
+    App->>MH: START_STREAM<br/>JSON: {cd:11,mt:x}
+    Note over MH: Interpreta mensagem
+    MH->>ADC: startContinuousMode(ch=0)
+    MH->>SEMG: enableStreaming()
+    Note over ADC: Inicia 860 SPS
+    Note over SEMG: Config Butterworth<br/>10-50 Hz + Notch
+    SEMG->>ADC: Requisição Contínua
+    ADC->>SEMG: Amostras 215 Hz<br/>(4× decimadas)
+
+    MH->>App: ACK {cd:11,mt:a}
+
+    loop Streaming Contínuo
+        ADC->>SEMG: 1 amostra 215 Hz
+        SEMG->>SEMG: Filtra Butterworth
+        SEMG->>SEMG: Acumula 50 amostras
+        SEMG->>SEMG: Pacotiza 108 bytes
+        SEMG->>BT: Envia pacote binário<br/>cd=0x0D
+        Note over BT: ~4,3 pacotes/s<br/>464 bytes/s
+        BT->>App: Frame binário
+    end
+
+    App->>MH: STOP_STREAM<br/>JSON: {cd:12,mt:x}
+    Note over SEMG: streaming_active = false
+    SEMG->>ADC: ADC::stopContinuousMode()
+    Note over ADC: Encerra 860 SPS
+    MH->>App: ACK {cd:12,mt:a}
+
+    Note over App,BT: Fluxo encerrado

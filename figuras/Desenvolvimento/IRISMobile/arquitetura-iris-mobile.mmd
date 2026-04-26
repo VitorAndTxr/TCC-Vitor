@@ -1,0 +1,130 @@
+%% ============================================================
+%% Arquitetura interna do IRIS Mobile e relacao com o NPI
+%% e com o dispositivo NeuroEstimulator.
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.2)
+%% Label: fig:IRISMobileArquitetura
+%% ============================================================
+graph TB
+    subgraph mobile["IRIS Mobile (React Native 0.76 + Expo 52)"]
+        subgraph apresentacao["Camada de Apresentacao (apps/mobile/src/screens)"]
+            telaLogin["LoginScreen"]
+            telaHome["HomeScreen"]
+            telaBT["BluetoothScreen"]
+            telaCfg["StreamConfigScreen"]
+            telaCap["CaptureScreen"]
+            telaAnn["NewAnnotationScreen<br/>+ AnnotationsListScreen"]
+            telaHist["HistoryScreen"]
+            telaSet["SettingsScreen"]
+            telaRes["ResearchListScreen<br/>+ ResearchDetailScreen"]
+        end
+
+        subgraph designsystem["Sistema de Design (src/components/ui)"]
+            ds["Button, Input, Select,<br/>Card, EmptyState,<br/>SEMGChart, NamePromptModal"]
+        end
+
+        subgraph contextos["Contextos React (src/context)"]
+            ctxAuth["AuthContext"]
+            ctxBT["BluetoothContext"]
+            ctxSess["SessionContext"]
+            ctxSync["SyncContext"]
+        end
+
+        subgraph servicos["Servicos (src/services)"]
+            svcMW["middleware.ts<br/>(adapter @iris/middleware)"]
+            svcSync["SyncService<br/>(loop 60s, backoff exp.)"]
+            svcSnomed["SnomedService"]
+            svcResearch["ResearchService"]
+            svcPref["PreferencesService"]
+        end
+
+        subgraph dados["Dados Locais (src/data)"]
+            db["expo-sqlite v15<br/>iris_clinical.db<br/>migrations v1..v7"]
+            repoSess["SessionRepository"]
+            repoRec["RecordingRepository"]
+            repoAnn["AnnotationRepository"]
+            repoFav["FavoriteRepository"]
+            fs["expo-file-system<br/>recording_*.csv"]
+            sec["expo-secure-store<br/>(token JWT)"]
+        end
+
+        subgraph stream["Aquisicao em Tempo Real"]
+            decoder["BinaryFrameAccumulator<br/>(quadro 108 B, 50 amostras)"]
+            hook["useStreamData<br/>(flush 500 ms,<br/>downsample 215 -> 40 Hz)"]
+            chart["SEMGChart<br/>(react-native-gifted-charts,<br/>4 s / 160 pontos)"]
+        end
+
+        nav["RootNavigator<br/>(react-navigation v7)"]
+    end
+
+    subgraph nativo["Modulos Nativos (Android-only)"]
+        rnbtc["react-native-bluetooth-classic 1.73<br/>(SPP / Base64 binario)"]
+    end
+
+    subgraph dispositivo["NeuroEstimulator (ESP32 + HC-06)"]
+        hc06["Bluetooth Classic / SPP<br/>quadros 0xAA 0x0D ...<br/>108 B a 215 Hz"]
+    end
+
+    subgraph npi["NPI (Interoperable Research Node)"]
+        epAuth["/api/Auth/login"]
+        epRes["/api/Researcher<br/>/api/Research/..."]
+        epSnomed["/api/snomed/<br/>BodyStructure /<br/>TopographicalModifier"]
+        epSess["/api/ClinicalSession/New<br/>/api/ClinicalSession/GetAllPaginated"]
+        epRec["/api/ClinicalSession/{id}/recordings/New<br/>/api/Upload/recording"]
+        epAnnApi["/api/ClinicalSession/{id}/annotations/New"]
+    end
+
+    nav --> telaLogin
+    nav --> telaHome
+    nav --> telaBT
+    nav --> telaCfg
+    nav --> telaCap
+    nav --> telaAnn
+    nav --> telaHist
+    nav --> telaSet
+    nav --> telaRes
+
+    telaLogin --> ds
+    telaBT --> ds
+    telaCap --> ds
+    telaAnn --> ds
+    telaHist --> ds
+
+    telaLogin -->|consome| ctxAuth
+    telaBT -->|consome| ctxBT
+    telaCap -->|consome| ctxBT
+    telaCap -->|consome| ctxSess
+    telaAnn -->|consome| ctxSess
+    telaHist -->|consome| ctxSync
+
+    ctxBT -->|delega I/O| rnbtc
+    rnbtc <-->|SPP / Base64| hc06
+
+    ctxBT -->|alimenta bytes| decoder
+    decoder -->|StreamDataPacket| hook
+    hook -->|amostras downsampled| chart
+
+    ctxSess -->|grava CSV| fs
+    ctxSess -->|persiste metadados| repoRec
+    ctxSess -->|persiste sessao| repoSess
+    telaAnn -->|cria anotacao| repoAnn
+
+    repoSess --> db
+    repoRec --> db
+    repoAnn --> db
+    repoFav --> db
+
+    ctxAuth -->|tokens| sec
+    ctxAuth -->|login / refresh| svcMW
+
+    ctxSync -->|loop sync| svcSync
+    svcSync -->|le pendentes| repoSess
+    svcSync -->|le pendentes| repoRec
+    svcSync -->|le pendentes| repoAnn
+    svcSync -->|envia| svcMW
+
+    svcMW -->|HTTP + JWT| epAuth
+    svcMW -->|HTTP + JWT| epRes
+    svcMW -->|HTTP + JWT| epSnomed
+    svcMW -->|HTTP + JWT| epSess
+    svcMW -->|HTTP + JWT| epRec
+    svcMW -->|HTTP + JWT| epAnnApi

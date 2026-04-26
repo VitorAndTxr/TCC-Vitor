@@ -1,0 +1,23 @@
+flowchart LR
+    A["ADS1115<br/>860 SPS<br/>Modo Contínuo<br/>Core 1"]
+    B["Buffer de<br/>Decimação<br/>4 amostras"]
+    C["Média<br/>Anti-aliasing<br/>860÷4=215 Hz"]
+    D["Buffer Circular<br/>512 amostras<br/>ADC task"]
+    E["Filtro Butterworth<br/>10-50 Hz<br/>+ Notch 60 Hz<br/>sEMG task"]
+    F["Buffer<br/>Streaming<br/>300 amostras<br/>Core 1"]
+    G["Pacotização<br/>50 amostras/frame<br/>108 bytes"]
+    H["Envio Binário<br/>UART2 Bluetooth<br/>~4,3 pacotes/s"]
+
+    A -->|Leitura<br/>contínua<br/>1163 µs| B
+    B -->|Acumula 4<br/>amostras| C
+    C -->|215 Hz<br/>int16| D
+    D -->|Produtor-<br/>Consumidor| E
+    E -->|Filtra<br/>e converte| F
+    F -->|Acumula| G
+    G -->|Frame<br/>pronto| H
+
+    style A fill:#ff9999
+    style C fill:#99ccff
+    style D fill:#99ff99
+    style E fill:#ffcc99
+    style H fill:#cc99ff

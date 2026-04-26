@@ -1,0 +1,45 @@
+%% ============================================================
+%% Etiquetagem em tempo real: criacao, vinculo a sessao e envio
+%% das anotacoes (rotulos) que contextualizam o sinal sEMG.
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.5)
+%% Label: fig:IRISMobileFluxoRotulagem
+%% ============================================================
+sequenceDiagram
+    autonumber
+    actor U as Pesquisador
+    participant Cap as CaptureScreen<br/>(captura ativa)
+    participant List as AnnotationsListScreen
+    participant Form as NewAnnotationScreen
+    participant Repo as AnnotationRepository
+    participant DB as SQLite<br/>(tabela annotations)
+    participant Sync as SyncService
+    participant NPI as NPI<br/>/api/ClinicalSession/{id}/<br/>annotations/New
+
+    Note over U,Cap: (i) Sessao de captura em andamento
+    Cap->>Cap: mantem session_id ativo<br/>e timestamp do quadro corrente
+
+    U->>Cap: Toca em "Adicionar anotacao"
+    Cap->>List: navega com session_id
+
+    Note over U,Form: (ii) Criacao do rotulo
+    U->>List: Toca em "+ Add annotation"
+    List->>Form: abre formulario
+    U->>Form: Digita texto livre<br/>(observacao clinica)
+    U->>Form: Salvar
+    Form->>Repo: create({ sessionId, text })
+    Repo->>Repo: id = uuid()<br/>created_at = ISO8601
+    Repo->>DB: INSERT (id, session_id, text,<br/>created_at, sync_status='pending')
+    DB-->>Repo: ok
+    Repo-->>Form: anotacao salva
+    Form-->>List: goBack()
+    List->>Repo: getBySession(session_id)
+    Repo-->>List: anotacoes ordenadas por created_at
+
+    Note over U,DB: (iii) Vinculo temporal
+    Note right of DB: O rotulo e ancorado a sessao<br/>(FK session_id) e a created_at,<br/>permitindo correlacionar a anotacao<br/>com o trecho do sinal cuja janela<br/>temporal a contem.
+
+    Note over Sync,NPI: (iv) Envio assincrono
+    Sync->>DB: SELECT WHERE sync_status='pending'<br/>AND session_id IN (sincronizadas)
+    Sync->>NPI: POST /annotations/New<br/>{ text, created_at, session_id_remoto }
+    NPI-->>Sync: 201 Created
+    Sync->>DB: UPDATE sync_status='synced'

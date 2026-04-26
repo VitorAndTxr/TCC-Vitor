@@ -1,0 +1,46 @@
+graph TD
+    ESP["ESP32 Dual-Core<br/>Firmware v3.2"]
+
+    subgraph Core0["Core 0"]
+        ST["Session Task<br/>Prioridade 20<br/>FES + Trigger"]
+        SNT["Sensor Task<br/>Prioridade 10<br/>Amostragem legacy"]
+    end
+
+    subgraph Core1["Core 1 - Comunicação"]
+        MH["MessageHandler<br/>Prioridade 20<br/>Despacho JSON"]
+        ADC["ADC Continuous Task<br/>Prioridade 18<br/>860 Hz → 215 Hz"]
+        SEMG["sEMG Streaming Task<br/>Prioridade 15<br/>Filtragem + Pacotização"]
+    end
+
+    subgraph Mutexes["Sincronização"]
+        I2C["i2cMutex<br/>Protege: ADS1115<br/>+ MPU6050"]
+        BLU["MutexBlu<br/>Protege: UART2<br/>Bluetooth HC-06"]
+    end
+
+    subgraph Buffers["Produtor-Consumidor"]
+        ADCBUF["Buffer Circular<br/>ADC: 512 amostras"]
+        STRBUF["Buffer Streaming<br/>300 amostras"]
+    end
+
+    ESP --> Core0
+    ESP --> Core1
+
+    ST -.->|Aquisição legacy| SNT
+
+    MH -->|Inicia/Para| ADC
+    ADC -->|Escreve 215 Hz| ADCBUF
+    ADCBUF -->|Lê amostras| SEMG
+    SEMG -->|Escreve filtrado| STRBUF
+
+    ADC -->|Protegido por| I2C
+    ST -->|Protegido por| I2C
+
+    SEMG -->|Envia Bluetooth| BLU
+    MH -->|Envia ACK| BLU
+
+    style Core0 fill:#e1f5ff
+    style Core1 fill:#fff3e0
+    style I2C fill:#f3e5f5
+    style BLU fill:#f3e5f5
+    style ADCBUF fill:#e8f5e9
+    style STRBUF fill:#e8f5e9

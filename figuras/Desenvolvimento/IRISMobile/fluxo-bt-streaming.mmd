@@ -1,0 +1,70 @@
+%% ============================================================
+%% Fluxo de pareamento, captura e renderizacao do sinal sEMG.
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.3 e 4.4.4)
+%% Label: fig:IRISMobileFluxoCaptura
+%% ============================================================
+sequenceDiagram
+    autonumber
+    actor U as Pesquisador
+    participant Tela as BluetoothScreen +<br/>CaptureScreen
+    participant Ctx as BluetoothContext
+    participant RN as react-native-<br/>bluetooth-classic
+    participant Disp as NeuroEstimulator<br/>(ESP32 + HC-06)
+    participant Acc as BinaryFrameAccumulator<br/>(utils/binaryDecoder)
+    participant Hook as useStreamData<br/>(hook)
+    participant Chart as SEMGChart
+    participant Sess as SessionContext
+    participant FS as expo-file-system
+
+    Note over U,Tela: (i) Permissoes e listagem de pareados
+    U->>Tela: Abre tela de Bluetooth
+    Tela->>Ctx: requestPermissions()
+    Ctx->>Ctx: PermissionsAndroid.requestMultiple<br/>(BLUETOOTH_CONNECT, BLUETOOTH_SCAN,<br/>ACCESS_FINE_LOCATION)
+    Ctx->>RN: getBondedDevices()
+    RN-->>Ctx: lista de pareados
+    Ctx->>Ctx: filtra por nome "NeuroEstimulator"
+    Ctx-->>Tela: neuraDevices[]
+
+    Note over U,Disp: (ii) Conexao SPP
+    U->>Tela: Toca em dispositivo
+    Tela->>Ctx: connectBluetooth(address)
+    Ctx->>RN: connectToDevice(<br/>{ secureSocket: false,<br/>connectionType: 'binary' })
+    RN->>Disp: socket SPP estabelecido
+    Disp-->>RN: ok
+    Ctx->>RN: subscribe onDataReceived,<br/>onDeviceDisconnected
+
+    Note over U,Chart: (iii) Captura e streaming a 215 Hz
+    U->>Tela: Inicia captura
+    Tela->>Ctx: startStream() + startRecording()
+    Ctx->>FS: cria recording_<ts>.csv<br/>com cabecalho "timestamp,value"
+    Ctx->>Disp: comando "Start Stream" (codigo 11)
+
+    loop A cada 50 amostras (~ 232 ms)
+        Disp-->>RN: quadro binario 108 B<br/>[0xAA, 0x0D, ts32 LE,<br/>cnt16 LE, 50 x int16 LE]
+        RN-->>Ctx: callback onDataReceived (Base64)
+        Ctx->>Acc: feed(bytes)
+        Acc-->>Ctx: StreamDataPacket{ timestamp, samples[50] }
+        Ctx->>Ctx: append em streamBufferRef<br/>+ csvPendingRef
+    end
+
+    loop A cada 500 ms (Hook)
+        Hook->>Ctx: drena streamBufferRef
+        Hook->>Hook: downsample (fator 5)<br/>+ janela de 4 s / 160 pontos
+        Hook-->>Chart: setData(amostras)
+        Ctx->>FS: append CSV (linha-a-linha)
+    end
+
+    Note over U,FS: (iv) Encerramento da captura
+    U->>Tela: Para captura
+    Tela->>Ctx: stopStream() + stopRecording()
+    Ctx->>Disp: comando "Stop Stream" (codigo 12)
+    Ctx->>Acc: reset()
+    Ctx->>FS: flush final + close
+    Ctx->>Sess: addRecording({ filePath, sampleCount,<br/>duration, sampleRate })
+    Sess->>Sess: persiste em SQLite com<br/>sync_status = 'pending'
+
+    Note over U,Disp: (v) Falha de conexao (recuperacao)
+    Disp-->>RN: desconexao inesperada
+    RN-->>Ctx: onDeviceDisconnected
+    Ctx-->>Tela: showConnectionErrorModal = true
+    Tela-->>U: alerta + opcao de reconectar

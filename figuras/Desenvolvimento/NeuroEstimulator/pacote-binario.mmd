@@ -1,0 +1,27 @@
+flowchart LR
+    A["magic<br/>1 byte<br/>0xAA"]
+    B["message_code<br/>1 byte<br/>0x0D"]
+    C["timestamp<br/>4 bytes<br/>uint32_t LE"]
+    D["sample_count<br/>2 bytes<br/>uint16_t LE<br/>= 50"]
+    E["payload<br/>100 bytes<br/>int16_t ×50<br/>Little-Endian"]
+
+    subgraph Header["Header: 8 bytes"]
+        A --- B --- C --- D
+    end
+
+    subgraph Data["Dados: 100 bytes"]
+        E
+    end
+
+    Header --- E
+
+    Footer["Total: 108 bytes<br/>Transmission: ~464 bytes/s<br/>Rate: ~4,3 pacotes/s @ 215 Hz"]
+
+    style A fill:#ffcccc
+    style B fill:#ffddaa
+    style C fill:#ccffcc
+    style D fill:#ccddff
+    style E fill:#ffccff
+    style Header fill:#ffffee
+    style Data fill:#eeffff
+    style Footer fill:#f0f0f0

@@ -625,75 +625,172 @@ Quanto à \textbf{acessibilidade}, a aplicação observa o conjunto mínimo de p
 
 \section{IRIS --- Mobile}\label{sec:desenvolvimentoIRISMobile}
 % ======================================================================
+% Pré-requisito de inclusão: este arquivo é destinado a ser inserido em
+% capitulos/cap-experimentos-resultados.tex, logo após a Seção
+% \ref{sec:desenvolvimentoIRIS}.
+% As figuras referenciadas vivem em figuras/Desenvolvimento/IRISMobile/.
 
-% Parágrafo de abertura: posicionar o IRIS Mobile como cliente especializado
-% (não-generalista) — substitui o app legado do NeuroEstimulator e demonstra
-% que clientes em plataformas heterogêneas consomem o mesmo contrato do NPI.
+O IRIS \textit{Mobile} é a aplicação cliente especializada do ecossistema PRISM responsável pela operação do dispositivo NeuroEstimulator em campo, pela captura do sinal de eletromiografia de superfície --- sEMG e pela contextualização desse sinal por meio de rótulos clínicos durante a coleta. Ao contrário do IRIS \textit{web} (Seção \ref{sec:desenvolvimentoIRIS}), generalista e desacoplado de qualquer modalidade de biossinal, o IRIS \textit{Mobile} ocupa o papel de \textit{aplicação especializada} previsto pelo padrão e substitui, no experimento conduzido neste trabalho, o aplicativo legado distribuído originalmente com o NeuroEstimulator. Sua presença no estudo é necessária para evidenciar que o mesmo contrato exposto pelo NPI pode ser consumido tanto por aplicações generalistas \textit{web} quanto por clientes nativos em plataformas heterogêneas, e que a tese central do PRISM --- a de que rótulos clínicos contextualizam o biossinal --- pode ser materializada já no instante da aquisição. Esta seção descreve o papel do IRIS \textit{Mobile} no ecossistema (Subseção \ref{subsec:IRISMobilePapel}), sua arquitetura interna (Subseção \ref{subsec:IRISMobileArquitetura}), o pareamento e a comunicação com o NeuroEstimulator (Subseção \ref{subsec:IRISMobileBT}), a estratégia de captura, \textit{buffering} e envio do sinal ao NPI (Subseção \ref{subsec:IRISMobileCaptura}), o mecanismo de etiquetagem em tempo real (Subseção \ref{subsec:IRISMobileRotulos}), as telas principais (Subseção \ref{subsec:IRISMobileTelas}) e, por fim, as limitações reconhecidas e os trabalhos futuros (Subseção \ref{subsec:IRISMobileLimitacoes}).
 
 % ----------------------------------------------------------------------
 \subsection{Papel: cliente especializado em captura}\label{subsec:IRISMobilePapel}
 % ----------------------------------------------------------------------
 
-% TODO: contrastar com o IRIS web — o que justifica um app dedicado em vez
-% de um web responsivo? (acesso a Bluetooth nativo, latência, operação em campo).
+No modelo conceitual do PRISM, o IRIS \textit{Mobile} é um exemplar do papel de \textit{aplicação especializada}: um cliente do NPI cuja razão de ser não é abranger todas as funcionalidades operacionais do nó, mas sim assumir as responsabilidades que dependem do contato direto com o dispositivo de aquisição e com o pesquisador em campo. Ele se contrapõe ao IRIS \textit{web} (Seção \ref{sec:desenvolvimentoIRIS}), generalista e voltado à gestão administrativa e à federação, e ao NeuroEstimulator (Seção \ref{sec:adaptacaoNeuroEstimulator}), que ocupa o papel de \textit{dispositivo}. A coexistência destes três artefatos no experimento permite observar a mesma API do NPI sendo consumida por clientes heterogêneos --- um \textit{web} \textit{desktop} e um nativo Android --- e demonstra que a separação de responsabilidades proposta pelo padrão é exequível na prática.
+
+A justificativa para que a captura do sEMG seja conduzida por uma aplicação dedicada, em vez de uma versão responsiva do IRIS \textit{web}, repousa em três restrições objetivas observadas durante o desenvolvimento. A primeira é o \textit{acesso a periféricos nativos}: a comunicação com o NeuroEstimulator ocorre por Bluetooth Classic, perfil \textit{Serial Port Profile} --- SPP, cujo acesso a partir de páginas \textit{web} convencionais é vedado pelos navegadores modernos, que oferecem apenas a \textit{Web Bluetooth API} restrita a Bluetooth de Baixa Energia --- BLE. A segunda é a \textit{latência percebida pelo usuário durante a coleta}: o aplicativo precisa renderizar o sinal a uma taxa estável e reagir, em poucas dezenas de milissegundos, a comandos de início e parada de \textit{streaming} bem como à criação de rótulos pelo pesquisador, características mais adequadas a um cliente nativo do que a uma página \textit{web} responsiva. A terceira é a \textit{operação em campo}: o aplicativo deve ser instalável em dispositivos do próprio pesquisador, capaz de operar em ambientes com conectividade intermitente e de armazenar localmente o material adquirido até que a sincronização com o NPI seja viável.
 
 % ----------------------------------------------------------------------
 \subsection{Arquitetura do aplicativo}\label{subsec:IRISMobileArquitetura}
 % ----------------------------------------------------------------------
 
-% TODO:
-%   - Plataforma escolhida (Android nativo? Flutter? React Native?);
-%   - Estratégia de comunicação com o NPI (mesma API REST? gRPC?);
-%   - Armazenamento local para resiliência (capturar mesmo offline?).
+A Figura \ref{fig:IRISMobileArquitetura} sintetiza a organização interna do IRIS \textit{Mobile} e suas relações com o dispositivo NeuroEstimulator e com o NPI. A aplicação é construída em \texttt{TypeScript} sobre \textit{React Native}~\cite{ReferenciaReactNative} versão 0.76.9 e o ferramental \textit{Expo}~\cite{ReferenciaExpo} versão 52, com a arquitetura clássica de \textit{bridge} (\texttt{newArchEnabled = false}) e o motor JavaScript \textit{Hermes} habilitado. O projeto reside no monorepositório do IRIS, em \texttt{apps/mobile/}, e compartilha com o IRIS \textit{web} dois pacotes internos: \texttt{packages/domain}, que define os tipos de domínio comuns às duas aplicações, e \texttt{packages/middleware}, que encapsula o adaptador para o NPI. Essa partilha é deliberada: garantir que ambos os clientes operem sobre o mesmo modelo de dados elimina divergências silenciosas entre representações ao mesmo tempo em que mantém o NPI como única fonte de verdade do contrato.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.95\textwidth}
+\caption{Arquitetura interna do IRIS \textit{Mobile}, suas dependências nativas e relação com o NeuroEstimulator e o NPI.}
+\label{fig:IRISMobileArquitetura}
+% TODO: renderizar arquitetura-iris-mobile.mmd para .png antes da compilação final.
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/arquitetura-iris-mobile.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A \textbf{camada de apresentação} agrupa as telas em \texttt{apps/mobile/src/screens/}, organizadas por domínio funcional --- autenticação (\texttt{LoginScreen}), conexão com o dispositivo (\texttt{BluetoothScreen}, \texttt{StreamConfigScreen}), captura ao vivo (\texttt{CaptureScreen}), histórico (\texttt{HistoryScreen}), etiquetagem (\texttt{NewAnnotationScreen}, \texttt{AnnotationsListScreen}) e gestão de pesquisas (subpasta \texttt{research/}). A navegação entre telas é mediada pela biblioteca \texttt{react-navigation} (versão 7), composta por um \textit{stack navigator} raiz (\texttt{RootNavigator}) e um \textit{tab navigator} interno (\texttt{MainTabNavigator}). A \textbf{camada de componentes reutilizáveis} (\texttt{src/components/}) reúne primitivas visuais próprias --- \texttt{Button}, \texttt{Input}, \texttt{Select}, \texttt{Card}, \texttt{EmptyState} ---, modais transversais (\texttt{NamePromptModal}, \texttt{SavingModal}) e o componente de visualização do sinal (\texttt{SEMGChart}), construído sobre a biblioteca \texttt{react-native-gifted-charts}. A escolha por uma biblioteca de componentes própria, ao invés de soluções de terceiros, mantém coerência visual com o IRIS \textit{web} e dispensa o aplicativo de dependências externas pesadas que ampliariam o tempo de \textit{cold start}.
+
+A \textbf{camada de contextos React} (\texttt{src/context/}) implementa o estado global da aplicação por meio de quatro provedores: \texttt{AuthContext}, responsável pelo ciclo de vida da sessão e pela hidratação do \textit{token} JSON Web Token --- JWT a partir do armazenamento seguro; \texttt{BluetoothContext}, que orquestra toda a interação com o NeuroEstimulator; \texttt{SessionContext}, que mantém o estado da sessão clínica em curso e medeia o registro de gravações no banco local; e \texttt{SyncContext}, que expõe à interface o estado do laço de sincronização com o NPI. A opção pelo \textit{Context API} nativo do React, em detrimento de bibliotecas como \textit{Redux} ou \textit{Zustand}, foi adotada para manter o aplicativo enxuto: o estado a ser compartilhado é compacto e fortemente atrelado ao ciclo de vida da captura, não justificando a complexidade adicional de uma biblioteca dedicada de \textit{store}.
+
+A \textbf{camada de serviços} (\texttt{src/services/}) traduz as ações do usuário em chamadas ao NPI. O serviço \texttt{middleware.ts} adapta o pacote interno \texttt{@iris/middleware} ao ambiente do React Native --- substituindo, por exemplo, o armazenamento seguro baseado em \texttt{keytar} pelo \texttt{expo-secure-store} e o cliente HTTP do navegador pela implementação \textit{nativa} do \texttt{fetch}. O \texttt{SyncService} implementa o laço de sincronização periódica com o NPI, descrito em detalhe na Subseção \ref{subsec:IRISMobileCaptura}; o \texttt{SnomedService} consome os \textit{endpoints} de vocabulário SNOMED CT (Subseção \ref{subsec:NPIDados}) para alimentar as telas de configuração de coleta com estruturas anatômicas e modificadores topográficos; e o \texttt{ResearchService} apoia as telas que listam pesquisas, aplicações e dispositivos.
+
+A \textbf{camada de dados locais} (\texttt{src/data/}) materializa a estratégia \textit{offline-first} do aplicativo. As gravações em \textit{Comma-Separated Values} --- CSV são persistidas em \texttt{expo-file-system}, sob \texttt{FileSystem.documentDirectory}, e os metadados associados --- sessões clínicas, gravações, anotações e configurações favoritas --- residem em um banco \texttt{expo-sqlite} (versão 15) chamado \texttt{iris\_clinical.db}. O esquema é gerido por um sistema de \textit{migrations} versionadas, hoje na versão 7, que registra na tabela \texttt{migrations} cada migração já aplicada e garante atualizações incrementais idempotentes entre instalações do aplicativo. Toda interação com o banco passa pelos repositórios \texttt{SessionRepository}, \texttt{RecordingRepository}, \texttt{AnnotationRepository} e \texttt{FavoriteRepository}, que encapsulam os comandos SQL e expõem ao restante da aplicação uma interface tipada em \texttt{TypeScript}. Em todas as tabelas que participam da sincronização, uma coluna \texttt{sync\_status} assume os valores \texttt{'pending'}, \texttt{'synced'} ou \texttt{'failed'}, função explicitamente delineada para permitir que o aplicativo opere mesmo na ausência de conectividade e retransmita as entidades pendentes assim que o NPI tornar-se acessível.
+
+A \textbf{estratégia de comunicação com o NPI} reaproveita integralmente a \textit{Application Programming Interface} --- API HTTP descrita na Subseção \ref{subsec:NPIAPI}. As requisições partem diretamente do aplicativo contra o NPI, autenticadas por \textit{token} JWT obtido na tela de \textit{login} e mantido em armazenamento seguro do sistema operacional pelo \texttt{expo-secure-store}. Não há \textit{Backend-for-Frontend} --- BFF intermediário, e tampouco se utilizam protocolos como \textit{Google Remote Procedure Call} --- gRPC ou \textit{WebSockets}: a comunicação é toda via HTTP/JSON e é adaptada para o ambiente nativo pela mesma camada de \textit{middleware} compartilhada com o IRIS \textit{web}. A renovação do \textit{token} é feita automaticamente alguns minutos antes da expiração pelo \texttt{SessionManager} herdado do pacote \textit{middleware}, evitando que o usuário seja forçado a reautenticar-se em meio a uma coleta.
 
 % ----------------------------------------------------------------------
 \subsection{Pareamento e comunicação com o NeuroEstimulator}\label{subsec:IRISMobileBT}
 % ----------------------------------------------------------------------
 
-% TODO:
-%   - Descoberta do dispositivo via Bluetooth Classic (HC-06);
-%   - Protocolo de mensagens próprio do NeuroEstimulator (referenciar a Seção 4.5.3.3);
-%   - Tratamento de desconexão.
-%   - Explicitar dificuldades em achar uma versão do ReactNative compativel com Bluetooth Classic, sendo necessário usar versões especificas do ReactNative e do Gradle para poder funcionar corretamente
-%   - Essa limitação impossilita o uso de dispositivos IPhone recentes e uso direto pela versão web gerada pelo aplicativo via chrome que são obrigatoriamente BLE
+A interação com o NeuroEstimulator é toda mediada pelo \texttt{BluetoothContext} (\texttt{apps/mobile/src/context/BluetoothContext.tsx}), que encapsula o módulo nativo \texttt{react-native-bluetooth-classic} (versão 1.73.0-rc.15) e expõe à interface um conjunto reduzido de operações de alto nível: solicitação de permissões, listagem de dispositivos pareados, conexão a um dispositivo, início e parada de \textit{streaming}, registro de pacotes recebidos e tratamento de desconexões inesperadas. O fluxo completo, do pareamento à renderização do sinal, está ilustrado pela Figura \ref{fig:IRISMobileFluxoCaptura}, que serve como referência visual para a discussão desta subseção e da seguinte.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.95\textwidth}
+\caption{Fluxo de pareamento, captura e renderização do sinal sEMG no IRIS \textit{Mobile}.}
+\label{fig:IRISMobileFluxoCaptura}
+% TODO: renderizar fluxo-bt-streaming.mmd para .png antes da compilação final.
+\includegraphics[scale=0.28]{figuras/Desenvolvimento/IRISMobile/fluxo-bt-streaming.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+O \textbf{pareamento} segue um modelo de duas etapas. A primeira é externa ao aplicativo: o pesquisador é instruído a parear o NeuroEstimulator pelas configurações Bluetooth do sistema operacional Android, fornecendo o \textit{Personal Identification Number} --- PIN do módulo HC-06. A segunda etapa, interna, é executada pela tela \texttt{BluetoothScreen}: o aplicativo invoca \texttt{getBondedDevices()} do \texttt{react-native-bluetooth-classic}, filtra a lista pelo nome \textit{NeuroEstimulator} para isolar apenas dispositivos compatíveis e, em seguida, sondam-se quais já estão conectados por meio de \texttt{isConnected()}. Essa separação delibera-se a partir de uma restrição da plataforma: aplicativos Android, por padrão, não recebem permissão para iniciar o pareamento de novos dispositivos a partir do \textit{userland}, e tentar contornar tal restrição introduziria fricção desproporcional para o pesquisador. Antes de qualquer chamada de Bluetooth, o aplicativo solicita as permissões pertinentes ao Android: a partir da \textit{Application Programming Interface --- API} 31 (Android 12), \texttt{BLUETOOTH\_CONNECT}, \texttt{BLUETOOTH\_SCAN} e \texttt{ACCESS\_FINE\_LOCATION}; em versões anteriores, apenas \texttt{ACCESS\_FINE\_LOCATION} é exigida, dado que \texttt{BLUETOOTH} e \texttt{BLUETOOTH\_ADMIN} são concedidas em tempo de instalação.
+
+A \textbf{conexão} é estabelecida pela função \texttt{connectBluetooth(address)}, que invoca \texttt{connectToDevice} do módulo nativo com a configuração \texttt{\{ secureSocket: false, connectionType: 'binary' \}}. O modo \textit{binary} é essencial: ele instrui a biblioteca a entregar os dados recebidos como \textit{strings} codificadas em Base64, sem qualquer tentativa de delimitação por linha, o que preserva a integridade dos quadros binários emitidos pelo NeuroEstimulator. Imediatamente após a conexão, o \texttt{BluetoothContext} registra dois \textit{listeners}: \texttt{onDataReceived}, que alimenta o decodificador de quadros descrito a seguir, e \texttt{onDeviceDisconnected}, que dispara o estado \texttt{showConnectionErrorModal} sinalizando à interface que a conexão foi perdida e oferecendo ao pesquisador a opção de reconectar. O aplicativo não tenta reconexão automática silenciosa: a decisão de reconectar fica a cargo do usuário, evitando que reconexões inadvertidas reiniciem coletas sem notificação explícita.
+
+O \textbf{protocolo de mensagens} adotado pelo NeuroEstimulator está descrito em detalhe na Subseção \ref{subsec:NEFirmware}, que apresenta a transição do antigo modelo comando-resposta para o modelo atual de \textit{streaming} contínuo de quadros binários. Recapitula-se aqui apenas o que é relevante ao IRIS \textit{Mobile}: durante uma sessão de captura, o dispositivo emite, a cada pacote de cinquenta amostras, um quadro binário de exatamente 108 \textit{bytes} composto por um \textit{magic byte} \texttt{0xAA}, um código de mensagem \texttt{0x0D}, um \textit{timestamp} de 32 \textit{bits} em \textit{little-endian} (em milissegundos a partir do reinício do ESP32), uma contagem de amostras de 16 \textit{bits} (sempre 50) e cinquenta amostras de 16 \textit{bits} com sinal, totalizando os cem \textit{bytes} de \textit{payload} de sinal. O componente \texttt{BinaryFrameAccumulator}, definido em \texttt{apps/mobile/src/utils/binaryDecoder.ts}, recebe os \textit{bytes} entregues pelo \textit{listener} \texttt{onDataReceived}, acumula em um \textit{buffer} dinâmico aqueles que ainda não formam um quadro completo e, sempre que o início de quadro (\textit{magic byte}) é localizado e há \textit{bytes} suficientes para encerrá-lo, decodifica-o em uma estrutura \texttt{StreamDataPacket}. Em situações de desalinhamento --- por exemplo, depois de uma desconexão parcial ---, o acumulador descarta \textit{bytes} até reencontrar o próximo \textit{magic byte}, contabilizando esse evento como \textit{dropped} para fins de diagnóstico.
+
+A escolha por \textbf{Bluetooth Classic} em detrimento de Bluetooth de Baixa Energia --- BLE foi imposta pelo dispositivo: o NeuroEstimulator utiliza o módulo HC-06, que opera exclusivamente em Bluetooth Classic sob o perfil SPP. Essa decisão impõe três consequências práticas que merecem registro. Primeiro, a única biblioteca \textit{React Native} disponível com suporte a SPP é a \texttt{react-native-bluetooth-classic}, e foi necessário fixar versões compatíveis no monorepositório, com particular atenção ao alinhamento entre \textit{React Native} 0.76.9, Gradle 8 e \textit{Java Development Kit} --- JDK 17, em particular \texttt{compileSdk = 35}, \texttt{targetSdk = 34} e \texttt{minSdk = 24}. Tentativas iniciais de utilizar versões de \textit{React Native} mais recentes ou anteriores resultaram em falhas de compilação no módulo nativo, motivando a fixação da versão. Segundo, o aplicativo deixa de operar nos modos para os quais o suporte a Bluetooth Classic é inexistente: a versão \textit{web} gerada pelo Expo, executada no navegador \textit{Chrome}, fica restrita à \textit{Web Bluetooth API} (apenas BLE), e a plataforma \textit{Apple iOS}, por restrições do próprio sistema operacional, não expõe o perfil SPP a aplicativos de terceiros, o que impede o uso em \textit{iPhones} mesmo em versões recentes do \textit{hardware}. Por essa razão, o arquivo \texttt{app.json} declara explicitamente \texttt{"platforms": ["web", "android"]}, e o \texttt{BLUETOOTH\_SETUP.md} do projeto registra que o aplicativo é, na prática, \textit{Android-only} para a captura. Terceiro, como o módulo nativo não pode ser embutido em \textit{Expo Go}, a compilação exige a execução de \texttt{expo prebuild} e a geração de uma \textit{development build} com Gradle, o que, em ambientes Windows, requereu ainda a habilitação de caminhos longos no sistema de arquivos --- documentada em \texttt{WINDOWS\_LONG\_PATH\_FIX.md} --- para acomodar a profundidade de pastas típica de \textit{node\_modules} aninhados a CMake.
 
 % ----------------------------------------------------------------------
 \subsection{Captura, \textit{buffering} e envio do sinal sEMG ao NPI}\label{subsec:IRISMobileCaptura}
 % ----------------------------------------------------------------------
 
-% TODO:
-%   - Estratégia de buffer no app (tamanho da janela, política de descarte);
-%   - Política de envio ao NPI (tempo real, batch ao final da coleta?);
-%   - Indicação de sincronização com o servidor para o usuário (UX).
+O ciclo de captura é coordenado pela tela \texttt{CaptureScreen} em conjunto com o \texttt{BluetoothContext} e o \texttt{SessionContext}. Ao iniciar uma coleta, o aplicativo cria, em \texttt{FileSystem.documentDirectory}, um arquivo CSV com nome no padrão \texttt{recording\_<\textit{timestamp ISO 8601}>.csv} e escreve o cabeçalho \texttt{timestamp,value}; a seguir, comanda o NeuroEstimulator a iniciar o \textit{streaming} (mensagem de código 11 do protocolo) e aguarda, por até cinco segundos, a primeira evidência de quadros recebidos. A partir desse momento, o \texttt{BluetoothContext} acumula em um \textit{ring buffer} interno (\texttt{streamBufferRef}) os \texttt{StreamDataPacket} decodificados pelo \texttt{BinaryFrameAccumulator}, ao mesmo tempo em que serializa em uma estrutura paralela (\texttt{csvPendingRef}) as linhas correspondentes do arquivo CSV, no formato \texttt{<\textit{timestamp em milissegundos}>,<\textit{amostra de 16 \textit{bits} com sinal}>}.
 
+O \textbf{\textit{buffering}} resolve dois problemas distintos. Por um lado, a renderização gráfica do sinal não pode ser feita à taxa nominal de aquisição (215 Hz) sem comprometer a fluidez da interface: ainda que o React Native seja capaz de renderizar a essa taxa, a re-execução do componente de gráfico a cada novo pacote impõe um custo de \textit{layout} e \textit{repaint} que, em dispositivos Android intermediários, leva a perda perceptível de quadros. O \texttt{useStreamData} resolve esse ponto: a cada quinhentos milissegundos, ele drena o \texttt{streamBufferRef}, aplica decimação por fator cinco a cada pacote (reduzindo cinquenta amostras a dez) e recorta a janela exibida em quatro segundos a aproximadamente quarenta amostras por segundo, totalizando cento e sessenta pontos visíveis no \texttt{SEMGChart}. A redução resulta em uma taxa efetiva de atualização de duas atualizações por segundo no gráfico, suficiente para fornecer ao pesquisador realimentação visual em tempo aproximadamente real e sem percepção de \textit{lag}, mas distante o bastante da taxa nominal para evitar saturação de re-renderizações.
+
+Por outro lado, o \textit{buffering} segregado para o arquivo CSV impede que a operação custosa de \textit{flush} no sistema de arquivos seja feita por amostra. As linhas de CSV são enfileiradas em \texttt{csvPendingRef} e gravadas em lote no arquivo aberto, o que reduz a frequência de chamadas a \texttt{writeAsStringAsync} e mitiga o impacto da operação de I/O sobre a \textit{Java Virtual Machine} --- JVM do React Native. Eventuais perdas de quadro no \textit{ring buffer} de exibição são tratadas como descarte por \textit{First-In-First-Out} --- FIFO, dado que o que importa para a renderização é a janela mais recente; já o \textit{buffer} de CSV nunca descarta amostras, pois o arquivo é a fonte canônica do sinal a ser enviado ao NPI.
+
+Ao encerrar a captura, a tela \texttt{CaptureScreen} comanda a parada do \textit{streaming} (mensagem de código 12), aguarda meio segundo para garantir que os últimos quadros transmitidos sobre a conexão SPP sejam processados, drena o \textit{buffer} de CSV residual para o arquivo, fecha o arquivo e invoca \texttt{SessionContext.addRecording}, que persiste no SQLite uma linha em \texttt{recordings} contendo o caminho local do arquivo, a duração efetiva, a contagem de amostras, a taxa nominal e a marca \texttt{sync\_status = 'pending'}. Nesse instante, a sessão clínica encontra-se inteiramente armazenada localmente, e o aplicativo está pronto para operar tanto em modo conectado quanto desconectado.
+
+A \textbf{política de envio ao NPI} é deliberadamente assíncrona e baseada em \textit{batch}, e está sintetizada na Figura \ref{fig:IRISMobileFluxoSync}. O \texttt{SyncService}, instanciado pelo \texttt{SyncContext}, executa um laço periódico com intervalo padrão de sessenta segundos --- também acionável manualmente pela ação \texttt{syncNow} oferecida pela \texttt{HistoryScreen} --- que percorre as três tabelas com \texttt{sync\_status = 'pending'} respeitando a ordem de dependências do contrato do NPI. Primeiro, as sessões clínicas são submetidas via \texttt{POST /api/ClinicalSession/New}, garantindo idempotência por meio do identificador \textit{Universally Unique Identifier} --- UUID gerado localmente; segundo, para cada gravação pendente são submetidos os metadados em \texttt{POST /api/ClinicalSession/\{sessionId\}/recordings/New} e, em seguida, o conteúdo do arquivo CSV em \texttt{POST /api/Upload/recording} (codificado em Base64 a partir do conteúdo lido por \texttt{readAsStringAsync}); por fim, as anotações da sessão são submetidas em \texttt{POST /api/ClinicalSession/\{sessionId\}/annotations/New}. Em caso de falha transiente --- códigos de \textit{Hypertext Transfer Protocol} --- HTTP 408, 429 ou da família 5xx ---, a entidade é reenfileirada com \textit{backoff} exponencial até o limite de cinco tentativas consecutivas; em caso de falha permanente (4xx, exceto 408 e 429), seu \texttt{sync\_status} é gravado como \texttt{'failed'}, permitindo que o pesquisador acione manualmente uma nova tentativa pela interface.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.95\textwidth}
+\caption{Ciclo de sincronização do IRIS \textit{Mobile} com o NPI: sessão, gravação (metadados e arquivo) e anotações.}
+\label{fig:IRISMobileFluxoSync}
+% TODO: renderizar fluxo-sync-mobile.mmd para .png antes da compilação final.
+\includegraphics[scale=0.28]{figuras/Desenvolvimento/IRISMobile/fluxo-sync-mobile.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A \textbf{indicação de sincronização} ao usuário é uma decisão deliberada de \textit{User Experience} --- UX. Cada linha exibida pela \texttt{HistoryScreen} apresenta uma etiqueta colorida correspondente ao \texttt{sync\_status} da sessão (verde para sincronizada, amarela para pendente e vermelha para falha), juntamente com um botão \textit{Retry} acessível imediatamente quando o estado é de falha. A ausência de uma camada de \textit{toasts} ou \textit{notifications} acompanha esse desenho: o pesquisador é poupado de interrupções da interface durante a coleta, e o estado da sincronização é apresentado como uma propriedade da sessão em si, não como um evento transitório.
 
 % ----------------------------------------------------------------------
 \subsection{Etiquetagem em tempo real}\label{subsec:IRISMobileRotulos}
 % ----------------------------------------------------------------------
 
-% TODO: SUBSEÇÃO ESTRATÉGICA. É onde a tese central do PRISM
-% ("rótulos contextualizam o sinal") aparece na prática.
-%   - Como o pesquisador cria rótulos durante a coleta;
-%   - Como o rótulo é vinculado ao trecho temporal correto do sinal;
-%   - Como o rótulo é serializado e transmitido junto com o sinal.
+A etiquetagem em tempo real é a subseção em que a tese central do PRISM --- a de que rótulos contextualizam o sinal --- aparece materializada na ponta do experimento. Sem rótulos, uma gravação sEMG é apenas uma série temporal de amplitudes; com rótulos, ela torna-se um registro clínico interpretável, vinculado ao gesto, à condição ou à observação que o pesquisador deseja correlacionar com o sinal. O fluxo correspondente está representado pela Figura \ref{fig:IRISMobileFluxoRotulagem}.
 
+\begin{figure}[htpb]
+\captionsetup{width=0.85\textwidth}
+\caption{Fluxo de criação, vínculo à sessão e envio das anotações que contextualizam o sinal sEMG.}
+\label{fig:IRISMobileFluxoRotulagem}
+% TODO: renderizar fluxo-rotulagem.mmd para .png antes da compilação final.
+\includegraphics[scale=0.32]{figuras/Desenvolvimento/IRISMobile/fluxo-rotulagem.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A \textbf{criação de um rótulo} pelo pesquisador ocorre por meio da tela \texttt{NewAnnotationScreen}, acessível a partir da \texttt{CaptureScreen} durante a coleta e da \texttt{AnnotationsListScreen} fora dela. A tela apresenta um único campo de texto multilinha (\texttt{TextInput}) destinado à observação clínica em \textit{free text}, com foco automático ao montar o componente para minimizar fricção, e um botão de salvamento que delega ao \texttt{AnnotationRepository.create} a persistência do rótulo. Esse repositório, ao receber a requisição, gera um identificador UUID, atribui à anotação um \texttt{created\_at} no formato \textit{International Organization for Standardization} --- ISO 8601 obtido por \texttt{Date.now().toISOString()}, e insere a linha na tabela \texttt{annotations} do banco SQLite com \texttt{sync\_status = 'pending'}.
+
+O \textbf{vínculo temporal} entre rótulo e sinal é estabelecido por dois elementos complementares. O primeiro é a chave estrangeira \texttt{session\_id} presente em cada linha de \texttt{annotations}: ela amarra univocamente a anotação à sessão clínica em curso, e portanto à coleção de gravações que dela derivam. O segundo é o instante \texttt{created\_at}, expresso em escala absoluta e portanto comparável aos \textit{timestamps} dos quadros do sEMG: o pesquisador, ou ferramentas analíticas posteriores, pode identificar com precisão suficiente qual janela do sinal contém o instante em que o rótulo foi criado, restaurando o vínculo entre observação clínica e trecho de biossinal sem que seja necessário introduzir, no momento da captura, um mecanismo de \textit{seek} sobre o sinal. Essa decisão é, ao mesmo tempo, uma simplificação consciente e uma limitação reconhecida (Subseção \ref{subsec:IRISMobileLimitacoes}): suficiente para o experimento descrito neste trabalho, mas insuficiente para usos clínicos que demandem o trecho exato em sub-segundo, demanda essa que motivaria a adoção de \textit{markers} embutidos no fluxo do sinal.
+
+A \textbf{serialização e o envio} do rótulo seguem o mesmo padrão das demais entidades sincronizáveis. Ao alcançar o \texttt{SyncService}, a anotação é mapeada para o \textit{payload} esperado pelo NPI por meio de \texttt{mapToCreateAnnotationPayload}, e submetida via \texttt{POST /api/ClinicalSession/\{sessionId\}/annotations/New}. Uma vez confirmada a inserção remota, o \texttt{sync\_status} local transita para \texttt{'synced'}, fechando o ciclo de transmissão. Ressalta-se que o envio de anotações é condicionado à prévia sincronização da sessão à qual elas pertencem, política adotada pelo \texttt{SyncService} para preservar a integridade referencial sem necessidade de mensagens de coordenação adicionais.
 
 % ----------------------------------------------------------------------
 \subsection{Telas principais}\label{subsec:IRISMobileTelas}
 % ----------------------------------------------------------------------
 
-% TODO: 2-3 print-screens das telas mais relevantes (pareamento, captura ao vivo,
-% lista de coletas). Padrão de label: fig:irisMobileTela<Nome>.
+Esta subseção apresenta as três telas mais representativas do IRIS \textit{Mobile}, em ordem condizente com o fluxo típico de uso: pareamento (Figura \ref{fig:irisMobileTelaPareamento}), captura ao vivo com etiquetagem (Figura \ref{fig:irisMobileTelaCaptura}) e histórico de coletas (Figura \ref{fig:irisMobileTelaHistorico}). As capturas reproduzem o estado da aplicação contra um NPI alimentado com os dados do experimento descrito no Capítulo \ref{cap:desenvolvimento}.
+
+% TODO Vitor: substituir cada placeholder abaixo por captura real de tela em
+% dispositivo Android (resolução 1080x2400, formato PNG, sem barras do SO).
+
+\begin{figure}[htpb]
+\captionsetup{width=0.7\textwidth}
+\caption{Tela de pareamento do IRIS \textit{Mobile}, com a listagem dos dispositivos NeuroEstimulator pareados ao sistema operacional.}
+\label{fig:irisMobileTelaPareamento}
+% TODO: capturar BluetoothScreen com ao menos um NeuroEstimulator pareado.
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-pareamento.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A \texttt{BluetoothScreen} (Figura \ref{fig:irisMobileTelaPareamento}) ilustra o padrão de listagem do aplicativo: cabeçalho com título da seção, conteúdo principal preenchido pela lista de dispositivos compatíveis e ações primárias agrupadas em rodapé. A escolha por exibir somente dispositivos cujo nome corresponde ao NeuroEstimulator é deliberada para reduzir a superfície de erro do pesquisador em campo, evitando que outros pareamentos do telefone sejam exibidos junto a equipamentos clínicos.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.7\textwidth}
+\caption{Tela de captura ao vivo do IRIS \textit{Mobile}, com o gráfico do sinal sEMG, controles de gravação e ação de criação de anotação.}
+\label{fig:irisMobileTelaCaptura}
+% TODO: capturar CaptureScreen com streaming ativo e ao menos uma anotação.
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-captura.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A \texttt{CaptureScreen} (Figura \ref{fig:irisMobileTelaCaptura}) é a tela operacional central do aplicativo. O gráfico em primeiro plano apresenta a janela de quatro segundos do sinal sEMG conforme descrita na Subseção \ref{subsec:IRISMobileCaptura}; abaixo dele, controles de início e parada de gravação, um cronômetro e o atalho para criação de uma anotação compõem o conjunto mínimo de comandos exigidos durante a coleta. A ausência deliberada de controles secundários nessa tela --- preferências, navegação para histórico ou configuração --- responde à preocupação de preservar a atenção do pesquisador no que ocorre com o voluntário, em consonância com o princípio de \textit{operação em campo} discutido na Subseção \ref{subsec:IRISMobilePapel}.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.7\textwidth}
+\caption{Tela de histórico de coletas do IRIS \textit{Mobile}, com etiquetas indicativas do estado de sincronização de cada sessão.}
+\label{fig:irisMobileTelaHistorico}
+% TODO: capturar HistoryScreen com sessões em estados Synced/Pending/Failed.
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-historico.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A \texttt{HistoryScreen} (Figura \ref{fig:irisMobileTelaHistorico}) consolida visualmente o estado da sincronização discutido na Subseção \ref{subsec:IRISMobileCaptura}. Cada linha apresenta a sessão, sua duração, o número de gravações e anotações associadas e, à direita, a etiqueta colorida correspondente ao \texttt{sync\_status}; sessões em estado de falha exibem ainda um botão de \textit{Retry} alinhado à etiqueta. A possibilidade de \textit{pull-to-refresh} dispara um \texttt{syncNow} explícito e é apresentada com um indicador de progresso curto, deixando claro ao pesquisador que a operação foi disparada e está em curso.
 
 % ----------------------------------------------------------------------
 \subsection{Limitações e trabalhos futuros}\label{subsec:IRISMobileLimitacoes}
 % ----------------------------------------------------------------------
 
-% TODO: subseção curta. Listar honestamente o que ficou de fora:
-%   - Operação totalmente offline com fila de sincronização;
-%   - Suporte a múltiplos dispositivos simultâneos;
-%   - Visualização do sinal em tempo real com filtros configuráveis
-%   - Dificuldades em exibição suave do gráfico gerado pelo stream devido a alta taxa de re-render.
+O IRIS \textit{Mobile}, como artefato deste trabalho, foi deliberadamente mantido enxuto e focado nas necessidades do experimento descrito no Capítulo \ref{cap:desenvolvimento}. Algumas escolhas justificáveis no contexto desta investigação inicial dão origem, entretanto, a limitações reconhecidas que devem ser explicitadas para orientar trabalhos futuros.
+
+A primeira limitação diz respeito à \textbf{resiliência da fila de sincronização}. O \texttt{SyncService}, em sua implementação atual, mantém em memória o contador de tentativas de cada entidade reenfileirada por \textit{backoff} exponencial; um reinício do aplicativo zera esse contador e reapresenta a entidade ao laço de sincronização como se fosse a primeira tentativa. O comportamento é benigno em uso típico, mas em cenários de uso prolongado com NPI indisponível a evolução natural seria uma fila persistente --- por exemplo, uma tabela auxiliar no SQLite que registre histórico de tentativas, último erro observado e próxima janela de envio.
+
+A segunda limitação refere-se à \textbf{ausência de suporte a múltiplos dispositivos simultâneos}. O \texttt{BluetoothContext}, por desenho, mantém uma única conexão SPP ativa por vez e não introduz mecanismos de \textit{ownership} ou de roteamento entre múltiplos dispositivos. Embora o experimento atual envolva apenas um NeuroEstimulator por sessão, cenários futuros que demandem aquisição multicanal a partir de dispositivos distintos --- por exemplo, sEMG e eletrocardiografia em paralelo --- exigirão uma reformulação substancial do contexto Bluetooth e do esquema de \texttt{recordings}.
+
+A terceira limitação atinge a \textbf{visualização do sinal em tempo real}. O \texttt{SEMGChart} apresenta o sinal bruto na janela de quatro segundos descrita na Subseção \ref{subsec:IRISMobileCaptura}, sem opções configuráveis de filtragem em tempo real (passa-faixa, retificação, envoltória), de marcadores temporais sobrepostos ao traço ou de eixos auxiliares. A ausência decorre do compromisso entre fidelidade visual e custo de re-renderização: introduzir filtragens adicionais em tempo de execução elevaria a frequência de atualização exigida e comprometeria a fluidez observada no aparelho de testes. Trabalhos futuros que pretendam realizar análise visual mais sofisticada deverão tratar o problema de \textit{performance} de re-renderização como questão de primeira ordem, possivelmente migrando o desenho para uma camada nativa via \textit{Skia} ou \textit{OpenGL}.
+
+A quarta limitação é a \textbf{granularidade temporal das anotações}. Conforme discutido na Subseção \ref{subsec:IRISMobileRotulos}, o vínculo entre rótulo e trecho de sinal é estabelecido pelo \texttt{created\_at} da anotação e pelo \texttt{timestamp} dos quadros. Embora suficiente para o experimento conduzido, esse vínculo é insuficiente para usos clínicos que demandem precisão sub-segundo ou rótulos temporais fechados (com início e fim explícitos sobre o sinal). A evolução natural seria um modelo de anotação com intervalos temporais (\texttt{startedAt} e \texttt{endedAt} relativos ao início da gravação), com possível interface de marcação direta sobre o gráfico durante a coleta.
+
+A quinta e última limitação diz respeito à \textbf{cobertura de plataformas}. Como discutido na Subseção \ref{subsec:IRISMobileBT}, a dependência de Bluetooth Classic restringe o aplicativo, na prática, ao Android: a versão \textit{web} gerada pelo Expo opera apenas com BLE, e o iOS não expõe SPP a aplicativos de terceiros. A migração futura do firmware do NeuroEstimulator para um perfil BLE compatível com a especificação de \textit{streaming} --- ou a introdução de um \textit{gateway} intermediário --- abriria caminho para uma cobertura efetivamente multiplataforma sem reescrita das demais camadas do IRIS \textit{Mobile}.
 
 % ======================================================================
 \section{Adaptação do NeuroEstimulator}\label{sec:adaptacaoNeuroEstimulator}

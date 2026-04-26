@@ -1,0 +1,67 @@
+%% ============================================================
+%% Ciclo de sincronizacao do IRIS Mobile com o NPI:
+%% sessao -> recording (metadados + arquivo) -> annotations.
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.4)
+%% Label: fig:IRISMobileFluxoSync
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant App as App (CaptureScreen,<br/>NewAnnotationScreen)
+    participant DB as SQLite local<br/>(iris_clinical.db)
+    participant FS as expo-file-system<br/>(recording_*.csv)
+    participant Ctx as SyncContext
+    participant Sync as SyncService<br/>(loop 60 s)
+    participant MW as middleware.ts<br/>(JWT, fetch)
+    participant NPI as NPI
+
+    Note over App,FS: (i) Geracao de dados locais (offline-first)
+    App->>FS: grava CSV ao longo da captura
+    App->>DB: INSERT clinical_sessions<br/>sync_status = 'pending'
+    App->>DB: INSERT recordings<br/>(file_path, blob_url=NULL,<br/>sync_status = 'pending')
+    App->>DB: INSERT annotations<br/>(session_id, text, created_at)<br/>sync_status = 'pending'
+
+    loop A cada 60 s (ou syncNow() manual)
+        Ctx->>Sync: syncAll()
+
+        Note over Sync,DB: (ii) Ordenacao por dependencias
+        Sync->>DB: SELECT pendentes<br/>(sessions -> recordings -> annotations)
+
+        Note over Sync,NPI: (ii.a) Sessoes
+        loop Para cada sessao pendente
+            Sync->>MW: POST /api/ClinicalSession/New<br/>(idempotente via UUID local)
+            MW->>NPI: requisicao + Bearer JWT
+            NPI-->>MW: 201 Created (id remoto)
+            MW-->>Sync: ok
+            Sync->>DB: UPDATE sync_status = 'synced'
+        end
+
+        Note over Sync,NPI: (ii.b) Gravacoes (metadados + arquivo)
+        loop Para cada recording pendente
+            Sync->>MW: POST /api/ClinicalSession/{id}/<br/>recordings/New (metadados)
+            MW-->>Sync: 201 Created
+            Sync->>FS: readAsStringAsync(filePath, base64)
+            Sync->>MW: POST /api/Upload/recording<br/>(payload base64)
+            MW->>NPI: upload do CSV
+            NPI-->>MW: 200 OK + blob_url
+            MW-->>Sync: ok
+            Sync->>DB: UPDATE blob_url = ...,<br/>sync_status = 'synced'
+            Sync->>FS: deleteAsync(filePath)
+        end
+
+        Note over Sync,NPI: (ii.c) Anotacoes
+        loop Para cada anotacao pendente
+            Sync->>MW: POST /api/ClinicalSession/{id}/<br/>annotations/New
+            MW-->>Sync: 201 Created
+            Sync->>DB: UPDATE sync_status = 'synced'
+        end
+
+        alt Sucesso
+            Sync->>Ctx: syncReport{ synced, pending: 0 }
+        else Falha transiente (5xx, 408, 429)
+            Sync->>Sync: backoff exponencial<br/>(2^n s + jitter, max 5 min)
+        else Falha permanente (4xx)
+            Sync->>DB: UPDATE sync_status = 'failed'
+            Sync->>Ctx: syncReport{ failed[], errorDetails }
+        end
+        Ctx-->>App: badge na HistoryScreen<br/>(Synced / Pending / Failed)
+    end
