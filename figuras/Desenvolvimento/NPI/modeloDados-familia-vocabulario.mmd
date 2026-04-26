@@ -1,0 +1,73 @@
+erDiagram
+    %% ============================================================
+    %% Familia 4: Vocabulario Clinico
+    %% ============================================================
+
+    SNOMED_BODY_STRUCTURE {
+        string SnomedCode PK
+        string BodyRegionCode FK
+        string DisplayName
+        string StructureType
+        string ParentStructureCode FK
+        bool IsActive
+    }
+
+    SNOMED_BODY_REGION {
+        string SnomedCode PK
+        string DisplayName
+        string ParentRegionCode FK
+        string Description
+        bool IsActive
+    }
+
+    SNOMED_TOPOGRAPHICAL_MODIFIER {
+        string Code PK
+        string DisplayName
+        string Category
+        string Description
+        bool IsActive
+    }
+
+    SNOMED_LATERALITY {
+        string Code PK
+        string DisplayName
+        string Description
+        bool IsActive
+    }
+
+    CLINICAL_CONDITION {
+        string SnomedCode PK
+        string DisplayName
+        string Description
+        bool IsActive
+    }
+
+    VOLUNTEER_CLINICAL_CONDITION {
+        uuid Id PK
+        uuid VolunteerId FK
+        string SnomedCode FK
+        string ClinicalStatus
+        uuid RecordedBy FK
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    TARGET_AREA_TOPOGRAPHICAL_MODIFIER {
+        uuid TargetAreaId FK
+        string TopographicalModifierCode FK
+    }
+
+    %% Entidades de outras familias citadas em relacionamentos
+    VOLUNTEER { }
+    TARGET_AREA { }
+
+    %% Relacionamentos internos
+    SNOMED_BODY_STRUCTURE ||--o| SNOMED_BODY_REGION : pertence
+    SNOMED_BODY_REGION ||--o{ SNOMED_BODY_REGION : hierarquia
+    SNOMED_BODY_STRUCTURE ||--o{ SNOMED_BODY_STRUCTURE : hierarquia
+
+    %% Relacionamentos com outras familias
+    VOLUNTEER }o--o{ CLINICAL_CONDITION : VOLUNTEER_CLINICAL_CONDITION
+    TARGET_AREA ||--|| SNOMED_BODY_STRUCTURE : refere
+    TARGET_AREA ||--o| SNOMED_LATERALITY : tem
+    TARGET_AREA }o--o{ SNOMED_TOPOGRAPHICAL_MODIFIER : TARGET_AREA_TOPOGRAPHICAL_MODIFIER

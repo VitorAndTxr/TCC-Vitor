@@ -1,0 +1,67 @@
+erDiagram
+    %% ============================================================
+    %% Familia 1: Federacao e Identidade
+    %% ============================================================
+
+    RESEARCH_NODE {
+        uuid Id PK
+        string NodeName
+        string CertificateFingerprint
+        string Status
+        string NodeAccessLevel
+        timestamp RegisteredAt
+        timestamp UpdatedAt
+        timestamp LastAuthenticatedAt
+    }
+
+    USER {
+        uuid Id PK
+        string Login
+        string PasswordHash
+        string Role
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    RESEARCHER {
+        uuid ResearcherId PK
+        uuid ResearchNodeId FK
+        string Name
+        string Email
+        string Institution
+        string Role
+        string Orcid
+    }
+
+    APPLICATION {
+        uuid ApplicationId PK
+        uuid ResearchId FK
+        string AppName
+        string Url
+        string Description
+    }
+
+    SYNC_LOG {
+        uuid Id PK
+        uuid RemoteNodeId FK
+        timestamp StartedAt
+        timestamp CompletedAt
+        string Status
+        timestamp LastSyncedAt
+        string EntitiesReceived
+        string ErrorMessage
+    }
+
+    %% Entidades de outras familias citadas em relacionamentos
+    RESEARCH { }
+    VOLUNTEER { }
+
+    %% Relacionamentos internos
+    USER ||--|| RESEARCHER : autentica
+    RESEARCH_NODE ||--o{ RESEARCHER : hospeda
+    RESEARCH_NODE ||--o{ SYNC_LOG : registra
+
+    %% Relacionamentos com outras familias
+    RESEARCH_NODE ||--o{ RESEARCH : hospeda
+    RESEARCH_NODE ||--o{ VOLUNTEER : hospeda
+    RESEARCH ||--o{ APPLICATION : cataloga

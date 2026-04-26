@@ -1,0 +1,81 @@
+erDiagram
+    %% ============================================================
+    %% Visao geral do modelo de dados do NPI - sem atributos
+    %% Entidades agrupadas pelas quatro familias funcionais
+    %% ============================================================
+
+    %% Familia 1: Federacao e Identidade
+    RESEARCH_NODE { }
+    USER { }
+    RESEARCHER { }
+    APPLICATION { }
+    SYNC_LOG { }
+
+    %% Familia 2: Pesquisa
+    RESEARCH { }
+    VOLUNTEER { }
+    DEVICE { }
+    SENSOR { }
+    RESEARCH_VOLUNTEER { }
+    RESEARCH_RESEARCHER { }
+    RESEARCH_DEVICE { }
+
+    %% Familia 3: Aquisicao
+    RECORD_SESSION { }
+    RECORD { }
+    RECORD_CHANNEL { }
+    TARGET_AREA { }
+    SESSION_ANNOTATION { }
+
+    %% Familia 4: Vocabulario Clinico
+    SNOMED_BODY_STRUCTURE { }
+    SNOMED_BODY_REGION { }
+    SNOMED_TOPOGRAPHICAL_MODIFIER { }
+    SNOMED_LATERALITY { }
+    CLINICAL_CONDITION { }
+    VOLUNTEER_CLINICAL_CONDITION { }
+    TARGET_AREA_TOPOGRAPHICAL_MODIFIER { }
+
+    %% ============================================================
+    %% Relacionamentos
+    %% ============================================================
+
+    %% Internos a Familia 1
+    USER ||--|| RESEARCHER : autentica
+    RESEARCH_NODE ||--o{ RESEARCHER : hospeda
+    RESEARCH_NODE ||--o{ SYNC_LOG : registra
+
+    %% Familia 1 -> Familia 2
+    RESEARCH_NODE ||--o{ RESEARCH : hospeda
+    RESEARCH_NODE ||--o{ VOLUNTEER : hospeda
+    RESEARCH ||--o{ APPLICATION : cataloga
+
+    %% Internos a Familia 2
+    RESEARCH }o--o{ VOLUNTEER : RESEARCH_VOLUNTEER
+    RESEARCH }o--o{ RESEARCHER : RESEARCH_RESEARCHER
+    RESEARCH }o--o{ DEVICE : RESEARCH_DEVICE
+    DEVICE ||--o{ SENSOR : compoe
+
+    %% Familia 2 -> Familia 3
+    RESEARCH ||--o{ RECORD_SESSION : executa
+    VOLUNTEER ||--o{ RECORD_SESSION : participa
+    RECORD_CHANNEL ||--o| SENSOR : mede
+
+    %% Internos a Familia 3
+    RECORD_SESSION ||--o{ RECORD : contem
+    RECORD_SESSION ||--o{ SESSION_ANNOTATION : anota
+    RECORD_SESSION ||--o{ TARGET_AREA : ocorre_em
+    RECORD ||--o{ RECORD_CHANNEL : cataloga
+
+    %% Familia 3 -> Familia 4
+    TARGET_AREA ||--|| SNOMED_BODY_STRUCTURE : refere
+    TARGET_AREA ||--o| SNOMED_LATERALITY : tem
+    TARGET_AREA }o--o{ SNOMED_TOPOGRAPHICAL_MODIFIER : TARGET_AREA_TOPOGRAPHICAL_MODIFIER
+
+    %% Familia 2 -> Familia 4
+    VOLUNTEER }o--o{ CLINICAL_CONDITION : VOLUNTEER_CLINICAL_CONDITION
+
+    %% Internos a Familia 4
+    SNOMED_BODY_STRUCTURE ||--o| SNOMED_BODY_REGION : pertence
+    SNOMED_BODY_REGION ||--o{ SNOMED_BODY_REGION : hierarquia
+    SNOMED_BODY_STRUCTURE ||--o{ SNOMED_BODY_STRUCTURE : hierarquia

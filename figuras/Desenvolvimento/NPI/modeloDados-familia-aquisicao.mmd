@@ -1,0 +1,76 @@
+erDiagram
+    %% ============================================================
+    %% Familia 3: Aquisicao
+    %% ============================================================
+
+    RECORD_SESSION {
+        uuid Id PK
+        uuid ResearchId FK
+        uuid VolunteerId FK
+        uuid TargetAreaId FK
+        timestamp StartAt
+        timestamp FinishedAt
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    RECORD {
+        uuid Id PK
+        uuid RecordSessionId FK
+        timestamp CollectionDate
+        string SessionId
+        string RecordType
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    RECORD_CHANNEL {
+        uuid Id PK
+        uuid RecordId FK
+        uuid SensorId FK
+        string SignalType
+        string FileUrl
+        float SamplingRate
+        int SamplesCount
+        timestamp StartTimestamp
+        timestamp UpdatedAt
+    }
+
+    TARGET_AREA {
+        uuid Id PK
+        uuid RecordSessionId FK
+        string BodyStructureCode FK
+        string LateralityCode FK
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    SESSION_ANNOTATION {
+        uuid Id PK
+        uuid RecordSessionId FK
+        string Text
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    %% Entidades de outras familias citadas em relacionamentos
+    RESEARCH { }
+    VOLUNTEER { }
+    SENSOR { }
+    SNOMED_BODY_STRUCTURE { }
+    SNOMED_LATERALITY { }
+    SNOMED_TOPOGRAPHICAL_MODIFIER { }
+
+    %% Relacionamentos internos
+    RECORD_SESSION ||--o{ RECORD : contem
+    RECORD_SESSION ||--o{ SESSION_ANNOTATION : anota
+    RECORD_SESSION ||--o{ TARGET_AREA : ocorre_em
+    RECORD ||--o{ RECORD_CHANNEL : cataloga
+
+    %% Relacionamentos com outras familias
+    RESEARCH ||--o{ RECORD_SESSION : executa
+    VOLUNTEER ||--o{ RECORD_SESSION : participa
+    RECORD_CHANNEL ||--o| SENSOR : mede
+    TARGET_AREA ||--|| SNOMED_BODY_STRUCTURE : refere
+    TARGET_AREA ||--o| SNOMED_LATERALITY : tem
+    TARGET_AREA }o--o{ SNOMED_TOPOGRAPHICAL_MODIFIER : TARGET_AREA_TOPOGRAPHICAL_MODIFIER

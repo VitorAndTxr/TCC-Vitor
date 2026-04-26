@@ -1,0 +1,84 @@
+erDiagram
+    %% ============================================================
+    %% Familia 2: Pesquisa
+    %% ============================================================
+
+    RESEARCH {
+        uuid Id PK
+        uuid ResearchNodeId FK
+        string Title
+        string Description
+        datetime StartDate
+        datetime EndDate
+        string Status
+    }
+
+    VOLUNTEER {
+        uuid VolunteerId PK
+        uuid ResearchNodeId FK
+        string VolunteerCode
+        string Name
+        datetime BirthDate
+        string Gender
+        float Height
+        float Weight
+        string ConsentStatus
+    }
+
+    DEVICE {
+        uuid DeviceId PK
+        string DeviceName
+        string Manufacturer
+        string Model
+    }
+
+    SENSOR {
+        uuid SensorId PK
+        uuid DeviceId FK
+        string SensorName
+        float MaxSamplingRate
+        string Unit
+        float Accuracy
+    }
+
+    RESEARCH_VOLUNTEER {
+        uuid ResearchId FK
+        uuid VolunteerId FK
+        string EnrollmentStatus
+        timestamp ConsentDate
+        string ConsentVersion
+    }
+
+    RESEARCH_RESEARCHER {
+        uuid ResearchId FK
+        uuid ResearcherId FK
+        bool IsPrincipal
+        timestamp AssignedAt
+    }
+
+    RESEARCH_DEVICE {
+        uuid ResearchId FK
+        uuid DeviceId FK
+        string Role
+        timestamp AddedAt
+        string CalibrationStatus
+    }
+
+    %% Entidades de outras familias citadas em relacionamentos
+    RESEARCH_NODE { }
+    RESEARCHER { }
+    RECORD_SESSION { }
+    CLINICAL_CONDITION { }
+
+    %% Relacionamentos internos
+    RESEARCH }o--o{ VOLUNTEER : RESEARCH_VOLUNTEER
+    RESEARCH }o--o{ DEVICE : RESEARCH_DEVICE
+    DEVICE ||--o{ SENSOR : compoe
+
+    %% Relacionamentos com outras familias
+    RESEARCH_NODE ||--o{ RESEARCH : hospeda
+    RESEARCH_NODE ||--o{ VOLUNTEER : hospeda
+    RESEARCH }o--o{ RESEARCHER : RESEARCH_RESEARCHER
+    RESEARCH ||--o{ RECORD_SESSION : executa
+    VOLUNTEER ||--o{ RECORD_SESSION : participa
+    VOLUNTEER }o--o{ CLINICAL_CONDITION : VOLUNTEER_CLINICAL_CONDITION
