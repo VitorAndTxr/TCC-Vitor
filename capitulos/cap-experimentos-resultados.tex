@@ -386,58 +386,45 @@ A troca de dados entre NPIs é o momento em que a hipótese central deste trabal
 % --- 4.2.5.1 ---
 \subsubsection{Descoberta e \textit{handshake} entre nós}
 
-A descoberta entre NPIs ocorre em dois tempos. O primeiro é administrativo: o operador do NPI-B registra previamente, em sua tabela local de nós conhecidos, o endereço (URL) e o certificado digital esperado do NPI-A. Optou-se por essa abordagem em detrimento de mecanismos de descoberta distribuída --- como DNS-SD ou registros baseados em \textit{Distributed Ledger Technology} --- pelo entendimento de que dados clínicos exigem federação por confiança explícita, não por enumeração automática \cite{kleppmann2017designing}. O segundo tempo é dinâmico e reusa integralmente o protocolo de identificação descrito na Subseção~\ref{subsec:NPIMiddleware}: ao receber a primeira requisição do nó remoto, o NPI-B percorre as três fases de \textit{handshake} ali detalhadas (abertura de canal, identificação por \textit{fingerprint} de certificado e desafio-resposta), só admitindo a continuidade da troca caso o estado registrado seja \textit{Authorized}.
+A descoberta entre NPIs ocorre em dois tempos. O primeiro é administrativo: o operador do NPI-B registra previamente, em sua tabela local de nós conhecidos, o endereço (URL) e o certificado digital esperado do NPI-A. Optou-se por essa abordagem em detrimento de mecanismos de descoberta distribuída --- como DNS-SD ou registros baseados em \textit{Distributed Ledger Technology} --- pelo entendimento de que dados clínicos exigem federação por confiança explícita, não por enumeração automática \cite{kleppmann2017designing}. O segundo tempo é dinâmico e reusa integralmente o protocolo de identificação descrito na Subseção~\ref{subsec:NPIMiddleware} e ilustrado pelas Figuras~\ref{fig:auth-fase-1}, \ref{fig:auth-fase-2} e \ref{fig:auth-fase-3}: ao receber a primeira requisição do nó remoto, o NPI-B percorre as três fases ali detalhadas (abertura de canal, identificação por \textit{fingerprint} de certificado e desafio-resposta), só admitindo a continuidade da troca caso o estado registrado seja \textit{Authorized}.
 
-Sobre essa base, a Subseção~\ref{subsec:NPIMiddleware} é estendida em dois pontos específicos da troca de dados entre nós. Em primeiro lugar, a versão do contrato é negociada implicitamente na fase de abertura do canal, na qual o nó solicitante declara a versão de protocolo suportada e o conjunto de cifras simétricas aceitas; o nó receptor seleciona a interseção mais segura e a comunica como parte da resposta, preservando compatibilidade ascendente sem exigir um \textit{endpoint} público de capacidades \cite{stallings2005cryptography}. Em segundo lugar, o \textit{handshake} não é repetido a cada operação, mas executado uma única vez por janela de sincronização: as fases 1 a 3 produzem dois artefatos persistidos --- o \texttt{ChannelId}, vinculado à chave simétrica efêmera, e o \texttt{SessionToken}, vinculado às capacidades autorizadas para o nó remoto --- que envelopam todas as requisições subsequentes de troca, amortizando o custo computacional do \textit{handshake} entre múltiplas operações \cite{Coulouris2013, van2025distributed}.
-
-% TODO: inserir diagrama de sequência mostrando NPI-B reaproveitando ChannelId+SessionToken
-% (já produzidos pelas fig:auth-fase-1/2/3) na primeira requisição de sincronização.
-% Sugestão:
-%   \begin{figure}[htpb]
-%   \caption{Acoplamento entre handshake e sincronização incremental.}
-%   \label{fig:NPIHandshakeSync}
-%   \includegraphics[scale=0.30]{figuras/Desenvolvimento/NPI/handshake-sync.png}
-%   \fonte{Autoria própria (2026)}
-%   \end{figure}
+Sobre essa base, a Subseção~\ref{subsec:NPIMiddleware} é estendida em dois pontos específicos da troca de dados entre nós. Em primeiro lugar, a versão do contrato é negociada implicitamente na fase de abertura do canal (Figura~\ref{fig:auth-fase-1}), na qual o nó solicitante declara a versão de protocolo suportada e o conjunto de cifras simétricas aceitas; o nó receptor seleciona a interseção mais segura e a comunica como parte da resposta, preservando compatibilidade ascendente sem exigir um \textit{endpoint} público de capacidades \cite{stallings2005cryptography}. Em segundo lugar, o \textit{handshake} não é repetido a cada operação, mas executado uma única vez por janela de sincronização: as fases 1 a 3 produzem dois artefatos persistidos --- o \texttt{ChannelId}, vinculado à chave simétrica efêmera, e o \texttt{SessionToken}, vinculado às capacidades autorizadas para o nó remoto --- que envelopam todas as requisições subsequentes de troca, amortizando o custo computacional do \textit{handshake} entre múltiplas operações \cite{Coulouris2013, van2025distributed}.
 
 % --- 4.2.5.2 ---
 \subsubsection{Sincronização do catálogo de rótulos}
 
 A decisão de propagar os rótulos antes dos sinais não é arbitrária: trata-se de uma consequência direta do modelo de dados adotado e da própria semântica do biossinal. Um registro de sEMG, isoladamente, é apenas uma sequência numérica indexada no tempo; só adquire valor de pesquisa quando vinculado à estrutura corporal alvo, à lateralidade e a eventuais modificadores topográficos que descrevem o local exato da captura \cite{deluca2006, hof1984emg}. No modelo relacional do NPI, essa contextualização é materializada por chaves estrangeiras: cada \texttt{RecordChannel} aponta para uma \texttt{TargetArea}, que por sua vez referencia uma \texttt{SnomedBodyStructure}, uma \texttt{SnomedLaterality} e zero ou mais \texttt{SnomedTopographicalModifier}. Tentar importar um registro de biossinal antes de seu vocabulário resultaria, na melhor hipótese, em violações de integridade referencial e, na pior, em dados clinicamente ininterpretáveis. A ordem de sincronização --- vocabulário, depois entidades de pesquisa, depois sinais --- é, portanto, derivada do grafo de dependências do esquema, não imposta pelo protocolo.
 
-A estratégia de resolução de conflitos para o catálogo de rótulos beneficia-se do fato de que a maior parte do vocabulário é importada de uma autoridade externa: o SNOMED CT \cite{SNOMEDCT, SNOMEDCTOverview}. Como cada conceito SNOMED possui um código único globalmente atribuído pela autoridade mantenedora, o uso desse código como chave natural elimina a possibilidade de colisão semântica entre nós: dois NPIs que carregam a estrutura corporal ``bíceps'' o farão com o mesmo código \texttt{SnomedCode}, ainda que tenham importado a partir de fontes distintas. O risco residual concentra-se nas atualizações: caso a autoridade central revise a descrição associada a um código, dois nós podem manter versões textualmente divergentes da mesma entidade. Para esse caso, o protocolo adota o atributo \texttt{UpdatedAt} como \textit{watermark} e aplica semântica de \textit{last-write-wins}, considerada adequada para vocabulários do tipo \textit{read-mostly} pela literatura de sistemas eventualmente consistentes \cite{vogels2009eventually}. O versionamento, portanto, é monotônico em \texttt{UpdatedAt}: a sincronização incremental requisita ao nó produtor todas as entidades de catálogo cujo \texttt{UpdatedAt} seja posterior ao último ponto de corte conhecido, registrado no \texttt{SyncLog} local do nó consumidor.
+A estratégia de resolução de conflitos para o catálogo de rótulos beneficia-se do fato de que a maior parte do vocabulário é importada de uma autoridade externa: o SNOMED CT \cite{SNOMEDCT, SNOMEDCTOverview}. Como cada conceito SNOMED possui um código único globalmente atribuído pela autoridade mantenedora, o uso desse código como chave natural elimina a possibilidade de colisão semântica entre nós: dois NPIs que carregam a estrutura corporal ``bíceps'' o farão com o mesmo código \texttt{SnomedCode}, ainda que tenham importado a partir de fontes distintas. O risco residual concentra-se nas atualizações: caso a autoridade central revise a descrição associada a um código, dois nós podem manter versões textualmente divergentes da mesma entidade. Para esse caso, o protocolo adota o atributo \texttt{UpdatedAt} como \textit{watermark} e aplica semântica de \textit{last-write-wins}, considerada adequada para vocabulários do tipo \textit{read-mostly} pela literatura de sistemas eventualmente consistentes \cite{vogels2009eventually}. O versionamento, portanto, é monotônico em \texttt{UpdatedAt}: a sincronização incremental requisita ao nó produtor todas as entidades de catálogo cujo \texttt{UpdatedAt} seja posterior ao último ponto de corte conhecido, registrado no \texttt{SyncLog} local do nó consumidor. A Figura~\ref{fig:NPISyncCatalogo} sintetiza esse fluxo, evidenciando os dois \textit{loops} aninhados --- o externo, sobre os tipos de entidade SNOMED, e o interno, sobre as páginas de cada tipo --- e o papel do \texttt{SyncLog} local como ponto de partida do incremental.
+
+\begin{figure}[htpb]
+\captionsetup{width=1\textwidth}
+\caption{Sincronização incremental do catálogo de rótulos SNOMED CT.}
+\label{fig:NPISyncCatalogo}
+\includegraphics[scale=0.35]{figuras/Desenvolvimento/NPI/sync-catalogo.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
 
 Rótulos definidos localmente pelo pesquisador --- por exemplo, anotações temporais associadas a uma sessão de coleta --- são tratados como subordinados ao seu contexto de criação e não compõem um vocabulário compartilhado entre nós. Eles são serializados como atributos da \texttt{RecordingSession} de origem e propagados junto com ela, herdando o modelo de propriedade do nó produtor e dispensando, portanto, a discussão de chave natural global discutida no parágrafo anterior.
-
-% TODO: inserir diagrama de sequência da sincronização de catálogo, evidenciando
-% a paginação por entidade SNOMED. Sugestão:
-%   \begin{figure}[htpb]
-%   \caption{Sincronização incremental do catálogo de rótulos SNOMED CT.}
-%   \label{fig:NPISyncCatalogo}
-%   \includegraphics[scale=0.30]{figuras/Desenvolvimento/NPI/sync-catalogo.png}
-%   \fonte{Autoria própria (2026)}
-%   \end{figure}
 
 % --- 4.2.5.3 ---
 \subsubsection{Transferência de registros de biossinais}
 
 A transferência de biossinais segue o modelo \textit{pull}: o NPI-B é sempre o iniciador, declarando explicitamente o intervalo temporal de interesse e o conjunto de pesquisas relevantes. Essa escolha tem três motivações. Primeiro, garante que o nó consumidor controle o ritmo de ingestão e possa abortar transferências que excedam sua capacidade de armazenamento ou processamento. Segundo, evita que o nó produtor mantenha um estado por consumidor (filas de \textit{outbox}, marcações de entrega), o que reduz a complexidade do servidor e o aproxima do estilo arquitetural REST. Terceiro, alinha-se ao princípio de minimização de dados das legislações brasileira e europeia: nenhum dado deixa o nó produtor sem que tenha sido explicitamente requisitado e autorizado, com rastreamento individual no \texttt{SyncLog}.
 
-A granularidade da transferência é multinível e desacoplada. Os metadados de cada \texttt{RecordingSession} --- incluindo \texttt{Records}, \texttt{RecordChannels} e anotações --- são transferidos em páginas de até cem entidades por requisição, encadeadas por meio de paginação baseada em \textit{cursor} sobre o atributo \texttt{UpdatedAt}. Já o conteúdo binário propriamente dito de cada canal de biossinal é tratado como recurso independente: o NPI-B, após receber os metadados, identifica os \texttt{RecordChannel.Id} de interesse e solicita cada arquivo individualmente em um endpoint dedicado. Essa separação entre metadados e \textit{payload} é uma prática consolidada em sistemas de arquivamento clínico-hospitalar e permite, em trabalhos futuros, tratar a transferência binária com protocolos especializados (por exemplo, transferência por fluxo contínuo ou em blocos) sem alterar o contrato dos metadados \cite{Hadjileontiadis2006, ExtensibleBiosignalMetadata}.
+A granularidade da transferência é multinível e desacoplada, conforme ilustrado pela Figura~\ref{fig:NPISyncBiossinais}. Os metadados de cada \texttt{RecordingSession} --- incluindo \texttt{Records}, \texttt{RecordChannels} e anotações --- são transferidos em páginas de até cem entidades por requisição, encadeadas por meio de paginação baseada em \textit{cursor} sobre o atributo \texttt{UpdatedAt}. Já o conteúdo binário propriamente dito de cada canal de biossinal é tratado como recurso independente: o NPI-B, após receber os metadados, identifica os \texttt{RecordChannel.Id} de interesse e solicita cada arquivo individualmente em um \textit{endpoint} dedicado. Essa separação entre metadados e \textit{payload} é uma prática consolidada em sistemas de arquivamento clínico-hospitalar e permite, em trabalhos futuros, tratar a transferência binária com protocolos especializados (por exemplo, transferência por fluxo contínuo ou em blocos) sem alterar o contrato dos metadados \cite{Hadjileontiadis2006, ExtensibleBiosignalMetadata}.
 
 A serialização adotada é mista. Para metadados, utiliza-se JSON, justificado pela legibilidade durante a depuração e pela ampla disponibilidade de bibliotecas de manipulação. Para o sinal binário propriamente dito, adota-se um envelope JSON contendo o conteúdo codificado em Base64 e atributos descritivos como nome do arquivo, tipo MIME e caminho original no \textit{blob storage}. Reconhece-se que a codificação Base64 acrescenta cerca de 33\% ao tamanho do \textit{payload}; trata-se de um custo aceito conscientemente em troca da uniformidade de tratamento sobre HTTPS e da preservação do canal criptografado existente, evitando a necessidade de um segundo canal binário paralelo. A compressão de \textit{payload} (por exemplo, GZIP no nível de transporte) não foi habilitada na implementação atual e é apresentada como melhoria de desempenho recomendada para uma evolução posterior do padrão, conforme discutido na análise de riscos técnicos do projeto.
 
-A verificação de integridade fim-a-fim é tratada hoje em dois níveis distintos. No nível de protocolo, o canal criptografado descrito na Subseção \ref{subsec:NPIMiddleware} já garante autenticidade e ausência de adulteração da \textit{stream} HTTP por meio de \textit{cifra autenticada} (AES-256-GCM ou ChaCha20-Poly1305), apoiada nas primitivas recomendadas pelo \textit{NIST} \cite{barker2020nist}. No nível de aplicação, a importação de cada lote ocorre dentro de uma transação ACID \cite{harder1983principles, weikum2002transactional}: caso qualquer subetapa --- gravação no banco relacional ou \textit{upload} do binário no \textit{blob storage} --- falhe, todas as operações já efetuadas para aquele lote são revertidas, incluindo a remoção dos blobs já enviados. Reconhece-se, contudo, que essa camada não substitui um \textit{checksum} explícito do conteúdo binário, que permitiria detectar corrupção silenciosa em casos limítrofes (por exemplo, falha de hardware no \textit{blob storage} de origem). A inclusão de um \textit{hash} SHA-256 por arquivo, calculado no NPI de origem e revalidado no de destino, é uma das evoluções planejadas para o protocolo e está documentada no relatório de análise de riscos técnicos do projeto.
+A verificação de integridade fim-a-fim é tratada hoje em dois níveis distintos. No nível de protocolo, o canal criptografado descrito na Subseção \ref{subsec:NPIMiddleware} já garante autenticidade e ausência de adulteração da \textit{stream} HTTP por meio de \textit{cifra autenticada} (AES-256-GCM ou ChaCha20-Poly1305), apoiada nas primitivas recomendadas pelo \textit{NIST} \cite{barker2020nist}. No nível de aplicação, a importação de cada lote ocorre dentro de uma transação ACID \cite{harder1983principles, weikum2002transactional}: caso qualquer subetapa --- gravação no banco relacional ou \textit{upload} do binário no \textit{blob storage} --- falhe, todas as operações já efetuadas para aquele lote são revertidas, incluindo a remoção dos blobs já enviados, ramo explicitado pela ação compensatória da Figura~\ref{fig:NPISyncBiossinais}. Reconhece-se, contudo, que essa camada não substitui um \textit{checksum} explícito do conteúdo binário, que permitiria detectar corrupção silenciosa em casos limítrofes (por exemplo, falha de \textit{hardware} no \textit{blob storage} de origem). A inclusão de um \textit{hash} SHA-256 por arquivo, calculado no NPI de origem e revalidado no de destino, é uma das evoluções planejadas para o protocolo e está documentada no relatório de análise de riscos técnicos do projeto.
 
-% TODO: inserir diagrama de sequência da transferência de biossinais, evidenciando
-% (i) requisição de metadados paginados, (ii) requisição individual de arquivo
-% binário por RecordChannel.Id, (iii) escopo da transação ACID. Sugestão:
-%   \begin{figure}[htpb]
-%   \caption{Transferência de metadados e \textit{payload} binário de biossinais.}
-%   \label{fig:NPISyncBiossinais}
-%   \includegraphics[scale=0.30]{figuras/Desenvolvimento/NPI/sync-biossinais.png}
-%   \fonte{Autoria própria (2026)}
-%   \end{figure}
+\begin{figure}[htpb]
+\captionsetup{width=1\textwidth}
+\caption{Transferência de metadados e \textit{payload} binário de biossinais.}
+\label{fig:NPISyncBiossinais}
+\includegraphics[scale=0.35]{figuras/Desenvolvimento/NPI/sync-biossinais.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
 
 % --- 4.2.5.4 ---
 \subsubsection{Idempotência e resolução de conflitos}
@@ -446,19 +433,17 @@ Uma característica distintiva entre uma demonstração funcional e um padrão d
 
 A pedra fundamental dessa estratégia é a adoção de \textit{Universally Unique Identifiers} (UUIDs) na versão 4 como chaves primárias de todas as entidades transacionais geradas localmente: voluntários, pesquisadores, dispositivos, sensores, projetos, sessões de coleta, registros e canais de biossinal são identificados globalmente por um valor de 128 bits aleatório, atribuído no momento da criação pelo nó produtor. A escolha por UUIDs em detrimento de chaves \textit{auto-increment} é deliberada e fundamental: ela elimina a necessidade de coordenação entre nós para gerar identificadores únicos, transformando o problema de inserção distribuída em um problema local de \textit{upsert} \cite{kleppmann2017designing, vogels2009eventually}. Para o vocabulário SNOMED, conforme já discutido, a chave natural global é o próprio código fornecido pela autoridade mantenedora, que cumpre o mesmo papel epistemológico das UUIDs.
 
-A idempotência das operações de transferência é construída sobre essa base. Quando o NPI-B recebe um lote de entidades do NPI-A e este lote já havia sido aplicado parcial ou totalmente em uma transferência anterior, cada entidade é submetida a uma rotina de \textit{upsert} que, ao localizar registro pré-existente com o mesmo identificador, compara o atributo \texttt{UpdatedAt} do incoming com o do registro local: a atualização só é aplicada se o \textit{timestamp} remoto for estritamente posterior. O mesmo padrão estende-se ao \textit{blob storage}: os arquivos binários são gravados com sobrescrita habilitada, de modo que retransmissões resultam em substituição do conteúdo, não em duplicatas. Como consequência, a retransmissão integral de um lote já aplicado é uma operação \textit{no-op} sob a perspectiva de estado: nenhuma entidade ganha versão regressiva, nenhuma duplicata é criada e o \texttt{SyncLog} registra a tentativa de modo que o \textit{watermark} avance sem inconsistência. Essa propriedade é essencial em ambientes federados, nos quais falhas transitórias de rede tornam retentativas inevitáveis.
+A idempotência das operações de transferência é construída sobre essa base e está ilustrada pela Figura~\ref{fig:NPIIdempotencia}, que percorre três tentativas consecutivas sobre uma mesma entidade. Quando o NPI-B recebe um lote de entidades do NPI-A e este lote já havia sido aplicado parcial ou totalmente em uma transferência anterior, cada entidade é submetida a uma rotina de \textit{upsert} que, ao localizar registro pré-existente com o mesmo identificador, compara o atributo \texttt{UpdatedAt} do incoming com o do registro local: a atualização só é aplicada se o \textit{timestamp} remoto for estritamente posterior. O mesmo padrão estende-se ao \textit{blob storage}: os arquivos binários são gravados com sobrescrita habilitada, de modo que retransmissões resultam em substituição do conteúdo, não em duplicatas. Como consequência, a retransmissão integral de um lote já aplicado é uma operação \textit{no-op} sob a perspectiva de estado: nenhuma entidade ganha versão regressiva, nenhuma duplicata é criada e o \texttt{SyncLog} registra a tentativa de modo que o \textit{watermark} avance sem inconsistência. Essa propriedade é essencial em ambientes federados, nos quais falhas transitórias de rede tornam retentativas inevitáveis.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.85\textwidth}
+\caption{Idempotência sob retransmissão: detecção por UUID e \textit{watermark} \texttt{UpdatedAt}.}
+\label{fig:NPIIdempotencia}
+\includegraphics[scale=0.35]{figuras/Desenvolvimento/NPI/idempotencia.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
 
 A resolução de conflitos quando dois nós editam o mesmo recurso é, hoje, resolvida pela mesma semântica de \textit{last-write-wins} aplicada ao vocabulário. Defende-se que essa simplificação é suficiente para o escopo atual do protocolo por três motivos. Primeiro, o domínio dos sinais (\texttt{RecordingSession}, \texttt{Record}, \texttt{RecordChannel}) é, por construção, \textit{append-only}: uma vez encerrada a coleta, os atributos do registro não são editados, apenas seus metadados administrativos. Segundo, o domínio do vocabulário é \textit{read-mostly}: edições concorrentes são raras e tendem a representar a mesma intenção (correção textual). Terceiro, o domínio das entidades de pesquisa (\texttt{Research}, \texttt{Researcher}, \texttt{Device}) tem proprietário institucional bem definido --- usualmente, apenas o nó originador as edita --- de modo que conflitos genuínos de escrita simultânea são exceção, não regra. Reconhece-se, todavia, que o \textit{last-write-wins} baseado em \textit{timestamp} é vulnerável ao desvio de relógio entre nós e não preserva a causalidade das modificações \cite{vogels2009eventually, kleppmann2017designing}. Para o domínio de dados clínicos do voluntário, em que edições simultâneas e independentes podem refletir intenções clínicas distintas, a evolução natural do padrão é a adoção de \textit{vector clocks} acompanhados de uma regra determinística de desempate por identificador de nó. Essa evolução está prevista como passo seguinte na trajetória do PRISM e é formalizada como recomendação na análise de riscos técnicos que acompanha a especificação do protocolo.
-
-% TODO: inserir diagrama de sequência destacando o fluxo de retransmissão
-% (mesma operação aplicada duas vezes, segunda execução é no-op).
-% Sugestão:
-%   \begin{figure}[htpb]
-%   \caption{Idempotência sob retransmissão: detecção por UUID e watermark UpdatedAt.}
-%   \label{fig:NPIIdempotencia}
-%   \includegraphics[scale=0.30]{figuras/Desenvolvimento/NPI/idempotencia.png}
-%   \fonte{Autoria própria (2026)}
-%   \end{figure}
 
 % TODO: considerar fechar a subseção 4.2.5 com um quadro sintético:
 %   coluna 1 -> Característica do protocolo (descoberta, vocabulário, biossinais, conflitos)
@@ -466,80 +451,178 @@ A resolução de conflitos quando dois nós editam o mesmo recurso é, hoje, res
 %   coluna 3 -> Limitação reconhecida (sem DNS-SD, sem checksum por arquivo, sem vector clock)
 %   coluna 4 -> Evolução proposta (referência cruzada à seção de trabalhos futuros)
 
+\newpage
 
 % ======================================================================
 \section{Interoperable Research Interface System --- IRIS}\label{sec:desenvolvimentoIRIS}
 % ======================================================================
+% Pré-requisito de inclusão: este arquivo é destinado a ser inserido em
+% capitulos/cap-experimentos-resultados.tex, logo após a Seção
+% \ref{sec:DesenvolvimentoNPI}, por meio de \input{./capitulos/sec-iris}.
+% As figuras referenciadas vivem em figuras/Desenvolvimento/IRIS/.
 
-% Parágrafo de abertura: 2-3 linhas reafirmando que o IRIS é a interface web
-% generalista que opera sobre o NPI, justificando POR QUE ele faz parte do trabalho
-% (demonstrar que aplicações generalistas operam o NPI sem acoplamento ao tipo de biossinal).
+O \textit{Interoperable Research Interface System} --- IRIS é a aplicação \textit{web} generalista que opera sobre o NPI no experimento conduzido neste trabalho. Sua presença no estudo é necessária para evidenciar que o contrato definido pelo PRISM \textit{Middleware} é consumido por aplicações de uso geral, sem qualquer acoplamento ao tipo de biossinal manipulado pelo nó. Esta seção descreve o papel do IRIS no ecossistema (Subseção~\ref{subsec:IRISPapel}), sua arquitetura interna (Subseção~\ref{subsec:IRISArquitetura}), os módulos funcionais que o compõem (Subseção~\ref{subsec:IRISModulos}), as principais telas resultantes (Subseção~\ref{subsec:IRISTelas}) e as decisões de \textit{User Experience} --- UX que sustentam sua reutilização por futuros consumidores do NPI (Subseção~\ref{subsec:IRISUX}).
 
 % ----------------------------------------------------------------------
 \subsection{Papel no ecossistema PRISM}\label{subsec:IRISPapel}
 % ----------------------------------------------------------------------
 
-% TODO: 1-2 parágrafos. Posicionar o IRIS como exemplar de "aplicação"
-% no modelo PRISM, contrapondo com o IRIS Mobile (especialista) e o
-% NeuroEstimulator (dispositivo).
+No modelo conceitual do PRISM, o IRIS é um exemplar do papel de \textit{aplicação}: um cliente do NPI que adiciona ao nó capacidades de operação, gestão e configuração que não pertencem ao núcleo do \textit{middleware}. Ele se contrapõe ao IRIS \textit{Mobile} (Seção \ref{sec:desenvolvimentoIRISMobile}), que ocupa o mesmo papel de aplicação porém com escopo especializado --- captura de biossinal e comando do dispositivo em campo ---, e ao NeuroEstimulator (Seção \ref{sec:adaptacaoNeuroEstimulator}), que ocupa o papel de \textit{dispositivo}. A coexistência destes três artefatos no experimento permite observar a mesma API do NPI sendo consumida por clientes heterogêneos e demonstra que a separação de responsabilidades proposta pelo padrão é exequível na prática.
+
+A justificativa para que o IRIS seja qualificado como \textit{generalista} reside no conjunto de funcionalidades por ele oferecidas: gestão de acessos, gestão de voluntários, gestão de projetos de pesquisa e administração da federação entre nós. Nenhum desses módulos pressupõe uma modalidade específica de biossinal, e todos consomem exclusivamente endpoints estáveis expostos pelo NPI, sem dependências de protocolos proprietários ou de bibliotecas de processamento de sinal. Em consequência, a mesma instância do IRIS pode operar sobre nós que armazenem sEMG, eletrocardiografia, eletroencefalografia ou outras modalidades, desde que os respectivos dispositivos honrem o contrato do NPI por meio de aplicações especializadas análogas ao IRIS \textit{Mobile}.
 
 % ----------------------------------------------------------------------
 \subsection{Arquitetura da aplicação web}\label{subsec:IRISArquitetura}
 % ----------------------------------------------------------------------
 
-% TODO:
-%   - Stack escolhida (TypeScript + framework front-end);
-%   - Existe um BFF (Backend-for-Frontend)? Ou consome o NPI diretamente?
-%   - Estratégia de autenticação (uso da camada de usuário do middleware PRISM);
-%   - Estrutura de pastas / módulos.
+A Figura \ref{fig:IRISArquitetura} sintetiza a organização interna do IRIS e sua interação com o NPI. A aplicação é construída em \texttt{TypeScript}~\cite{ReferenciaTypeScript} sobre o \textit{framework} \texttt{React}~\cite{ReferenciaReact}, empacotada pelo \texttt{Vite} para execução em ambiente \textit{web} e distribuída como aplicação \textit{desktop} por meio do \texttt{Electron}; o roteamento entre telas é mediado pela biblioteca \texttt{react-router-dom}, configurada de forma centralizada em um único componente raiz (\texttt{AppRouter}). Internamente, o código está organizado em quatro camadas de responsabilidade --- apresentação, sistema de \textit{design}, serviços e \textit{middleware} ---, descritas na sequência.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.85\textwidth}
+\caption{Arquitetura interna do IRIS e relação com o NPI.}
+\label{fig:IRISArquitetura}
+% TODO: renderizar arquitetura-iris.mmd para .png antes da compilação final.
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/arquitetura-iris.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A \textbf{camada de apresentação} agrupa as telas da aplicação organizadas por domínio funcional --- autenticação, acessos, voluntários, pesquisa, vocabulário e federação --- residindo em \texttt{apps/desktop/src/screens/}. Cada tela compõe-se de um pequeno conjunto de componentes responsáveis por lista, formulário e ações específicas do domínio, o que reduz o acoplamento entre módulos e permite que a navegação e o ciclo de vida de uma funcionalidade sejam compreendidos a partir de uma única pasta. A \textbf{camada de sistema de \textit{design}} (\texttt{apps/desktop/src/design-system}) reúne os elementos visuais primitivos --- botões, campos de entrada, tabelas paginadas, modais, barras de busca, barra lateral e cabeçalho, entre outros --- na forma de uma biblioteca interna de componentes reutilizáveis. A escolha por uma biblioteca própria, em detrimento de soluções de terceiros, atende ao objetivo de manter coerência visual entre o IRIS \textit{web} e o IRIS \textit{Mobile}, e de viabilizar a aplicação de identidade visual institucional sem que isso exija reescrita das telas.
+
+A \textbf{camada de serviços} traduz as ações do usuário em chamadas ao NPI. Cada serviço de domínio (\texttt{NodeConnectionService}, \texttt{ResearchService}, \texttt{VolunteerService}, \texttt{NodeSyncServiceAdapter}, entre outros) estende uma classe base comum (\texttt{BaseService}), que implementa o protocolo de invocação ao \textit{middleware}, o tratamento uniforme de erros e a renovação automática de sessão. Esta abstração assegura que regras transversais --- garantir sessão válida antes de cada chamada, traduzir erros de rede em erros de domínio, aplicar paginação --- não sejam reimplementadas em cada serviço. A \textbf{camada de \textit{middleware}}, por sua vez, encapsula o protocolo proprietário do PRISM em um único componente, o \texttt{ResearchNodeMiddleware}, que delega a estabelecimento e renovação do canal cifrado ao \texttt{ChannelManager} (responsável pela troca \textit{Elliptic Curve Diffie-Hellman} --- ECDH P-384 e pela cifra simétrica AES-256-GCM) e o ciclo de vida da sessão ao \texttt{SessionManager} (responsável pela apresentação do \textit{token} \textit{JSON Web Token} --- JWT e por sua renovação automática). Toda comunicação com o NPI atravessa essa camada; nenhum componente das camadas superiores conhece a forma específica como o canal seguro é negociado.
+
+Quanto ao papel de \textit{Backend-for-Frontend} --- BFF, o IRIS deliberadamente \textbf{não} introduz uma camada intermediária entre cliente e NPI. As requisições partem do navegador (ou do processo \texttt{Electron}, no caso da distribuição \textit{desktop}) diretamente contra a API do NPI configurada por variável de ambiente. Essa decisão preserva o NPI como única fonte de verdade do contrato federado e impede que regras de negócio sejam silenciosamente duplicadas em uma camada de adaptação. As únicas adaptações específicas de cliente residem na camada de \textit{middleware} do próprio IRIS, que é compartilhada com o IRIS \textit{Mobile} por meio do pacote interno \texttt{packages/middleware} do monorepositório.
+
+A \textbf{estratégia de autenticação} reaproveita integralmente a camada de usuário oferecida pelo PRISM \textit{Middleware} (Subseção \ref{subsec:NPIMiddleware}). A tela de \textit{login} delega ao serviço \texttt{UserAuthService} a apresentação de credenciais ao NPI, e o \textit{token} retornado é persistido em armazenamento seguro do sistema operacional --- via \texttt{keytar} no ambiente \textit{desktop} --- de modo a sobreviver a reinícios da aplicação sem expor o material sensível ao espaço de armazenamento do navegador. Um contexto global de autenticação, denominado \texttt{AuthContext}, mantém o estado de sessão acessível a qualquer componente da árvore de telas; o roteador, por sua vez, encaminha o usuário não autenticado para a tela de \textit{login} antes de renderizar quaisquer rotas privadas. A renovação de \textit{token} é executada automaticamente pelo \texttt{SessionManager} alguns minutos antes da expiração, evitando que o usuário seja forçado a reautenticar-se em meio a uma operação.
+
+A \textbf{estrutura de pastas} reflete diretamente a separação de camadas descrita acima e adota o estilo \textit{feature-first}: cada domínio funcional vive em uma subpasta de \texttt{apps/desktop/src/screens/} contendo a tela principal, os formulários associados e os tipos específicos. Componentes compartilhados residem em \texttt{apps/desktop/src/design-system/}; tipos de domínio (modelos de \textit{Volunteer}, \textit{Research}, \textit{ResearchNodeConnection}, entre outros) ficam em \texttt{packages/domain/}; o \textit{middleware} e seus subsistemas vivem em \texttt{packages/middleware/}. Essa organização permite que mudanças em um módulo funcional permaneçam confinadas a uma única pasta e que componentes reutilizáveis sejam evoluídos sem coordenação cruzada com os módulos consumidores.
 
 % ----------------------------------------------------------------------
 \subsection{Módulos funcionais}\label{subsec:IRISModulos}
 % ----------------------------------------------------------------------
 
-% Comentário: estes são as "aplicações bases adicionadas ao nó" mencionadas
-% no rascunho original.
+Os módulos descritos a seguir constituem as aplicações de base oferecidas pelo IRIS sobre o NPI. Cada módulo materializa, na forma de telas e fluxos de usuário, um subconjunto coerente do contrato exposto pelo NPI, e foi projetado para ser operado sem conhecimento prévio do \textit{middleware} subjacente.
 
-\subsubsection{Gestão de acessos}
-% TODO: cadastro de usuários, papéis, autorização de aplicações cliente.
+% --------------------------------------------------------------
+\subsubsection{Gestão de acessos}\label{subsubsec:IRISAcessos}
+% --------------------------------------------------------------
 
-\subsubsection{Gestão de pacientes/voluntários}
-% TODO: cadastro, dados demográficos mínimos, anonimização, consentimento (TCLE).
+O módulo de gestão de acessos é responsável pelo cadastro de usuários humanos do NPI --- administradores e pesquisadores --- e pela atribuição de papéis que delimitam o que cada um pode operar. As telas desse módulo (\texttt{UsersAndResearchesersScreen}, \texttt{AddUserForm} e \texttt{AddResearcherForm}) consomem os \textit{endpoints} \texttt{/api/users} e \texttt{/api/researchers} do NPI e seguem o padrão de listagem paginada com criação por formulário modal. Além dos usuários humanos, este módulo também é o ponto de cadastro de \textit{aplicações cliente}: cada aplicação que pretenda consumir a API do NPI --- inclusive o próprio IRIS \textit{Mobile} --- recebe um identificador e um conjunto de credenciais administradas por essa interface, de modo que a gestão de quais clientes podem consumir o nó esteja sob controle direto da instituição que opera o NPI.
 
-\subsubsection{Gestão de coletas e rótulos}
-% TODO: criação de projetos, definição do vocabulário de rótulos, visualização de coletas.
+% --------------------------------------------------------------
+\subsubsection{Gestão de pacientes e voluntários}\label{subsubsec:IRISPacientes}
+% --------------------------------------------------------------
 
-\subsubsection{Federação: conexões com outros NPIs}
-% TODO: tela de configuração de pareamento entre nós, status de sincronização,
-% logs de troca de dados (visibilidade do que o middleware está fazendo nos bastidores).
+O módulo de gestão de voluntários cuida do cadastro dos sujeitos de pesquisa e dos dados estritamente necessários à condução das coletas. As telas (\texttt{VolunteersScreen}, \texttt{VolunteersList} e \texttt{CreateVolunteerForm}) registram dados demográficos mínimos --- nome, data de nascimento, contato --- e informações associadas ao Termo de Consentimento Livre e Esclarecido --- TCLE, em particular o instante em que o consentimento foi obtido. A anonimização dos voluntários é tratada pelo NPI por meio de identificadores opacos, e o IRIS expõe ao usuário apenas os identificadores e os campos demográficos definidos como mínimos pelo projeto, evitando que dados pessoais que não tenham finalidade de pesquisa sejam armazenados ou exibidos. Esse módulo consome os \textit{endpoints} \texttt{/api/volunteers}.
+
+% --------------------------------------------------------------
+\subsubsection{Gestão de coletas e rótulos}\label{subsubsec:IRISColetas}
+% --------------------------------------------------------------
+
+O módulo de coletas é o de maior abrangência e implementa a hierarquia conceitual definida pelo PRISM: um \textit{Research} (projeto de pesquisa) agrega \textit{Applications} (aplicações clínicas associadas ao projeto), as quais são realizadas com \textit{Devices} (dispositivos) compostos de \textit{Sensors} (sensores), gerando \textit{Sessions} de coleta cujas \textit{Recordings} contêm uma ou mais \textit{Annotations}. As telas correspondentes (\texttt{ResearchScreen}, \texttt{ResearchDetailsScreen} e os formulários de aplicação, dispositivo e sensor) permitem ao pesquisador navegar nessa hierarquia e configurar os atributos de cada nível. O vocabulário de rótulos --- regiões anatômicas, estruturas anatômicas, condições clínicas e modificadores topográficos --- é gerenciado em telas dedicadas sob \texttt{apps/desktop/src/screens/SNOMED/}, que materializam a integração do NPI com a \textit{Systematized Nomenclature of Medicine --- Clinical Terms} --- SNOMED CT (Subseção \ref{subsec:NPIDados}). A escolha por dedicar telas próprias ao vocabulário visa explicitar ao usuário que rótulos não são apenas \textit{strings} livres digitadas em formulário, mas sim instâncias de uma ontologia clínica reconhecida internacionalmente.
+
+% --------------------------------------------------------------
+\subsubsection{Federação: conexões com outros NPIs}\label{subsubsec:IRISFederacao}
+% --------------------------------------------------------------
+
+O módulo de federação é o que torna explícita, ao usuário, a operação distribuída do PRISM. Ele oferece três funcionalidades centrais: configurar o pareamento entre o NPI local e um NPI parceiro, acompanhar o estado das sincronizações realizadas e disparar manualmente novas sincronizações. A modelagem do estado de uma conexão federada segue uma máquina de estados explícita, ilustrada na Figura \ref{fig:IRISEstadosConexao}. Toda nova conexão nasce no estado \texttt{UNKNOWN} e é submetida pelo administrador local para o estado \texttt{PENDING}, no qual aguarda decisão; uma vez aprovada, transita para \texttt{AUTHORIZED} e passa a ser elegível para sincronização --- desde que o nível de acesso (\textit{NodeAccessLevel}) atribuído seja \texttt{READ\_WRITE} ou \texttt{ADMIN}. Conexões previamente aprovadas podem ser revogadas pelo administrador local, transitando para o estado \texttt{REVOKED}, e podem ser reaprovadas se assim for desejado. Esta separação clara entre identificação do par, autorização e nível de acesso é o que permite ao usuário enxergar a federação como um relacionamento bilateral controlado, e não como uma confiança implícita herdada de configuração estática.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.7\textwidth}
+\caption{Ciclo de vida de uma conexão federada \texttt{ResearchNodeConnection} no IRIS.}
+\label{fig:IRISEstadosConexao}
+% TODO: renderizar estados-conexao-npi.mmd para .png antes da compilação final.
+\includegraphics[scale=0.40]{figuras/Desenvolvimento/IRIS/estados-conexao-npi.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A sincronização propriamente dita é orquestrada por um único componente de tela, o \texttt{SyncProgressModal}, e pelo serviço \texttt{NodeSyncServiceAdapter}. O fluxo completo, ilustrado pela Figura \ref{fig:IRISFluxoSync}, é dividido em duas etapas explicitamente apresentadas ao usuário. A primeira é uma \textit{pré-visualização} --- o IRIS solicita ao NPI local uma chamada \texttt{POST /api/sync/preview} que retorna um manifesto com a contagem de entidades disponíveis no nó remoto (vocabulário SNOMED, voluntários, projetos de pesquisa, sessões de coleta e gravações binárias); essa contagem é apresentada ao usuário, que então autoriza ou cancela a operação. A segunda é o \textit{pull} efetivo --- uma chamada \texttt{POST /api/sync/pull} que dispara, no NPI local, uma transação atômica que itera de forma paginada sobre os metadados (\texttt{GET /api/sync/sessions}) e baixa, individualmente, os arquivos binários de cada canal de gravação (\texttt{GET /api/sync/recordings/\{id\}/file}). Em caso de falha em qualquer etapa, os \textit{blobs} já enviados são removidos por uma ação compensatória e a transação é revertida, garantindo que o nó local jamais persista um estado parcial.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.95\textwidth}
+\caption{Fluxo de sincronização de dados entre NPIs orquestrado pelo IRIS.}
+\label{fig:IRISFluxoSync}
+% TODO: renderizar fluxo-sincronizacao-iris.mmd para .png antes da compilação final.
+\includegraphics[scale=0.28]{figuras/Desenvolvimento/IRIS/fluxo-sincronizacao-iris.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A visibilidade que o IRIS oferece sobre o que ocorre nos bastidores do \textit{middleware} é deliberadamente limitada ao essencial. O usuário não vê o detalhamento das fases de identificação, autenticação ou negociação de canal: o que lhe é apresentado é o estado autorizativo da conexão (Figura \ref{fig:IRISEstadosConexao}), a impressão digital do certificado que identifica o par (na tela de detalhes da conexão), o instante da última sincronização bem-sucedida e o resumo de entidades transferidas em cada operação. Já o registro detalhado das tentativas de sincronização --- inclusive falhas e mensagens de erro --- está disponível por meio do endpoint \texttt{/api/sync/log} e é exibido em uma tela auxiliar de diagnóstico, fornecendo trilha de auditoria sem poluir o fluxo principal de operação.
 
 % ----------------------------------------------------------------------
 \subsection{Telas principais}\label{subsec:IRISTelas}
 % ----------------------------------------------------------------------
 
-% TODO: 1 figura (print-screen) por módulo funcional descrito acima,
-% acompanhada de 1 parágrafo explicando a tela e as decisões de UX relevantes.
-% Padrão de label: fig:irisTela<NomeDaTela>.
+Esta subseção apresenta uma tela representativa de cada módulo funcional, com ênfase nas decisões de UX que reforçam o caráter generalista da aplicação. As capturas reproduzem o estado da aplicação contra um NPI alimentado com os dados utilizados no experimento descrito no Capítulo \ref{cap:desenvolvimento}.
 
-% Exemplo de figura (substituir):
-% \begin{figure}[htpb]
-% \captionsetup{width=0.8\textwidth}
-% \caption{Tela de gestão de pacientes do IRIS.}
-% \label{fig:irisTelaPacientes}
-% \includegraphics[scale=0.3]{figuras/Desenvolvimento/IRIS/tela-pacientes.png}
-% \fonte{Autoria própria (2026)}
-% \end{figure}
+% TODO Vitor: substituir cada placeholder abaixo por captura real de tela.
+% Sugestão de captura: navegar até a rota indicada no comentário e tirar print
+% em janela 1440x900 (zoom 100%), formato PNG, sem bordas do SO.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.8\textwidth}
+\caption{Tela de gestão de acessos do IRIS, exibindo a listagem unificada de usuários e pesquisadores cadastrados.}
+\label{fig:irisTelaAcessos}
+% TODO: capturar rota /users-and-researchers.
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/tela-acessos.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A tela de gestão de acessos, ilustrada pela Figura \ref{fig:irisTelaAcessos}, materializa o padrão de listagem paginada adotado em todo o IRIS: barra de busca acima da tabela, ações primárias (criação) à direita do cabeçalho, ações secundárias (visualização, edição) por linha, e indicação de papel por meio de etiqueta colorida. A ausência de informações sensíveis na listagem --- senhas, \textit{tokens} ou identificadores internos --- é decisão consciente de UX que evita exposição inadvertida desses dados em telas com terceiros presentes.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.8\textwidth}
+\caption{Tela de gestão de voluntários do IRIS.}
+\label{fig:irisTelaPacientes}
+% TODO: capturar rota /volunteers.
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/tela-voluntarios.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A tela de voluntários (Figura \ref{fig:irisTelaPacientes}) reaproveita o mesmo padrão de listagem da tela de acessos, evidenciando a consistência do sistema de \textit{design}. O formulário de criação ocupa um modal lateral --- e não uma rota separada --- de modo que o pesquisador mantém o contexto da listagem enquanto adiciona um novo sujeito; esta escolha reduz o número de cliques exigidos em fluxos de cadastro em lote, tarefa frequente em projetos de coleta com múltiplos participantes.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.8\textwidth}
+\caption{Tela de detalhes de um projeto de pesquisa do IRIS, com a hierarquia \textit{Research}-\textit{Application}-\textit{Device}-\textit{Sensor}-\textit{Session}.}
+\label{fig:irisTelaColetas}
+% TODO: capturar rota /research/{id}/view com dados do experimento.
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/tela-coletas.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A tela de detalhes de um projeto de pesquisa (Figura \ref{fig:irisTelaColetas}) é a expressão mais visível da hierarquia de coletas: cada nível da hierarquia ocupa uma aba dedicada, permitindo ao pesquisador editar separadamente as aplicações, dispositivos e sensores associados ao projeto antes de visualizar as sessões de coleta efetivamente realizadas. A separação por abas, ao invés de uma única tela com todos os níveis simultaneamente, foi adotada para evitar sobrecarga cognitiva em projetos com muitas instâncias por nível.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.8\textwidth}
+\caption{Tela de conexões federadas do IRIS, na aba de conexões ativas.}
+\label{fig:irisTelaConexoesAtivas}
+% TODO: capturar rota /node-connections (aba Active).
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/tela-conexoes-ativas.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+A tela de conexões federadas (Figura \ref{fig:irisTelaConexoesAtivas}) traduz a máquina de estados da Subseção~\ref{subsubsec:IRISFederacao} em um par de abas (\textit{Active} e \textit{Requests}) que separam visualmente conexões já autorizadas das que aguardam decisão. A coluna de \textit{último \textit{sync}} apresenta o tempo decorrido em formato relativo (\textit{e.g.} ``há 2 horas''), reforçando que a sincronização é uma operação intermitente e que sua atualidade é informação relevante para o usuário decidir se uma nova sincronização é necessária.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.8\textwidth}
+\caption{Modal de progresso da sincronização do IRIS, na fase de confirmação do manifesto.}
+\label{fig:irisTelaModalSync}
+% TODO: capturar SyncProgressModal aberto na fase 'confirmation' (pós-preview).
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/tela-modal-sync.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
+O \texttt{SyncProgressModal} (Figura \ref{fig:irisTelaModalSync}) é a interface por meio da qual o usuário acompanha a sincronização. A apresentação do manifesto antes da execução do \textit{pull} efetivo é uma escolha de UX que dá ao usuário a oportunidade de cancelar operações volumosas inadvertidas --- a contagem de gravações, em particular, dá uma estimativa razoável do tráfego que será incorrido. Após a confirmação, o modal alterna para um estado de progresso e, ao término, apresenta um resumo das entidades efetivamente transferidas, fechando o ciclo iniciado pela pré-visualização.
 
 % ----------------------------------------------------------------------
 \subsection{Decisões de UX e padrões reutilizáveis}\label{subsec:IRISUX}
 % ----------------------------------------------------------------------
 
-% TODO: subseção curta. Comentar:
-%   - Sistema de design / biblioteca de componentes adotada;
-%   - Padrões de navegação reaproveitáveis para futuros consumidores do NPI;
-%   - Acessibilidade mínima considerada.
+A coerência observável nas telas apresentadas resulta de um pequeno conjunto de decisões transversais que estruturam a experiência do IRIS e que se constituem em padrões reaproveitáveis por futuros consumidores do NPI. O sistema de \textit{design} próprio, materializado na biblioteca interna de componentes (\texttt{apps/desktop/src/design-system}), oferece elementos básicos --- botões, campos de entrada, tabelas paginadas, modais, abas e barras de busca --- com aparência e comportamento padronizados; cada componente é documentado no \textit{Storybook} e acompanhado de um \textit{README} próprio, de modo que sua adoção por novas telas exija apenas leitura de documentação local. A ausência de dependência de bibliotecas de \textit{design} de terceiros --- como \textit{Material UI} ou \textit{shadcn} --- foi decisão consciente para preservar liberdade na evolução visual e para impedir que atualizações dessas bibliotecas imponham retrabalho não planejado.
 
-% ======================================================================
+Os \textbf{padrões de navegação} consolidam-se em três elementos: uma barra lateral persistente para alternância entre módulos funcionais, um cabeçalho superior com identidade visual e menu de usuário, e o uso disciplinado de modais para operações de criação ou confirmação que devem preservar o contexto da tela origem. Esses padrões são candidatos naturais à reutilização: aplicações futuras que pretendam operar sobre o NPI em domínios distintos --- por exemplo, dosimetria, gestão de instrumentação ou auditoria de coletas --- podem adotar o mesmo arcabouço sem reimplementar suas decisões estruturais, importando os componentes do pacote \texttt{packages/ui-components} compartilhado.
+
+Quanto à \textbf{acessibilidade}, a aplicação observa o conjunto mínimo de práticas exigido pela diretriz \textit{Web Content Accessibility Guidelines} --- WCAG no nível AA: uso de marcação semântica (\texttt{button}, \texttt{label}, \texttt{input}) em detrimento de elementos genéricos, atributos \texttt{aria-label} e \texttt{aria-describedby} em controles que demandem explicitação de propósito, contraste de cor verificado nos componentes do sistema de \textit{design} e suporte a navegação por teclado nos fluxos primários. A validação contínua dessas propriedades é apoiada pelo \textit{addon} de acessibilidade do \textit{Storybook}, integrado ao processo de desenvolvimento dos componentes. Embora a aplicação ainda não inclua um \textit{framework} de internacionalização, todas as cadeias de texto exibidas ao usuário estão centralizadas em arquivos de tela específicos, o que viabiliza, em trabalho futuro, a adoção de uma camada de tradução sem reescrita das telas.
+
 \section{IRIS --- Mobile}\label{sec:desenvolvimentoIRISMobile}
 % ======================================================================
 
@@ -676,45 +759,6 @@ O projeto-exemplo utilizado é o NeuroEstimulator, sistema funcional descrito na
 %   - REMETER os resultados quantitativos para o capítulo correspondente
 %     (Resultados, ou Seção 4.6 se Opção B).
 
-% ----------------------------------------------------------------------
-\subsection{Lições para integração de dispositivos legados ao PRISM}\label{subsec:NELicoes}
-% ----------------------------------------------------------------------
-
-% TODO: subseção CONCEITUAL. É o que conecta o caso particular (NeuroEstimulator)
-% ao argumento geral do PRISM. Sem ela, esta seção parece engenharia de firmware solta.
-% Sugestão de pontos:
-%   - Quais responsabilidades devem ficar no dispositivo vs na aplicação móvel;
-%   - Padrões mínimos de protocolo Bluetooth recomendados;
-%   - Custo aproximado de integração (em horas, em alterações de hardware) para
-%     dispositivos com arquitetura semelhante.
-
-% ======================================================================
-% (OPÇÃO B) — descomentar a Seção abaixo SE optar por manter um capítulo só
-% (ver "PENDÊNCIAS GLOBAIS" no início do arquivo). Caso contrário, mover para
-% um cap-resultados.tex separado.
-% ======================================================================
-%
-% \section{Validação experimental}\label{sec:desenvolvimentoValidacao}
-%
-% \subsection{Setup experimental}\label{subsec:ValidacaoSetup}
-% % TODO: hardware utilizado, posicionamento de eletrodos, configuração
-% % das duas instâncias de NPI (NPI-A e NPI-B), versão do firmware/app/web.
-%
-% \subsection{Resultados da coleta sEMG}\label{subsec:ValidacaoColeta}
-% % TODO: amostras de sinal capturadas, com e sem rótulos.
-%
-% \subsection{Resultados da sincronização entre NPIs}\label{subsec:ValidacaoSync}
-% % TODO: latência, integridade dos dados, consistência de rótulos
-% % entre NPI-A e NPI-B.
-%
-% \subsection{Validação com gerador de funções}\label{subsec:ValidacaoFuncao}
-% % TODO: fidelidade da cadeia de aquisição.
-%
-% \subsection{Discussão}\label{subsec:ValidacaoDiscussao}
-% % TODO: revisitar a hipótese — foi confirmada? Em que extensão?
-% % Que limitações ficaram evidentes?
-
-% ----------------------------------------------------------------------
 \section{Implantação}\label{subsec:NPIDeploy}
 % ----------------------------------------------------------------------
 
