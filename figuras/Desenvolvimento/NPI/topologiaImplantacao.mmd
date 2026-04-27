@@ -1,0 +1,45 @@
+%% ============================================================
+%% Topologia de implantacao do NPI em dois nos federados
+%% Referenciado em: cap-experimentos-resultados.tex
+%%   secao 4.6 (Implantacao), subsec:DeployServicos
+%% Label: fig:NPIDeployTopologia
+%% ============================================================
+flowchart LR
+    subgraph hospedeiro["Hospedeiro Docker (irn-network)"]
+        direction TB
+
+        subgraph aplicacao["Camada de aplicacao<br/>(docker-compose.application.yml)"]
+            nodeA["irn-node-a<br/>ASPNETCORE_ENVIRONMENT=NodeA<br/>:5000 -> :8080"]
+            nodeB["irn-node-b<br/>ASPNETCORE_ENVIRONMENT=NodeB<br/>:5001 -> :8080"]
+        end
+
+        subgraph persistencia["Camada de persistencia<br/>(docker-compose.persistence.yml)"]
+            pgA[("irn-postgres-node-a<br/>:5432<br/>prism_node_a_registry")]
+            pgB[("irn-postgres-node-b<br/>:5433<br/>prism_node_b_registry")]
+            redisA[("irn-redis-node-a<br/>:6379")]
+            redisB[("irn-redis-node-b<br/>:6380")]
+            azurite[("irn-azurite<br/>blob :10000<br/>queue :10001<br/>table :10002")]
+            pgadmin["irn-pgadmin<br/>:5050"]
+        end
+
+        nodeA -- EF Core --> pgA
+        nodeA -- StackExchange.Redis --> redisA
+        nodeA -- Blob SDK --> azurite
+
+        nodeB -- EF Core --> pgB
+        nodeB -- StackExchange.Redis --> redisB
+        nodeB -- Blob SDK --> azurite
+
+        pgadmin -. administracao .-> pgA
+        pgadmin -. administracao .-> pgB
+
+        nodeA <-->|"federacao<br/>(handshake + sync)"| nodeB
+    end
+
+    classDef app fill:#e6f4ff,stroke:#1677ff,color:#003a8c;
+    classDef persist fill:#fff7e6,stroke:#d48806,color:#874d00;
+    classDef admin fill:#f5f5f5,stroke:#8c8c8c,color:#262626;
+
+    class nodeA,nodeB app;
+    class pgA,pgB,redisA,redisB,azurite persist;
+    class pgadmin admin;

@@ -1,0 +1,60 @@
+%% ============================================================
+%% Topologia consolidada da implantacao experimental
+%% (NPIs federados, IRIS web, IRIS Mobile e NeuroEstimulator)
+%% Referenciado em: cap-experimentos-resultados.tex
+%%   secao 4.6 (Implantacao), subsec:DeployLimitacoes
+%% Label: fig:DeployTopologiaConsolidada
+%% ============================================================
+flowchart LR
+    subgraph vm["vm-prism (Azure, West US, 104.45.216.5)"]
+        direction TB
+
+        subgraph aplicacao["Camada de aplicacao"]
+            nodeA["irn-node-a<br/>:5000"]
+            nodeB["irn-node-b<br/>:5001"]
+            irisA["iris-web-node-a<br/>nginx :3000"]
+            irisB["iris-web-node-b<br/>nginx :3001"]
+        end
+
+        subgraph persistencia["Camada de persistencia"]
+            pgA[("postgres-node-a<br/>:5432")]
+            pgB[("postgres-node-b<br/>:5433")]
+            redisA[("redis-node-a")]
+            redisB[("redis-node-b")]
+            azurite[("azurite<br/>:10000-10002")]
+        end
+
+        nodeA --- pgA
+        nodeA --- redisA
+        nodeA --- azurite
+        nodeB --- pgB
+        nodeB --- redisB
+        nodeB --- azurite
+
+        irisA -- "API HTTP" --> nodeA
+        irisB -- "API HTTP" --> nodeB
+
+        nodeA <-->|"federacao<br/>handshake + sync"| nodeB
+    end
+
+    operador["Operador<br/>(navegador)"]
+    mobile["IRIS Mobile<br/>(Android, APK)"]
+    neuro["NeuroEstimulator<br/>(ESP32 + ADS1115)"]
+
+    operador -- "tunel SSH<br/>localhost:3000" --> irisA
+    operador -. "tunel SSH<br/>localhost:3001" .-> irisB
+
+    mobile -- "HTTP<br/>(EXPO_PUBLIC_API_URL)" --> nodeA
+    mobile -- "Bluetooth Classic<br/>SPP, 215 SPS" --> neuro
+
+    classDef app fill:#e6f4ff,stroke:#1677ff,color:#003a8c;
+    classDef web fill:#f0f5ff,stroke:#2f54eb,color:#10239e;
+    classDef persist fill:#fff7e6,stroke:#d48806,color:#874d00;
+    classDef cliente fill:#f6ffed,stroke:#52c41a,color:#135200;
+    classDef device fill:#fff1f0,stroke:#ff4d4f,color:#820014;
+
+    class nodeA,nodeB app;
+    class irisA,irisB web;
+    class pgA,pgB,redisA,redisB,azurite persist;
+    class operador,mobile cliente;
+    class neuro device;
