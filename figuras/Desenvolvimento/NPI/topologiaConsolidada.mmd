@@ -9,20 +9,27 @@ flowchart LR
     subgraph vm["vm-prism (Azure, West US, 104.45.216.5)"]
         direction TB
 
-        subgraph aplicacao["Camada de aplicacao"]
-            nodeA["irn-node-a<br/>:5000"]
-            nodeB["irn-node-b<br/>:5001"]
-            irisA["iris-web-node-a<br/>nginx :3000"]
-            irisB["iris-web-node-b<br/>nginx :3001"]
+        nginx["NGINX (servico do SO)<br/>reverse proxy HTTPS<br/>cert auto-assinado<br/>:5443/:5444 e :3443/:3444"]
+
+        subgraph aplicacao["Camada de aplicacao (containers)"]
+            nodeA["irn-node-a<br/>HTTP :5000"]
+            nodeB["irn-node-b<br/>HTTP :5001"]
+            irisA["iris-web-node-a<br/>nginx HTTP :3000"]
+            irisB["iris-web-node-b<br/>nginx HTTP :3001"]
         end
 
-        subgraph persistencia["Camada de persistencia"]
+        subgraph persistencia["Camada de persistencia (containers)"]
             pgA[("postgres-node-a<br/>:5432")]
             pgB[("postgres-node-b<br/>:5433")]
             redisA[("redis-node-a")]
             redisB[("redis-node-b")]
             azurite[("azurite<br/>:10000-10002")]
         end
+
+        nginx --> nodeA
+        nginx --> nodeB
+        nginx --> irisA
+        nginx --> irisB
 
         nodeA --- pgA
         nodeA --- redisA
@@ -41,20 +48,23 @@ flowchart LR
     mobile["IRIS Mobile<br/>(Android, APK)"]
     neuro["NeuroEstimulator<br/>(ESP32 + ADS1115)"]
 
-    operador -- "tunel SSH<br/>localhost:3000" --> irisA
+    operador -- "tunel SSH<br/>localhost:3000<br/>(caminho padrao)" --> irisA
     operador -. "tunel SSH<br/>localhost:3001" .-> irisB
+    operador -. "HTTPS auto-assinado<br/>(auxiliar)" .-> nginx
 
     mobile -- "HTTP<br/>(EXPO_PUBLIC_API_URL)" --> nodeA
     mobile -- "Bluetooth Classic<br/>SPP, 215 SPS" --> neuro
 
     classDef app fill:#e6f4ff,stroke:#1677ff,color:#003a8c;
     classDef web fill:#f0f5ff,stroke:#2f54eb,color:#10239e;
+    classDef proxy fill:#fffbe6,stroke:#faad14,color:#874d00;
     classDef persist fill:#fff7e6,stroke:#d48806,color:#874d00;
     classDef cliente fill:#f6ffed,stroke:#52c41a,color:#135200;
     classDef device fill:#fff1f0,stroke:#ff4d4f,color:#820014;
 
     class nodeA,nodeB app;
     class irisA,irisB web;
+    class nginx proxy;
     class pgA,pgB,redisA,redisB,azurite persist;
     class operador,mobile cliente;
     class neuro device;
