@@ -25,61 +25,61 @@ Esta seção descreve os principais tópicos teóricos envolvidos neste trabalho
 
 Sistemas distribuídos são aplicações constituídas de elementos computacionais independentes, também conhecidos como nós, que cooperam entre si para fornecer um conjunto de funcionalidades apresentadas ao usuário como um único sistema coerente \cite{van2025distributed}. A comunicação entre os componentes do sistema ocorre por meio da troca de mensagens pela rede que os interliga.
 
-O desenvolvimento de sistemas distribuídos modernos baseia-se nas experiências obtidas no projeto e na construção de sistemas anteriores, nas falhas observadas nesses sistemas e nas soluções encontradas para superá-las ~\cite{burns2024designing}. A necessidade de uso desse paradigma computacional surge quando é necessário garantir que dois requisitos do projeto sejam atendidos: escalabilidade e confiabilidade ~\cite{Coulouris2013}. A Figura~\ref{fig:internet} ilustra, de forma simplificada, a estrutura de redes, sub-redes e computadores que operam como um único sistema, apresentando-se ao usuário como a Internet.
+O desenvolvimento de sistemas distribuídos modernos baseia-se nas experiências obtidas no projeto e na construção de sistemas anteriores, nas falhas observadas nesses sistemas e nas soluções encontradas para superá-las~\cite{burns2024designing}. A necessidade de uso desse paradigma computacional surge quando é necessário garantir que dois requisitos do projeto sejam atendidos: escalabilidade e confiabilidade ~\cite{Coulouris2013}. A Figura~\ref{fig:internet} apresenta, de forma simplificada, a estrutura de redes, sub-redes e computadores que operam como um único sistema, apresentando-se ao usuário como a Internet.
 
 \begin{figure}[htb]%% Ambiente figure
     %\captionsetup{width=0.55\textwidth}%% Largura da legenda
     \caption{Estrutura típica de uma rede distribuída na Internet}%% Legenda
     \label{fig:internet}%% Rótulo
-    \includegraphics[scale=0.6]{figuras/conceitos/sistema-distribuido.png}%% Dimensões e localização
+    \includegraphics[width=\textwidth]{figuras/conceitos/sistema-distribuido.png}%% Dimensões e localização
     \fonte{Adaptado de \citeonline{Coulouris2013}}%% Fonte
 \end{figure}
 
- A \textbf{escalabilidade} busca assegurar a capacidade da aplicação de atender a uma quantidade crescente de usuários sem sofrer gargalos de desempenho ou indisponibilidade \cite{kleppmann2017designing}. Ao distribuir a carga computacional entre múltiplos nós, reduz-se a demanda sobre um servidor individual, evitando a indisponibilidade completa causada por um ponto único de falha (\textit{single point of failure}, SPOF). 
+ A escalabilidade busca assegurar a capacidade da aplicação de atender a uma quantidade crescente de usuários sem sofrer gargalos de desempenho ou indisponibilidade \cite{kleppmann2017designing}. Ao distribuir a carga computacional entre múltiplos nós, reduz-se a demanda sobre um servidor individual, evitando a indisponibilidade completa causada por um ponto único de falha (\textit{single point of failure}, SPOF). 
  
- A \textbf{confiabilidade} busca aprimorar a tolerância a falhas do sistema, de modo que a falha de um único nó (falha parcial) não comprometa a disponibilidade total do serviço. Esse requisito é cumprido pela aplicação de técnicas que geram redundância na solução, conferindo ao sistema a capacidade de mascarar falhas e de recuperar automaticamente a operação em curso sem que o usuário final perceba a interrupção. Esse princípio é conhecido como transparência de falhas \cite{Coulouris2013}.
+ A confiabilidade busca aprimorar a tolerância a falhas do sistema, de modo que a falha de um único nó (falha parcial) não comprometa a disponibilidade total do serviço. Esse requisito é cumprido pela aplicação de técnicas que geram redundância na solução, conferindo ao sistema a capacidade de mascarar falhas e de recuperar automaticamente a operação em curso sem que o usuário final perceba a interrupção. Esse princípio é conhecido como transparência de falhas \cite{Coulouris2013}.
 
- A \textbf{manutenibilidade} busca facilitar a manutenção do sistema, de modo que as atualizações e correções possam ser realizadas de forma eficiente e com mínimo impacto sobre o funcionamento do mesmo. Isso é alcançado através da utilização de práticas e ferramentas que promovem a modularidade, a reutilização de componentes e a documentação adequada \cite{kleppmann2017designing}.
+ A manutenibilidade busca facilitar a manutenção do sistema, de modo que as atualizações e correções possam ser realizadas de forma eficiente e com mínimo impacto sobre o funcionamento do mesmo. Isso é alcançado através da utilização de práticas e ferramentas que promovem a modularidade, a reutilização de componentes e a documentação adequada~\cite{kleppmann2017designing}.
 
 \subsection{Middleware}\label{subsec:middleware}
 
 A estrutura computacional das instituições é heterogênea, onde as aplicações são executadas em dispositivos diversos usando sistemas operacionais variados, interagindo por infraestruturas de rede diferentes. Nesse ambiente, os usuários esperam que interfaces que suportem múltiplos ambientes sejam oferecidas para simplificar o processo de integração de sistemas \cite{bernstein1996middleware}.
 
-O \textit{middleware} é uma camada de software intermediária responsável pela comunicação entre os nós. Sua responsabilidade é garantir a coerência e orquestrar as funções complexas do sistema sem externalizar a complexidade do funcionamento para o usuário. É uma camada de software rodando sobre o sistema operacional de cada nó, fornecendo uma interface uniforme de comunicação interprocesso, escalabilidade, segurança e disponibilidade \cite{astley2001middleware}. 
+O \textit{middleware} é uma camada de software intermediária responsável pela comunicação entre os nós. Sua responsabilidade é garantir a coerência e orquestrar as funções complexas do sistema sem externalizar a complexidade do funcionamento para o usuário. É uma camada de software rodando sobre o sistema operacional de cada nó, fornecendo uma interface uniforme de comunicação interprocesso, escalabilidade, segurança e disponibilidade~\cite{astley2001middleware}. 
 
-O middleware atua de forma análoga a um sistema operacional para um computador: ele gerencia os recursos do sistema distribuído e oferece às aplicações uma maneira de compartilhá-los e utilizá-los eficientemente através da rede. Seu principal objetivo é mascarar, da melhor forma possível, as diferenças de hardware e de sistemas operacionais, oferecendo uma interface de programação uniforme para as aplicações, conforme ilustrado na Figura \ref{fig:middleware}.
+O \textit{middleware} atua de forma análoga a um sistema operacional para um computador: ele gerencia os recursos do sistema distribuído e oferece às aplicações uma maneira de compartilhá-los e utilizá-los eficientemente através da rede. Seu principal objetivo é mascarar, da melhor forma possível, as diferenças de hardware e de sistemas operacionais, oferecendo uma interface de programação uniforme para as aplicações, conforme ilustrado na Figura~\ref{fig:middleware}.
 
 \begin{figure}[htb]%% Ambiente figure
     %\captionsetup{width=0.55\textwidth}%% Largura da legenda
-    \caption{Um sistema distribuído organizado sobre uma camada de middleware que se estende para várias máquinas e oferece a mesma interface para cada aplicação}%% Legenda
+    \caption{Um sistema distribuído organizado sobre uma camada de \textit{middleware} que se estende para várias máquinas e oferece a mesma interface para cada aplicação}%% Legenda
     \label{fig:middleware}%% Rótulo
-    \includegraphics[scale=0.3]{figuras/conceitos/middleware.png}%% Dimensões e localização
+    \includegraphics[width=\textwidth]{figuras/conceitos/middleware.png}%% Dimensões e localização
     \fonte{Adaptado de \citeonline{van2025distributed}}%% Fonte
 \end{figure}
 
-Além do gerenciamento de recursos, o middleware oferece um conjunto de serviços gerais para evitar que cada aplicação precise reimplementá-los. Esses serviços incluem \cite{van2025distributed}:
+Além do gerenciamento de recursos, o \textit{middleware} oferece um conjunto de serviços gerais para evitar que cada aplicação precise reimplementá-los. Esses serviços incluem \cite{van2025distributed}:
 
 \begin{itemize}
     \item Protocolos de comunicação entre aplicações;
     \item Processos de segurança;
-    \item Processos de autenticação;    
+    \item Processos de autenticação; e    
     \item Mecanismos para mascarar e se recuperar de falhas.
 \end{itemize}
 
 \subsection{Criptografia}\label{subsec:criptografia}
 
-A \textbf{criptografia} é a ciência que estuda mecanismos de construção e troca de mensagens secretas, com usos documentados datando 1900 A.C. \cite{KesslerCryptographyOverview}. Em computação, tem o objetivo de proteger o conteúdo de mensagens por meio de mecanismos digitais de assinatura e cifragem que buscam garantir:
+A criptografia é a ciência que estuda mecanismos de construção e troca de mensagens secretas~\cite{KesslerCryptographyOverview}. Em computação, tem o objetivo de proteger o conteúdo de mensagens por meio de mecanismos digitais de assinatura e cifragem que buscam garantir:
 
-\begin{description}
-    \item[Confidencialidade:] O conteúdo da mensagem deve ser protegido contra acesso não autorizado por terceiros;
-    \item[Autenticidade:] O destinatário deve ser capaz de garantir que a mensagem foi enviada pelo remetente alegado;
-    \item[Integridade:] O destinatário deve ser capaz de verificar que a mensagem não foi modificada ou substituída por um terceiro;
-    \item[Não repúdio:] O remetente é impossibilitado de negar a autoria da mensagem após o envio.
-\end{description}
+\begin{itemize}
+    \item Confidencialidade: O conteúdo da mensagem deve ser protegido contra acesso não autorizado por terceiros;
+    \item Autenticidade: O destinatário deve ser capaz de garantir que a mensagem foi enviada pelo remetente alegado;
+    \item Integridade: O destinatário deve ser capaz de verificar que a mensagem não foi modificada ou substituída por um terceiro; e
+    \item Não-repúdio: O remetente é impossibilitado de negar a autoria da mensagem após o envio.
+\end{itemize}
 
 Os mecanismos criptográficos podem ser classificados em três categorias principais: funções \textit{hash}, criptografia simétrica e criptografia assimétrica.
 
-As \textbf{funções hash} são funções matemáticas unidirecionais que produzem uma saída de tamanho fixo para qualquer entrada de qualquer tamanho. Uma função unidirecional implica baixo custo computacional no cálculo de $f(x)$, mas torna computacionalmente inviável calcular o valor de $x$ a partir de $f(x)$ \cite{stallings2005cryptography,paar2010understanding}. Além disso, espera-se que (i) a mesma entrada sempre produza a mesma saída (determinismo); (ii) pequenas alterações na entrada causem um grande efeito na saída (efeito avalanche); e (iii) seja computacionalmente inviável encontrar duas entradas distintas que produzam a mesma saída (resistência a colisões). 
+As funções \textit{hash} são funções matemáticas unidirecionais que produzem uma saída de tamanho fixo para qualquer entrada de qualquer tamanho. Uma função unidirecional implica baixo custo computacional no cálculo de $f(x)$, mas torna computacionalmente inviável calcular o valor de $x$ a partir de $f(x)$~\cite{stallings2005cryptography,paar2010understanding}. Além disso, espera-se que (i) a mesma entrada sempre produza a mesma saída (determinismo); (ii) pequenas alterações na entrada causem um grande efeito na saída (efeito avalanche); e (iii) seja computacionalmente inviável encontrar duas entradas distintas que produzam a mesma saída (resistência a colisões). 
 
 A \textbf{criptografia simétrica} baseia-se no compartilhamento de uma chave secreta pelos usuários que é usada para cifrar o conteúdo das mensagens e depende da confidencialidade da chave para manter a informação segura \cite{barker2020nist}. 
 

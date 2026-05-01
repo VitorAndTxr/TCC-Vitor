@@ -21,25 +21,34 @@ central deste trabalho --- de que dois Nós de Pesquisa Interoperáveis
 semântica clínica e a soberania local sobre os dados --- é exercitada
 por meio de dois testes complementares.
 
-O primeiro, descrito na Seção~\ref{sec:resultadosCadeiaAquisicao},
+\begin{comment}
+    O primeiro, descrito na Seção~\ref{sec:resultadosCadeiaAquisicao},
 avalia quantitativamente a fidelidade da cadeia de aquisição que liga
 o sensor analógico do NeuroEstimulator (Seção
 \ref{sec:adaptacaoNeuroEstimulator}) ao IRIS Mobile (Seção
 \ref{sec:desenvolvimentoIRISMobile}), utilizando como entrada um
 gerador de funções com parâmetros conhecidos. O segundo, descrito na
-Seção~\ref{sec:resultadosSincronizacao}, demonstra a operação fim a
+\end{comment}
+
+
+A Seção~\ref{sec:resultadosSincronizacao}, demonstra a operação fim a
 fim do PRISM \textit{Middleware} ao sincronizar dados de pesquisa
 criados em um NPI para outro, evidenciando a estrutura dos arquivos
 efetivamente exportados.
 
-A Seção~\ref{sec:resultadosAnaliseIntegrada} retoma o
+\begin{comment}
+ A Seção~\ref{sec:resultadosAnaliseIntegrada} retoma o
 Quadro~\ref{quad:artefatosDesenvolvidos}, apresentado na visão geral do
 Capítulo~\ref{cap:desenvolvimento}, e revisita cada hipótese
 específica à luz das evidências produzidas pelos dois testes,
 preparando a transição para a discussão de limitações e trabalhos
-futuros conduzida no Capítulo~\ref{cap:consideracoesFinais}.
+futuros conduzida no Capítulo~\ref{cap:consideracoesFinais}.   
+\end{comment}
 
-% ======================================================================
+
+
+\begin{comment}
+ % ======================================================================
 \section{Validação da cadeia de aquisição com gerador de funções}\label{sec:resultadosCadeiaAquisicao}
 % ======================================================================
 
@@ -203,6 +212,9 @@ estudo, bem como o caminho natural de evolução desta cadeia, é
 retomada nas Seções~\ref{sec:limitacoesEstudo} e
 \ref{sec:trabalhosFuturos} do Capítulo~\ref{cap:consideracoesFinais}.
 
+   
+\end{comment}
+
 % ======================================================================
 \section{Validação da sincronização entre nós}\label{sec:resultadosSincronizacao}
 % ======================================================================
@@ -254,7 +266,7 @@ a seguir.
     \item \textbf{Retransmissão controlada} do mesmo lote para
     exercer a propriedade de idempotência ilustrada pela
     Figura~\ref{fig:NPIIdempotencia}.
-    \item \textbf{Edição concorrente} de uma \texttt{SessionAnnotation}
+    \item \textbf{Edição concorrente} de uma \texttt{SnomedBodyRegion}
     em ambos os nós com diferença reduzida de tempo, para exercer a
     semântica de \textit{last-write-wins} adotada pelo protocolo.
 \end{enumerate}
@@ -272,9 +284,7 @@ na Subseção~\ref{subsec:NPIDados}.
 \begin{figure}[htb]
 \caption{Árvore de diretórios da pesquisa exportada após sincronização.}
 \label{fig:resultadosSincArvoreExport}
-% TODO Vitor: gerar a figura a partir do export real (pode ser uma
-% captura de tela do Azurite Explorer ou um diagrama em texto).
-\includegraphics[width=0.75\textwidth]{figuras/Resultados/sync-arvore-export.png}
+\includegraphics[width=0.75\textwidth]{figuras/Resultados/file_tree.png}
 \fonte{Autoria própria (2026)}
 \end{figure}
 
@@ -289,84 +299,134 @@ como elas se materializam no acervo importado pelo NPI-B.
 \begin{tabular}{|p{0.20\textwidth-\columnsep}|p{0.30\textwidth-\columnsep}|p{0.20\textwidth-\columnsep}|p{0.20\textwidth-\columnsep}|}
 \hline
 \textbf{Família} & \textbf{Entidades transferidas} & \textbf{Formato} & \textbf{Origem na API} \\ \hline
-Vocabulário clínico & \texttt{SnomedBodyStructure}, \texttt{SnomedTopographicalModifier}, \texttt{SnomedLaterality}, \texttt{ClinicalCondition} & JSON paginado em PostgreSQL & \texttt{GET /api/sync/snomed/*} \\ \hline
-Pesquisa & \texttt{Research}, \texttt{Researcher}, \texttt{Volunteer}, \texttt{Device}, \texttt{Sensor} & JSON paginado em PostgreSQL & \texttt{GET /api/sync/research} \\ \hline
-Aquisição (metadados) & \texttt{RecordingSession}, \texttt{Record}, \texttt{RecordChannel}, \texttt{TargetArea}, \texttt{SessionAnnotation} & JSON paginado em PostgreSQL & \texttt{GET /api/sync/sessions} \\ \hline
-Aquisição (binários) & Conteúdo bruto de cada \texttt{RecordChannel} & CSV em \textit{blob storage} & \texttt{GET /api/sync/recordings/\{id\}/file} \\ \hline
+Vocabulário clínico & \texttt{SnomedBodyStructure}, \texttt{SnomedTopographical\newline Modifier}, \texttt{SnomedLaterality}, \texttt{ClinicalCondition} & JSON paginado em PostgreSQL & \texttt{GET /api/sync/\newline snomed/*} \\ \hline
+Pesquisa & \texttt{Research}, \texttt{Researcher}, \texttt{Volunteer}, \texttt{Device}, \texttt{Sensor} & JSON paginado em PostgreSQL & \texttt{GET /api/sync/\newline research} \\ \hline
+Aquisição (metadados) & \texttt{RecordingSession}, \texttt{Record}, \texttt{RecordChannel}, \texttt{TargetArea}, \texttt{SessionAnnotation} & JSON paginado em PostgreSQL & \texttt{GET /api/sync/\newline sessions} \\ \hline
+Aquisição (binários) & Conteúdo bruto de cada \texttt{RecordChannel} & CSV em \textit{blob storage} & \texttt{GET /api/sync/\newline recordings/\newline \{id\}/file} \\ \hline
 \end{tabular}
 \fonte{Autoria própria (2026)}
 \end{tabframed}
 
 % Excerto do payload de metadados de uma RecordingSession.
 \begin{sourcecode}[htpb]
-\caption{\label{codigo:resultadosSincPayloadJson}Excerto do \textit{payload} JSON de uma \texttt{RecordingSession} exportada do NPI-A para o NPI-B.}
+\caption{\label{codigo:resultadosSincPayloadJson}Excerto do \textit{payload} JSON de uma \texttt{Session} exportada do NPI-A para o NPI-B.}
 \begin{lstlisting}[frame=single, language=json]
-% TODO Vitor: substituir pelos identificadores reais coletados no
-% experimento (UUIDs, timestamps, e referências para o blob).
 {
-  "Id": "00000000-0000-0000-0000-000000000000",
-  "ResearchId": "00000000-0000-0000-0000-000000000000",
-  "VolunteerId": "00000000-0000-0000-0000-000000000000",
-  "StartedAt": "2026-04-27T14:35:12.000Z",
-  "EndedAt":   "2026-04-27T14:36:02.000Z",
-  "UpdatedAt": "2026-04-27T14:36:05.123Z",
-  "TargetArea": {
-    "BodyStructureSnomedCode": "53075003",
-    "Laterality": "RIGHT"
+  "id": "8995c0b2-976a-4f4a-a3a4-badeceaa9c1a",
+  "researchId": "6876677e-c263-4d5a-9a6a-81e0444761b6",
+  "volunteerId": "13c15f73-93f8-4565-bbf4-9636296ba38e",
+  "targetAreaId": "0d987c7f-82c7-4a4a-a11b-bc7040274dd4",
+  "targetArea": {
+    "id": "0d987c7f-82c7-4a4a-a11b-bc7040274dd4",
+    "bodyStructureCode": "16225001",
+    "bodyStructure": {
+      "snomedCode": "16225001",
+      "displayName": "B\u00EDceps",
+      "description": "B\u00EDceps",
+      "structureType": "M\u00FAsculo",
+      "bodyRegionCode": "40983000"
+    },
+    "topographicalModifierCodes": [
+      "24028007"
+    ],
+    "topographicalModifiers": [
+      {
+        "code": "24028007",
+        "displayName": "Direita",
+        "category": "Lateralidade",
+        "description": "Direita"
+      }
+    ],
+    "createdAt": "2026-03-23T02:09:45.173244Z",
+    "updatedAt": "2026-03-23T02:09:45.173281Z"
   },
-  "Records": [
+  "startAt": "2026-03-23T02:09:34.735Z",
+  "finishedAt": null,
+  "createdAt": "2026-03-23T02:09:45.074153Z",
+  "updatedAt": "2026-03-23T02:09:45.074216Z",
+  "annotations": [
     {
-      "Id": "00000000-0000-0000-0000-000000000000",
-      "Channels": [
-        {
-          "Id": "00000000-0000-0000-0000-000000000000",
-          "SamplingRateHz": 215,
-          "SampleCount": 10750,
-          "FileUrl": "research-uuid/session-uuid/recording-uuid.csv",
-          "UpdatedAt": "2026-04-27T14:36:05.123Z"
-        }
-      ]
+      "id": "ae834e0e-01ad-4fd0-be54-2649ff9839ff",
+      "recordSessionId": "8995c0b2-976a-4f4a-a3a4-badeceaa9c1a",
+      "text": "Primeiro teste",
+      "createdAt": "2026-03-23T02:09:45.104Z",
+      "updatedAt": "2026-03-23T02:10:47.363015Z"
     }
-  ],
-  "Annotations": []
+  ]
 }
 \end{lstlisting}
+\fonte{Autoria própria (2026)}
 \end{sourcecode}
 
-% Cabeçalho do CSV de canal de biossinal.
-\begin{sourcecode}[htpb]
+\begin{sourcecode}[htp]
+\caption{\label{codigo:resultadosSincRecordJson}Excerto do \textit{payload} JSON de uma \texttt{Recording} exportada do NPI-A para o NPI-B.}
+\begin{lstlisting}[frame=single, language=json]
+{
+  "id": "7cd97abd-5e29-43c5-97f4-75e6e85014d7",
+  "recordSessionId": "8995c0b2-976a-4f4a-a3a4-badeceaa9c1a",
+  "collectionDate": "2026-03-23T02:10:09.041Z",
+  "sessionId": "8995c0b2-976a-4f4a-a3a4-badeceaa9c1a",
+  "recordType": "filtered",
+  "createdAt": "2026-03-23T02:10:44.971822Z",
+  "updatedAt": "2026-03-23T02:10:44.971906Z",
+  "channels": [
+    {
+      "id": "bef9fc1a-d76c-4136-87ac-eed23d7c1b3e",
+      "recordId": "7cd97abd-5e29-43c5-97f4-75e6e85014d7",
+      "sensorId": "7972ab62-3a65-49a4-be7c-56eb6733e359",
+      "signalType": "filtered",
+      "fileUrl": "http://irn-azurite:10000/devstoreaccount1/..",
+      "samplingRate": 215,
+      "samplesCount": 3850,
+      "startTimestamp": "2026-03-23T02:10:09.041Z",
+      "createdAt": "2026-03-23T02:10:45.019591Z",
+      "updatedAt": "0001-01-01T00:00:00"
+    }
+  ]
+}
+\end{lstlisting}
+\fonte{Autoria própria (2026)}
+\end{sourcecode}
+
+\begin{sourcecode}[htp]
 \caption{\label{codigo:resultadosSincCsvCabecalho}Cabeçalho e primeiras linhas do arquivo CSV exportado de um \texttt{RecordChannel}.}
 \begin{lstlisting}[frame=single]
-% TODO Vitor: substituir pelos primeiros bytes de um arquivo real.
-timestamp_ms,sample_int16
-0,         12
-4,         15
-9,         18
-13,        21
+timestamp,value
+44171.00,4096
+44175.65,3545
+44180.30,408
+44184.95,1444
+44189.60,1491
+44194.26,-2427
 ...
 \end{lstlisting}
+\fonte{Autoria própria (2026)}
 \end{sourcecode}
 
-O Quadro~\ref{quad:resultadosSincTamanhos} resume os tamanhos e
-contagens observados na execução de referência, permitindo dimensionar
-a ordem de grandeza típica de uma sessão exportada.
+\begin{comment}
+   O Quadro~\ref{quad:resultadosSincTamanhos} resume os tamanhos e
+    contagens observados na execução de referência, permitindo dimensionar
+    a ordem de grandeza típica de uma sessão exportada.
+    
+    \begin{tabframed}[htb]
+    \caption{Tamanhos e contagens da sincronização de referência.}
+    \label{quad:resultadosSincTamanhos}
+    \begin{tabular}{|p{0.40\textwidth-\columnsep}|p{0.20\textwidth-\columnsep}|p{0.30\textwidth-\columnsep}|}
+    \hline
+    \textbf{Item} & \textbf{Quantidade} & \textbf{Observação} \\ \hline
+    Conceitos SNOMED transferidos & % TODO & 4 tipos (estrutura, modificador, lateralidade, condição) \\ \hline
+    Entidades de pesquisa transferidas & % TODO & \texttt{Research}, \texttt{Volunteer}, \texttt{Device}, \texttt{Sensor} \\ \hline
+    \texttt{RecordingSession} transferidas & % TODO & --- \\ \hline
+    \texttt{RecordChannel} transferidas & % TODO & --- \\ \hline
+    Tamanho total dos metadados (JSON) & % TODO & em \textit{kB} \\ \hline
+    Tamanho total dos blobs (CSV) & % TODO & em \textit{kB} \\ \hline
+    Sobrecarga Base64 estimada & $\approx$\,33\,\% & Discutida na Subseção~\ref{subsec:NPITrocaDados} \\ \hline
+    \end{tabular}
+    \fonte{Autoria própria (2026)}
+    \end{tabframed} 
+\end{comment}
 
-\begin{tabframed}[htb]
-\caption{Tamanhos e contagens da sincronização de referência.}
-\label{quad:resultadosSincTamanhos}
-\begin{tabular}{|p{0.40\textwidth-\columnsep}|p{0.20\textwidth-\columnsep}|p{0.30\textwidth-\columnsep}|}
-\hline
-\textbf{Item} & \textbf{Quantidade} & \textbf{Observação} \\ \hline
-Conceitos SNOMED transferidos & % TODO & 4 tipos (estrutura, modificador, lateralidade, condição) \\ \hline
-Entidades de pesquisa transferidas & % TODO & \texttt{Research}, \texttt{Volunteer}, \texttt{Device}, \texttt{Sensor} \\ \hline
-\texttt{RecordingSession} transferidas & % TODO & --- \\ \hline
-\texttt{RecordChannel} transferidas & % TODO & --- \\ \hline
-Tamanho total dos metadados (JSON) & % TODO & em \textit{kB} \\ \hline
-Tamanho total dos blobs (CSV) & % TODO & em \textit{kB} \\ \hline
-Sobrecarga Base64 estimada & $\approx$\,33\,\% & Discutida na Subseção~\ref{subsec:NPITrocaDados} \\ \hline
-\end{tabular}
-\fonte{Autoria própria (2026)}
-\end{tabframed}
+\begin{comment}
 
 % ----------------------------------------------------------------------
 \subsection{Resultados de transferência}\label{subsec:resultadosSincTransferencia}
@@ -409,41 +469,33 @@ encadeamento entre o nó consumidor (NPI-B), o nó produtor (NPI-A) e o
 \includegraphics[width=0.95\textwidth]{figuras/Resultados/sync-linha-do-tempo.png}
 \fonte{Autoria própria (2026)}
 \end{figure}
+    
+\end{comment}
 
 % ----------------------------------------------------------------------
 \subsection{Verificação de idempotência e \textit{last-write-wins}}\label{subsec:resultadosSincIdempotencia}
 % ----------------------------------------------------------------------
 
-A propriedade de idempotência prevista pela
-Subseção~\ref{subsec:NPITrocaDados} foi exercitada por meio da
-execução consecutiva de três operações de \textit{pull} sobre o mesmo
-conjunto de entidades, sem qualquer alteração no NPI-A entre as
-execuções. O Quadro~\ref{quad:resultadosSincIdempotencia} reporta o
-estado do \texttt{SyncLog} e o número de \textit{upserts} efetivamente
-realizados em cada execução.
+A propriedade de idempotência prevista pela Subseção~\ref{subsec:NPITrocaDados} foi exercitada por meio da execução consecutiva de três operações de \textit{pull} sobre o mesmo conjunto de entidades, sem qualquer alteração no NPI-A entre as execuções. O Quadro~\ref{quad:resultadosSincIdempotencia} reporta o estado do \texttt{SyncLog} e o número de \textit{upserts} efetivamente realizados em cada execução.
 
 \begin{tabframed}[htb]
 \caption{Idempotência sob retransmissão: estado do \texttt{SyncLog} ao longo de três execuções consecutivas.}
 \label{quad:resultadosSincIdempotencia}
-\begin{tabular}{|c|p{0.25\textwidth-\columnsep}|p{0.25\textwidth-\columnsep}|p{0.30\textwidth-\columnsep}|}
+\begin{tabular}{|c|p{0.15\textwidth-\columnsep}|p{0.15\textwidth-\columnsep}|p{0.40\textwidth-\columnsep}|}
 \hline
 \textbf{Tentativa} & \textbf{Entidades inseridas} & \textbf{Entidades atualizadas} & \textbf{Observação} \\ \hline
-1ª & % TODO & % TODO & Primeira execução, esperado o conjunto completo \\ \hline
+1ª & 0 & 0 & Primeira execução, esperado o conjunto completo \\ \hline
 2ª & 0 & 0 & Esperado: operação \textit{no-op} sob mesmo estado \\ \hline
 3ª & 0 & 0 & Idem 2ª \\ \hline
 \end{tabular}
 \fonte{Autoria própria (2026)}
 \end{tabframed}
 
-A semântica de \textit{last-write-wins} sobre o atributo
-\texttt{UpdatedAt} foi observada em um experimento complementar no
-qual a mesma \texttt{SessionAnnotation} foi editada em ambos os nós
-em uma janela curta de tempo. A Figura~\ref{fig:resultadosSincLww}
-apresenta a linha do tempo das edições e o estado final reconhecido
-por cada nó após a próxima sincronização.
+A semântica de \textit{last-write-wins} sobre o atributo \texttt{UpdatedAt} foi observada em um experimento complementar no
+qual a mesma \texttt{SnomedBodyRegion} foi editada em ambos os nós em uma janela curta de tempo. A Figura~\ref{fig:resultadosSincLww} apresenta a linha do tempo das edições e o estado final reconhecido por cada nó após a próxima sincronização.
 
 \begin{figure}[htb]
-\caption{Resolução de conflito por \textit{last-write-wins} sobre uma \texttt{SessionAnnotation} editada em ambos os nós.}
+\caption{Resolução de conflito por \textit{last-write-wins} sobre uma \texttt{SnomedBodyRegion} editada em ambos os nós.}
 \label{fig:resultadosSincLww}
 % TODO Vitor: gerar a figura.
 \includegraphics[width=0.85\textwidth]{figuras/Resultados/sync-last-write-wins.png}
@@ -459,7 +511,8 @@ Subseção~\ref{subsec:limitacoesProtocolo} e contemplada como
 trabalho futuro na
 Subseção~\ref{subsec:trabalhosFuturosPrism}.
 
-% ======================================================================
+\begin{comment}
+    % ======================================================================
 \section{Análise integrada das hipóteses específicas}\label{sec:resultadosAnaliseIntegrada}
 % ======================================================================
 
@@ -479,8 +532,8 @@ que a exercitou e a evidência produzida nas Seções
 \textbf{Artefato} & \textbf{Hipótese específica} & \textbf{Teste / seção} & \textbf{Evidência produzida} \\ \hline
 \textbf{NPI} & Viabilidade da camada de \textit{middleware} de interoperabilidade entre nós. & Seções \ref{sec:resultadosSincronizacao} e \ref{subsec:resultadosSincIdempotencia} & \textit{Handshake} concluído, sincronização incremental e idempotência demonstradas (Quadros \ref{quad:resultadosSincExecucao} e \ref{quad:resultadosSincIdempotencia}). \\ \hline
 \textbf{IRIS} & Integração de aplicações generalistas ao padrão sem acoplamento ao tipo de biossinal. & Subseção \ref{subsec:resultadosSincCenario} & Operação completa do fluxo de pré-visualização e \textit{pull} via interface \textit{web}, sem dependência de processamento de sEMG. \\ \hline
-\textbf{IRIS Mobile} & Consumo do mesmo contrato do NPI por clientes em plataformas heterogêneas. & Seções \ref{sec:resultadosCadeiaAquisicao} e \ref{subsec:resultadosSincCenario} & Captura do gerador de funções e envio ao NPI-A pelo aplicativo Android, materializada nos arquivos sincronizados (Codigos~\ref{codigo:resultadosSincPayloadJson} e \ref{codigo:resultadosSincCsvCabecalho}). \\ \hline
-\textbf{NeuroEstimulator} & Adaptabilidade de dispositivos legados ao padrão via modificações de \textit{firmware}. & Seção \ref{sec:resultadosCadeiaAquisicao} & \textit{Streaming} contínuo a 215\,SPS estabilizado, com fidelidade quantificada na banda 10--50\,Hz (Figura \ref{fig:resultadosCadeiaResposta}). \\ \hline
+\textbf{IRIS Mobile} & Consumo do mesmo contrato do NPI por clientes em plataformas heterogêneas. & Seção \ref{subsec:resultadosSincCenario} & Captura do gerador de funções e envio ao NPI-A pelo aplicativo Android, materializada nos arquivos sincronizados (Codigos~\ref{codigo:resultadosSincPayloadJson} e \ref{codigo:resultadosSincCsvCabecalho}). \\ \hline
+\textbf{Neuro\newline Estimulator} & Adaptabilidade de dispositivos legados ao padrão via modificações de \textit{firmware}. & Seção \ref{sec:resultadosSincPayloadJson} & \textit{Streaming} contínuo a 215\,SPS estabilizado, com fidelidade quantificada na banda 10--50\,Hz (Figura \ref{fig:resultadosCadeiaResposta}). \\ \hline
 \end{tabular}
 \fonte{Autoria própria (2026)}
 \end{tabframed}
@@ -492,3 +545,6 @@ instituições. Permanecem, contudo, em aberto, decisões arquiteturais
 e operacionais que delimitam a abrangência da validação aqui
 apresentada e cujos caminhos de evolução são tratados de forma
 sistemática no Capítulo~\ref{cap:consideracoesFinais}.
+
+\end{comment}
+
