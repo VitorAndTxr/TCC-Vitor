@@ -1,60 +1,143 @@
-%%%% APÊNDICE B
+%%%% APÊNDICE -- DIAGRAMAS DE SEQUÊNCIA E DE FLUXO
 %%
-%% Texto ou documento elaborado pelo autor, a fim de complementar sua argumentação, sem prejuízo da unidade nuclear do trabalho.
+%% Reúne os diagramas de sequência e de estado que detalham os protocolos do
+%% PRISM, do PRISM Middleware ao streaming Bluetooth do NeuroEstimulator. Os
+%% diagramas foram deslocados do Capítulo de Desenvolvimento para preservar a
+%% fluidez da leitura textual sem sacrificar o registro detalhado dos
+%% protocolos discutidos.
 
-%% Título e rótulo de apêndice (rótulos não devem conter caracteres especiais, acentuados ou cedilha)
-\chapter{Orçamentos dos Materiais para Montagem da Bancada Experimental}\label{cap:apendiceb}
+\chapter{Diagramas de sequência e de fluxo dos protocolos do PRISM}\label{cap:apendiceDiagramasSequencia}
 
-\begin{table}[htb]%% Ambiente table
-\caption{Orçamento dos materiais n.\textsuperscript{o} 1.}%% Legenda
-\label{tab:tab3}%% Rótulo
-\begin{tabularx}{\textwidth}{@{\extracolsep{\fill}}lrrr}%% Ambiente tabularx
-\toprule
-Material              & \multicolumn{1}{c}{Valor (R\$)} & \multicolumn{1}{c}{Quantidade}  & \multicolumn{1}{c}{Total (R\$)} \\ \midrule
-Bomba centrífuga      & 2500,00                         & 01                              & 2500,00                         \\
-Compressor rotativo   & 3000,00                         & 01                              & 3000,00                         \\
-Manômetro diferencial & 450,00                          & 02                              & 900,00                          \\
-Termopar              & 370,00                          & 02                              & 740,00                          \\
-Válvula de esfera     & 43,00                           & 02                              & 86,00                           \\
-Tubulação de PVC      & 10,00                           & 05                              & 50,00                           \\
-Conexão de PVC        & 5,00                            & 10                              & 50,00                           \\ \midrule
-                      &                                 & \multicolumn{1}{r}{Total (R\$)} & 7326,00                         \\ \bottomrule
-\end{tabularx}
-\fonte{}%% Fonte
-\end{table}
+Este apêndice reúne, em ordem temática, os diagramas de sequência e de fluxo que detalham os protocolos descritos ao longo do Capítulo~\ref{cap:desenvolvimento}. A reunião dos diagramas em apêndice atende a duas finalidades complementares: preservar, no corpo do texto, uma narrativa contínua sobre cada protocolo, e oferecer ao leitor interessado em uma leitura técnica aprofundada um material consolidado que pode ser consultado de forma autônoma. As referências cruzadas das subseções de origem ao apêndice são feitas individualmente para cada figura, de modo que o leitor possa decidir, a cada ponto da leitura, se prossegue com o texto principal ou se desloca a atenção para o detalhe gráfico.
 
-\begin{table}[htb]%% Ambiente table
-\caption{Orçamento dos materiais n.\textsuperscript{o} 2.}%% Legenda
-\label{tab:tab4}%% Rótulo
-\begin{tabularx}{\textwidth}{@{\extracolsep{\fill}}lrrr}%% Ambiente tabularx
-\toprule
-Material              & \multicolumn{1}{c}{Valor (R\$)} & \multicolumn{1}{c}{Quantidade}  & \multicolumn{1}{c}{Total (R\$)} \\ \midrule
-Bomba centrífuga      & 2700,00                         & 01                              & 2700,00                         \\
-Compressor rotativo   & 2950,00                         & 01                              & 2950,00                         \\
-Manômetro diferencial & 515,00                          & 02                              & 1030,00                         \\
-Termopar              & 350,00                          & 02                              & 700,00                          \\
-Válvula de esfera     & 40,00                           & 02                              & 80,00                           \\
-Tubulação de PVC      & 8,00                            & 05                              & 40,00                           \\
-Conexão de PVC        & 6,00                            & 10                              & 60,00                           \\ \midrule
-                      &                                 & \multicolumn{1}{r}{Total (R\$)} & 7560,00                         \\ \bottomrule
-\end{tabularx}
-\fonte{}%% Fonte
-\end{table}
+A organização do apêndice acompanha a estrutura do capítulo. A Seção~\ref{sec:apendiceSeqMiddleware} apresenta os três diagramas que descrevem o \textit{handshake} de quatro fases do PRISM \textit{Middleware}, conforme discutidos na Subseção~\ref{subsec:NPIMiddleware}. A Seção~\ref{sec:apendiceSeqSync} reúne os diagramas associados aos protocolos de troca de dados entre nós, abordados na Subseção~\ref{subsec:NPITrocaDados}. A Seção~\ref{sec:apendiceSeqIRIS} traz os diagramas de estado e de fluxo da camada de orquestração do IRIS \emph{web}, vinculados à discussão da Subseção~\ref{subsubsec:IRISFederacao}. A Seção~\ref{sec:apendiceSeqMobile} apresenta os diagramas que descrevem os fluxos de pareamento, sincronização e etiquetagem do IRIS \textit{Mobile} (Seção~\ref{sec:desenvolvimentoIRISMobile}). Por fim, a Seção~\ref{sec:apendiceSeqStreaming} concentra o diagrama de sequência do protocolo de \textit{streaming} binário do NeuroEstimulator adaptado, complementando a discussão da Subseção~\ref{subsubsec:NEProtocolo}.
 
-\begin{table}[htb]%% Ambiente table
-\caption{Orçamento dos materiais n.\textsuperscript{o} 3.}%% Legenda
-\label{tab:tab5}%% Rótulo
-\begin{tabularx}{\textwidth}{@{\extracolsep{\fill}}lrrr}%% Ambiente tabularx
-\toprule
-Material              & \multicolumn{1}{c}{Valor (R\$)} & \multicolumn{1}{c}{Quantidade}  & \multicolumn{1}{c}{Total (R\$)} \\ \midrule
-Bomba centrífuga      & 2600,00                         & 01                              & 2600,00                         \\
-Compressor rotativo   & 3100,00                         & 01                              & 3100,00                         \\
-Manômetro diferencial & 500,00                          & 02                              & 1000,00                         \\
-Termopar              & 400,00                          & 02                              & 800,00                          \\
-Válvula de esfera     & 45,00                           & 02                              & 90,00                           \\
-Tubulação de PVC      & 12,00                           & 05                              & 60,00                           \\
-Conexão de PVC        & 5,00                            & 10                              & 50,00                           \\ \midrule
-                      &                                 & \multicolumn{1}{r}{Total (R\$)} & 7700,00                         \\ \bottomrule
-\end{tabularx}
-\fonte{}%% Fonte
-\end{table}
+% ----------------------------------------------------------------------
+\section{Handshake de quatro fases do PRISM Middleware}\label{sec:apendiceSeqMiddleware}
+% ----------------------------------------------------------------------
+
+Os três diagramas desta seção materializam, em sequência, as três primeiras fases do protocolo de \textit{handshake} entre nós descrito na Subseção~\ref{subsec:NPIMiddleware}: a abertura do canal cifrado por troca \textit{Elliptic-Curve Diffie--Hellman} (ECDH) sobre a curva NIST P-384 (Figura~\ref{fig:auth-fase-1}); o registro e a identificação do nó por meio do \textit{fingerprint} SHA-256 do certificado X.509 (Figura~\ref{fig:auth-fase-2}); e a autenticação mútua por desafio-resposta com assinatura RSA-2048 (Figura~\ref{fig:auth-fase-3}). A quarta fase --- emissão e gestão da sessão de aplicação --- não foi diagramada como sequência por reduzir-se a uma operação de leitura contra o \textit{store} de sessões mantido em Redis, e está descrita textualmente na referida subseção.
+
+\begin{figure}[htpb]
+\caption{Abertura de canal criptografado entre nós (Fase~1 do \textit{handshake} do PRISM \textit{Middleware}).}
+\label{fig:auth-fase-1}
+\centering
+\includegraphics[scale=0.35]{figuras/Desenvolvimento/auth/fase-1.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Registro e identificação do nó (Fase~2 do \textit{handshake} do PRISM \textit{Middleware}).}
+\label{fig:auth-fase-2}
+\centering
+\includegraphics[scale=0.3]{figuras/Desenvolvimento/auth/fase-2.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Autenticação mútua por desafio-resposta (Fase~3 do \textit{handshake} do PRISM \textit{Middleware}).}
+\label{fig:auth-fase-3}
+\centering
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/auth/fase-3.png}
+\fonte{}
+\end{figure}
+
+% ----------------------------------------------------------------------
+\section{Sincronização de dados entre nós}\label{sec:apendiceSeqSync}
+% ----------------------------------------------------------------------
+
+Esta seção concentra os diagramas que detalham os três fluxos centrais discutidos na Subseção~\ref{subsec:NPITrocaDados}: a sincronização incremental do catálogo de rótulos SNOMED CT (Figura~\ref{fig:NPISyncCatalogo}); a transferência de metadados e de \textit{payload} binário das gravações de biossinais (Figura~\ref{fig:NPISyncBiossinais}); e a estratégia de idempotência adotada para que retransmissões não corrompam o estado do nó consumidor (Figura~\ref{fig:NPIIdempotencia}).
+
+A Figura~\ref{fig:NPISyncCatalogo} evidencia os dois \textit{loops} aninhados percorridos pelo protocolo --- o externo, sobre as quatro famílias de entidades SNOMED, e o interno, sobre as páginas de cada tipo --- e o papel do \texttt{SyncLog} local como ponto de partida do incremento. A Figura~\ref{fig:NPISyncBiossinais} explicita o desacoplamento entre a transferência paginada dos metadados de \texttt{RecordingSession} e a recuperação individualizada dos arquivos binários por canal, bem como a ação compensatória disparada em caso de falha de qualquer subetapa do lote. Por fim, a Figura~\ref{fig:NPIIdempotencia} percorre três tentativas consecutivas sobre uma mesma entidade, demonstrando como a combinação entre \textit{Universally Unique Identifier} (UUID) como chave global e \textit{watermark} \texttt{UpdatedAt} torna a retransmissão integral de um lote já aplicado uma operação \textit{no-op} sob a perspectiva de estado.
+
+\begin{figure}[htpb]
+\caption{Sincronização incremental do catálogo de rótulos SNOMED CT.}
+\label{fig:NPISyncCatalogo}
+\centering
+\includegraphics[scale=0.35]{figuras/Desenvolvimento/NPI/sync-catalogo.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Transferência de metadados e \textit{payload} binário de biossinais.}
+\label{fig:NPISyncBiossinais}
+\centering
+\includegraphics[scale=0.35]{figuras/Desenvolvimento/NPI/sync-biossinais.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\captionsetup{width=0.85\textwidth}
+\caption{Idempotência sob retransmissão: detecção por UUID e \textit{watermark} \texttt{UpdatedAt}.}
+\label{fig:NPIIdempotencia}
+\centering
+\includegraphics[scale=0.35]{figuras/Desenvolvimento/NPI/idempotencia.png}
+\fonte{}
+\end{figure}
+
+% ----------------------------------------------------------------------
+\section{Orquestração da federação no IRIS \emph{web}}\label{sec:apendiceSeqIRIS}
+% ----------------------------------------------------------------------
+
+Os dois diagramas desta seção complementam a discussão da Subseção~\ref{subsubsec:IRISFederacao} sobre o módulo de federação do IRIS \emph{web}. A Figura~\ref{fig:IRISEstadosConexao} apresenta a máquina de estados que rege o ciclo de vida de uma conexão federada \texttt{ResearchNodeConnection}: a transição de \texttt{UNKNOWN} para \texttt{PENDING} quando o administrador local submete a solicitação, a aprovação para \texttt{AUTHORIZED} e a possibilidade de revogação posterior para \texttt{REVOKED}, com reaprovação subsequente. A Figura~\ref{fig:IRISFluxoSync} representa o fluxo orquestrado pelo \texttt{SyncProgressModal} em conjunto com o serviço \texttt{NodeSyncServiceAdapter}, dividido em duas etapas explicitamente apresentadas ao usuário: a pré-visualização (\texttt{POST /api/sync/preview}) que retorna o manifesto das entidades disponíveis no nó remoto, e o \textit{pull} efetivo (\texttt{POST /api/sync/pull}) que dispara a transação atômica responsável pela ingestão dos dados.
+
+\begin{figure}[htpb]
+\caption{Ciclo de vida de uma conexão federada \texttt{ResearchNodeConnection} no IRIS \emph{web}.}
+\label{fig:IRISEstadosConexao}
+\centering
+\includegraphics[scale=0.40]{figuras/Desenvolvimento/IRIS/estados-conexao-npi.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Fluxo de sincronização de dados entre NPIs orquestrado pelo IRIS \emph{web}.}
+\label{fig:IRISFluxoSync}
+\centering
+\includegraphics[width=0.6\paperwidth]{figuras/Desenvolvimento/IRIS/fluxo-sincronizacao-iris.png}
+\fonte{}
+\end{figure}
+
+% ----------------------------------------------------------------------
+\section{Fluxos do IRIS \textit{Mobile}}\label{sec:apendiceSeqMobile}
+% ----------------------------------------------------------------------
+
+Esta seção reúne os três diagramas que detalham os fluxos centrais do IRIS \textit{Mobile}, em correspondência com as Subseções~\ref{subsec:IRISMobileBT}, \ref{subsec:IRISMobileCaptura} e \ref{subsec:IRISMobileRotulos}. A Figura~\ref{fig:IRISMobileFluxoCaptura} percorre o caminho que vai do pareamento Bluetooth do NeuroEstimulator à renderização do sinal sEMG na tela de captura, evidenciando o papel do decodificador binário \texttt{BinaryFrameAccumulator} e a lógica de tratamento de desconexões inesperadas. A Figura~\ref{fig:IRISMobileFluxoSync} sintetiza o ciclo periódico do \texttt{SyncService}, que percorre as três tabelas com \texttt{sync\_status = 'pending'} respeitando a ordem de dependências do contrato do NPI --- sessão clínica, gravação (metadados e arquivo) e anotações. A Figura~\ref{fig:IRISMobileFluxoRotulagem} traduz, em forma de fluxo, o caminho percorrido por uma anotação criada pelo pesquisador durante a coleta, da sua persistência local com \texttt{sync\_status = 'pending'} ao envio ao NPI por meio do \textit{endpoint} dedicado de anotações.
+
+\begin{figure}[htpb]
+\caption{Fluxo de pareamento, captura e renderização do sinal sEMG no IRIS \textit{Mobile}.}
+\label{fig:IRISMobileFluxoCaptura}
+\centering
+\includegraphics[scale=0.28]{figuras/Desenvolvimento/IRISMobile/fluxo-bt-streaming.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\captionsetup{width=0.95\textwidth}
+\caption{Ciclo de sincronização do IRIS \textit{Mobile} com o NPI: sessão, gravação (metadados e arquivo) e anotações.}
+\label{fig:IRISMobileFluxoSync}
+\centering
+\includegraphics[scale=0.28]{figuras/Desenvolvimento/IRISMobile/fluxo-sync-mobile.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Fluxo de criação, vínculo à sessão e envio das anotações que contextualizam o sinal sEMG.}
+\label{fig:IRISMobileFluxoRotulagem}
+\centering
+\includegraphics[scale=0.32]{figuras/Desenvolvimento/IRISMobile/fluxo-rotulagem.png}
+\fonte{}
+\end{figure}
+
+% ----------------------------------------------------------------------
+\section{Streaming Bluetooth do NeuroEstimulator}\label{sec:apendiceSeqStreaming}
+% ----------------------------------------------------------------------
+
+A Figura~\ref{fig:protocoloStreaming} resume o diálogo completo entre o IRIS \textit{Mobile}, o tratador de mensagens, as tarefas internas do \textit{firmware} e o canal Bluetooth durante uma sessão de aquisição, em complemento à discussão da Subseção~\ref{subsubsec:NEProtocolo}. O diagrama evidencia a coexistência entre o protocolo de comandos em JSON --- empregado para abertura e encerramento do \textit{streaming} --- e o fluxo binário compacto de pacotes de 108~\textit{bytes} emitidos autonomamente pelo \textit{firmware} a cada cinquenta amostras coletadas, padrão que substituiu o modelo legado de comando-resposta para o canal de dados.
+
+\begin{figure}[htpb]
+\caption{Diagrama de sequência do \textit{streaming} de sEMG entre o IRIS \textit{Mobile} e o \textit{firmware} adaptado.}
+\label{fig:protocoloStreaming}
+\centering
+\includegraphics[width=\textwidth]{figuras/Desenvolvimento/NeuroEstimulator/protocolo-streaming.png}
+\fonte{}
+\end{figure}

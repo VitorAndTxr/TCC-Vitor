@@ -1,417 +1,163 @@
-%%%% APÊNDICE A
+%%%% APÊNDICE -- TELAS DAS APLICAÇÕES IRIS
 %%
-%% Texto ou documento elaborado pelo autor, a fim de complementar sua argumentação, sem prejuízo da unidade nuclear do trabalho.
+%% Reúne as capturas de tela do IRIS web e do IRIS Mobile organizadas por
+%% módulo funcional. As capturas foram deslocadas do Capítulo de
+%% Desenvolvimento para o apêndice de modo a preservar a fluidez do texto e
+%% evitar interrupções gráficas extensas no corpo das subseções.
 
-%% Título e rótulo de apêndice (rótulos não devem conter caracteres especiais, acentuados ou cedilha)
-\chapter{Referência da API REST do Nó de Pesquisa Interoperável}\label{cap:apendiceRefApi}
+\chapter{Telas das aplicações IRIS \emph{web} e IRIS \textit{Mobile}}\label{cap:apendiceTelas}
 
-Este apêndice reproduz, em forma estática, a referência da API REST exposta pelo Nó de Pesquisa Interoperável (NPI) e discutida em alto nível na Subseção~\ref{subsec:NPIAPI}. O conteúdo aqui apresentado foi extraído da especificação \textit{OpenAPI} 3.0 gerada automaticamente pelo \textit{middleware} \textit{Swagger} habilitado no NPI a partir das anotações dos \textit{controllers} e dos \textit{Data Transfer Objects} (DTOs) da implementação. A reprodução estática justifica-se pela necessidade de preservar a documentação do contrato em um meio independente da operação dos servidores utilizados na coleta deste trabalho.
+Este apêndice reúne as capturas das principais telas das duas aplicações cliente desenvolvidas para o experimento --- o IRIS \emph{web}, generalista, e o IRIS \textit{Mobile}, especializado na captura de biossinais ---, discutidas respectivamente nas Seções~\ref{sec:desenvolvimentoIRIS} e~\ref{sec:desenvolvimentoIRISMobile}. As capturas reproduzem o estado das aplicações contra um NPI alimentado com os dados do experimento descrito no Capítulo~\ref{cap:desenvolvimento} e foram deslocadas para apêndice de modo a preservar a continuidade da leitura textual sem prejuízo do registro visual das interfaces resultantes.
 
-A leitura deste apêndice deve ser pontual e dirigida pelo interesse: o entendimento do texto principal não requer sua consulta integral. Os \textit{endpoints} estão organizados em onze grupos funcionais, na mesma ordem em que aparecem no \autoref{quad:NPIEndpoints} do capítulo principal, acrescidos de uma seção dedicada aos utilitários internos de testes que, embora não componham o contrato público da API, são reproduzidos por completude.
+A organização do apêndice acompanha a estrutura modular discutida no capítulo principal. A Seção~\ref{sec:apendiceTelasIRIS} apresenta as telas do IRIS \emph{web} agrupadas por módulo funcional --- gestão de acessos, gestão de rótulos, gestão de voluntários, gestão de pesquisas e federação ---, enquanto a Seção~\ref{sec:apendiceTelasIRISMobile} percorre as cinco telas mais representativas do IRIS \textit{Mobile} na ordem em que tipicamente são acionadas durante uma coleta. Em ambas as seções, optou-se por preservar o agrupamento das figuras em sub-figuras (\textit{subfloats}) sempre que o módulo correspondente reuni\-a múltiplas variantes de uma mesma tela, evidenciando a coerência do sistema de \textit{design} adotado.
 
 % ----------------------------------------------------------------------
-\section{Convenções transversais}\label{sec:apendiceaConvencoes}
+\section{Telas do IRIS \emph{web}}\label{sec:apendiceTelasIRIS}
 % ----------------------------------------------------------------------
 
-Antes da listagem propriamente dita, cabe sintetizar as convenções que se aplicam, salvo exceções explicitamente sinalizadas, a todas as rotas da API.
+Esta seção apresenta uma tela representativa de cada módulo funcional do IRIS \emph{web} (Subseção~\ref{subsec:IRISModulos}). A exposição inicia-se pela tela de gestão de acessos, que serve de referência para os padrões visuais reaproveitados nos módulos seguintes, e progride na ordem em que os elementos são tipicamente acionados pelo pesquisador --- da configuração inicial à operação corrente da federação.
 
-\textbf{Cabeçalhos obrigatórios.} Toda requisição protegida deve carregar simultaneamente o cabeçalho \texttt{X-Channel-Id}, que identifica o canal cifrado estabelecido na Fase~1 do \textit{handshake}, e o cabeçalho \texttt{X-Session-Id}, que porta o \textit{token} da sessão de aplicação emitida na Fase~3. As exceções são as rotas marcadas como anônimas, descritas no \autoref{tab:apendiceaAuth}.
+A Figura~\ref{fig:irisTelaAcessos} materializa o padrão de listagem paginada adotado em todo o IRIS \emph{web}: barra de busca acima da tabela, ações primárias (criação) à direita do cabeçalho, ações secundárias (visualização, edição) por linha e indicação de papel por meio de etiqueta colorida. A tela de gestão de rótulos (Figura~\ref{fig:irisTelaRotulos}) repete esse padrão e divide o vocabulário clínico em quatro telas complementares, uma para cada entidade SNOMED CT manipulada pelo NPI; em todas elas a coluna de identificador SNOMED é exibida ao lado do termo legível, evidenciando ao usuário que cada rótulo está vinculado a uma referência canônica externa, e não a uma cadeia de caracteres livre.
 
-\textbf{Cifragem de \textit{payload}.} O corpo HTTP das requisições e respostas em rotas protegidas trafega cifrado por AES-256-GCM, dentro do envelope JSON com os campos \texttt{encryptedData}, \texttt{iv} e \texttt{authTag}. A chave simétrica é derivada por \textit{Elliptic Curve Diffie-Hellman} (ECDH P-384) na Fase~1 e renovada a cada novo canal.
-
-\textbf{Autenticação de usuário.} Rotas marcadas com a coluna \textit{Auth.} contendo o nível \texttt{U} exigem, adicionalmente, um \textit{token} \textit{JSON Web Token} (JWT) RS256 válido no cabeçalho \texttt{Authorization: Bearer <token>}.
-
-\textbf{Envelope padronizado de erro.} Todas as respostas de erro seguem o esquema \texttt{errorDetail} apresentado na Subseção~\ref{subsec:NPIAPI}, contendo os campos \texttt{code}, \texttt{message}, \texttt{retryable} e, opcionalmente, \texttt{details} e \texttt{retryAfter}.
-
-\textbf{Paginação.} As rotas de listagem que devolvem coleções aceitam os parâmetros de \textit{query} \texttt{page} (padrão $1$) e \texttt{pageSize} (padrão $100$ ou $10$, conforme o recurso). As rotas de sincronização incremental aceitam ainda o parâmetro \texttt{since} (\textit{timestamp} ISO~8601), que filtra entidades cujo \texttt{UpdatedAt} seja posterior ao valor informado.
-
-\textbf{Identificadores.} Todas as entidades transacionais utilizam \textit{Universally Unique Identifiers} (UUIDs) na versão~4 como chave primária, representados em rotas com o sufixo de tipo \texttt{\{id:guid\}}. As entidades do vocabulário SNOMED CT empregam o próprio código numérico mantido pela autoridade externa como chave natural, representado pelo parâmetro de rota \texttt{\{snomedCode\}}.
-
-A \autoref{tab:apendiceaAuth} resume a notação adotada nas tabelas de \textit{endpoints} para descrever as exigências de autenticação de cada rota.
-
-\begin{table}[htpb]
+\begin{figure}[htb]
+\caption{Telas de gestão de acessos do IRIS \emph{web}, exibindo a listagem unificada de usuários e pesquisadores cadastrados: (a) usuários cadastrados, (b) pesquisadores cadastrados.}
+\label{fig:irisTelaAcessos}
 \centering
-\caption{Notação dos requisitos de autenticação utilizada nas tabelas de \textit{endpoints}.}
-\label{tab:apendiceaAuth}
-\begin{tabular}{|p{0.13\textwidth}|p{0.84\textwidth}|}
-\hline
-\textbf{Sigla} & \textbf{Significado} \\ \hline
-\texttt{A} & \textit{Anonymous}: rota acessível sem qualquer autenticação. \\ \hline
-\texttt{C} & \textit{Encrypted Channel}: exige canal cifrado válido (cabeçalho \texttt{X-Channel-Id}). \\ \hline
-\texttt{C+S} & \textit{Encrypted Channel + Authenticated Session}: exige canal cifrado e sessão de aplicação ativa. \\ \hline
-\texttt{C+S+U} & Adicionalmente exige \textit{token} JWT de usuário no cabeçalho \texttt{Authorization}. \\ \hline
-\texttt{C+S+U(Adm)} & Adicionalmente exige que o \textit{token} JWT carregue o papel \textit{Admin}. \\ \hline
-\texttt{C+S(R/W)} & Sessão de aplicação com capacidade \textit{ReadWrite} (utilizada na sincronização federada). \\ \hline
-\end{tabular}
-\fonte{Autoria própria (2026)}
-\end{table}
+\subfloat[Usuários cadastrados]{
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/screens/gestao-acessos-usuarios.png}
+}\hspace{0.15cm}
+\subfloat[Pesquisadores cadastrados]{
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/screens/gestao-acessos-pesquisadores.png}
+}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htb]
+\caption{Telas de gestão de rótulos do IRIS \emph{web}, divididas pelas quatro entidades SNOMED CT manipuladas pelo NPI: (a) regiões anatômicas, (b) estruturas anatômicas, (c) modificadores topográficos, (d) condições clínicas.}
+\label{fig:irisTelaRotulos}
+\centering
+\subfloat[Regiões anatômicas]{
+\includegraphics[scale=0.18]{figuras/Desenvolvimento/IRIS/screens/snomed-body-region.png}
+}
+\subfloat[Estruturas anatômicas]{
+\includegraphics[scale=0.18]{figuras/Desenvolvimento/IRIS/screens/snomed-body-structure.png}
+} \newline
+\subfloat[Modificadores topográficos]{
+\includegraphics[scale=0.18]{figuras/Desenvolvimento/IRIS/screens/snomed-topografical-modifier.png}
+}
+\subfloat[Condições clínicas]{
+\includegraphics[scale=0.18]{figuras/Desenvolvimento/IRIS/screens/snomed-medical-condition.png}
+}\hspace{0.15cm}
+\fonte{}
+\end{figure}
+
+A consistência do sistema de \textit{design} é igualmente visível na tela de voluntários (Figura~\ref{fig:irisTelaPacientes}), que reaproveita o mesmo padrão de listagem das telas anteriores. A tela de detalhes de um projeto de pesquisa (Figura~\ref{fig:irisTelaPesquisas}) é a única que se afasta do padrão de listagem plana, por ser também a expressão mais visível da hierarquia de coletas: cada nível dessa hierarquia ocupa uma aba dedicada, o que permite ao pesquisador editar separadamente as aplicações, os dispositivos e os sensores associados ao projeto, bem como os pesquisadores e voluntários nele envolvidos. A tela disponibiliza ainda um botão dedicado à exportação consolidada de todos os dados associados ao projeto, que reúne, em um único arquivo, os metadados da hierarquia e as gravações vinculadas às sessões de coleta.
+
+\begin{figure}[htb]
+\caption{Telas de gestão de voluntários do IRIS \emph{web}: (a) voluntários cadastrados, (b) cadastro de novo voluntário.}
+\label{fig:irisTelaPacientes}
+\centering
+\subfloat[Voluntários cadastrados]{
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/screens/voluntarios-lista.png}
+}\hspace{0.15cm}
+\subfloat[Novo voluntário]{
+\includegraphics[scale=0.35]{figuras/Desenvolvimento/IRIS/screens/voluntarios-novo.png}
+}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htb]
+\caption{Telas de gestão de pesquisas do IRIS \emph{web}: (a) pesquisas cadastradas, (b) detalhes da pesquisa.}
+\label{fig:irisTelaPesquisas}
+\centering
+\subfloat[Pesquisas cadastradas]{
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/screens/pesquisa-lista.png}
+}\hspace{0.15cm}
+\subfloat[Detalhes da pesquisa]{
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/screens/pesquisa-detalhes.png}
+}
+\fonte{}
+\end{figure}
+
+A última tela de operação corrente é a de conexões federadas (Figura~\ref{fig:irisTelaConexoesAtivas}), que traduz a máquina de estados apresentada na Subseção~\ref{subsubsec:IRISFederacao} em um par de abas (\textit{Active} e \textit{Requests}) que separam visualmente as conexões já autorizadas das que aguardam decisão. A coluna de \textit{último \textit{sync}} apresenta o tempo decorrido em formato relativo (\textit{e.g.}, ``há 2 horas''), reforçando que a sincronização é uma operação intermitente e que sua atualidade é informação relevante para que o usuário decida se uma nova sincronização é necessária. Disparada a partir dessa mesma tela, a sincronização propriamente dita é acompanhada pelo \texttt{SyncProgressModal} (Figura~\ref{fig:irisTelaModalSync}), interface em três estados sequenciais: o manifesto inicial, em que o usuário confirma a operação após visualizar a contagem de entidades a transferir; o progresso, exibido enquanto o NPI local executa a transação atômica descrita na Subseção~\ref{subsubsec:IRISFederacao}; e o resumo final, que enumera as entidades efetivamente transferidas e fecha o ciclo iniciado pela pré-visualização.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.8\textwidth}
+\caption{Tela de conexões federadas do IRIS \emph{web}, na aba de conexões ativas.}
+\label{fig:irisTelaConexoesAtivas}
+\centering
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/screens/conexoes-lista.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htb]
+\caption{Modal de sincronização do IRIS \emph{web}: (a) início da sincronização, (b) sincronização em progresso, (c) resumo final da sincronização.}
+\label{fig:irisTelaModalSync}
+\centering
+\subfloat[Início da sincronização]{
+\includegraphics[scale=0.40]{figuras/Desenvolvimento/IRIS/screens/conexoes-sync.png}
+}\hspace{0.15cm}
+\subfloat[Sincronizando]{
+\includegraphics[scale=0.40]{figuras/Desenvolvimento/IRIS/screens/conexoes-syncing.png}
+}\
+\subfloat[Resumo da sincronização]{
+\includegraphics[scale=0.40]{figuras/Desenvolvimento/IRIS/screens/conexoes-sync-completed.png}
+}
+\fonte{}
+\end{figure}
 
 % ----------------------------------------------------------------------
-\section{Canal cifrado e \textit{handshake}}\label{sec:apendiceaCanal}
+\section{Telas do IRIS \textit{Mobile}}\label{sec:apendiceTelasIRISMobile}
 % ----------------------------------------------------------------------
 
-Os \textit{endpoints} deste grupo materializam as Fases~1, 2 e 3 do protocolo de \textit{handshake} apresentado na Subseção~\ref{subsec:NPIMiddleware}.
+Esta seção apresenta as cinco telas mais representativas do IRIS \textit{Mobile} (Subseção~\ref{subsec:IRISMobileTelas}), dispostas na ordem em que tipicamente são percorridas durante uma coleta: pareamento do dispositivo (Figura~\ref{fig:irisMobileTelaPareamento}), configuração da sessão clínica (Figura~\ref{fig:irisMobileTelaNewSession}), gerenciamento da sessão ativa (Figura~\ref{fig:irisMobileTelaSessaoAtiva}), captura ao vivo (Figura~\ref{fig:irisMobileTelaCaptura}) e, ao final, consulta ao histórico de coletas (Figura~\ref{fig:irisMobileTelaHistorico}).
 
-\begin{longtable}{|p{0.36\textwidth}|p{0.42\textwidth}|p{0.10\textwidth}|}
-\caption{\textit{Endpoints} de canal cifrado e \textit{handshake} entre nós.}\label{tab:apendiceaCanal} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaCanal})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{POST /api/channel/open} & Abre um novo canal cifrado por meio de troca ECDH P-384 efêmera; retorna o \texttt{channelId} a ser utilizado nas demais requisições. & \texttt{A} \\ \hline
-\texttt{POST /api/channel/initiate} & Inicia o \textit{handshake} contra um nó remoto, atuando como cliente do canal cifrado. & \texttt{A} \\ \hline
-\texttt{GET /api/channel/\{channelId\}} & Consulta os metadados de um canal aberto (uso diagnóstico). & \texttt{A} \\ \hline
-\texttt{GET /api/channel/health} & \textit{Health check} do serviço de canal cifrado. & \texttt{A} \\ \hline
-\texttt{POST /api/node/identify} & Fase~2: identifica o nó remoto no canal recém-aberto, apresentando o \textit{fingerprint} SHA-256 do certificado X.509. & \texttt{C} \\ \hline
-\texttt{POST /api/node/challenge} & Fase~3: solicita um desafio aleatório (32~bytes, TTL de cinco minutos) para autenticação mútua. & \texttt{C} \\ \hline
-\texttt{POST /api/node/authenticate} & Fase~3: submete o desafio assinado com a chave privada RSA-2048 e recebe o \textit{token} de sessão de aplicação. & \texttt{C} \\ \hline
-\end{longtable}
+A \texttt{BluetoothScreen} (Figura~\ref{fig:irisMobileTelaPareamento}) é o ponto de entrada do fluxo de coleta e ilustra o padrão de listagem do aplicativo: cabeçalho com título da seção, conteúdo principal preenchido pela lista de dispositivos compatíveis e ações primárias agrupadas em rodapé.
 
-% ----------------------------------------------------------------------
-\section{Sessão de aplicação}\label{sec:apendiceaSessao}
-% ----------------------------------------------------------------------
+\begin{figure}[htpb]
+\caption{Tela de pareamento do IRIS \textit{Mobile}, com a listagem dos dispositivos NeuroEstimulator pareados ao sistema operacional.}
+\label{fig:irisMobileTelaPareamento}
+\centering
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-pareamento.png}
+\fonte{}
+\end{figure}
 
-Os \textit{endpoints} deste grupo permitem inspecionar, renovar e revogar a sessão de aplicação emitida na Fase~3.
+A \texttt{SessionConfigScreen} (Figura~\ref{fig:irisMobileTelaNewSession}) é o local em que a sessão clínica recebe a contextualização semântica que distingue o IRIS \textit{Mobile} de um aplicativo genérico de captura de sinal. O formulário concentra a seleção do voluntário inscrito no projeto de pesquisa, da estrutura anatômica alvo da medição, dos modificadores topográficos aplicáveis --- todos extraídos do vocabulário SNOMED CT consumido por \texttt{SnomedService} (Subseção~\ref{subsec:IRISMobileArquitetura}) --- e do dispositivo e sensor que conduzirão a aquisição. Combinações frequentemente repetidas pelo pesquisador podem ser marcadas como configuração favorita; nesses casos, o \texttt{FavoriteRepository} grava localmente o conjunto completo de campos preenchidos, de modo que sessões posteriores possam ser pré-configuradas com um único toque.
 
-\begin{longtable}{|p{0.36\textwidth}|p{0.42\textwidth}|p{0.10\textwidth}|}
-\caption{\textit{Endpoints} de sessão de aplicação.}\label{tab:apendiceaSessao} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaSessao})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{POST /api/session/whoami} & Retorna os metadados da sessão de aplicação atualmente associada ao canal. & \texttt{C+S} \\ \hline
-\texttt{POST /api/session/renew} & Estende o \textit{Time To Live} (TTL) da sessão sem necessidade de novo \textit{handshake}. & \texttt{C+S} \\ \hline
-\texttt{POST /api/session/revoke} & Revoga a sessão de aplicação corrente (\textit{logout} do nó cliente). & \texttt{C+S} \\ \hline
-\texttt{POST /api/session/metrics} & Retorna métricas agregadas (contagens, taxas, distribuições) das sessões de aplicação do nó. & \texttt{C+S+U(Adm)} \\ \hline
-\end{longtable}
+\begin{figure}[htpb]
+\caption{Tela de configuração de sessão do IRIS \textit{Mobile}, com a seleção de voluntário, estrutura anatômica alvo, modificadores topográficos, dispositivo e sensor.}
+\label{fig:irisMobileTelaNewSession}
+\centering
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-configuracao-sessao.png}
+\fonte{}
+\end{figure}
 
-% ----------------------------------------------------------------------
-\section{Gestão de nós-pares}\label{sec:apendiceaNos}
-% ----------------------------------------------------------------------
+A \texttt{ActiveSessionScreen} (Figura~\ref{fig:irisMobileTelaSessaoAtiva}) é a tela de coordenação da sessão clínica em curso. Nela, o pesquisador acompanha a relação de \texttt{recordings} já produzidas, dispara novas gravações e gerencia as anotações associadas à sessão por meio da \texttt{AnnotationsListScreen}, embarcada na mesma tela. A separação entre essa tela e a \texttt{CaptureScreen} é uma decisão consciente: a sessão é a unidade que agrega as gravações e os rótulos discutidos na Subseção~\ref{subsec:IRISMobileRotulos}, enquanto a captura propriamente dita é uma operação pontual, repetível ao longo do tempo de duração da sessão.
 
-Os \textit{endpoints} deste grupo cobrem o registro, a aprovação e a listagem de NPIs federados, bem como a inspeção e a manutenção de conexões existentes.
+\begin{figure}[htpb]
+\caption{Tela de sessão ativa do IRIS \textit{Mobile}, com a listagem das gravações e das anotações associadas à sessão em curso.}
+\label{fig:irisMobileTelaSessaoAtiva}
+\centering
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-sessao-ativa.png}
+\fonte{}
+\end{figure}
 
-\begin{longtable}{|p{0.42\textwidth}|p{0.40\textwidth}|p{0.07\textwidth}|}
-\caption{\textit{Endpoints} de gestão de nós-pares.}\label{tab:apendiceaNos} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaNos})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{POST /api/node/register} & Registra um novo nó remoto no acervo de NPIs conhecidos pelo nó local. & \texttt{C} \\ \hline
-\texttt{GET /api/node/nodes} & Lista todos os nós conhecidos com seus respectivos estados de autorização. & \texttt{A} \\ \hline
-\texttt{PUT /api/node/\{id\}/status} & Altera o estado de autorização de um nó (\textit{Pending}, \textit{Authorized}, \textit{Revoked}). & \texttt{A} \\ \hline
-\texttt{POST /api/node/newconnection} & Solicita uma nova conexão lógica com um nó remoto previamente registrado. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/node/getactiveconnectionspaginated} & Lista, paginadamente, as conexões aprovadas e ativas. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/node/getallunaprovedpaginated} & Lista, paginadamente, as conexões pendentes de aprovação. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/node/\{connectionId\}/approve} & Aprova uma solicitação de conexão pendente. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/node/\{connectionId\}/reject} & Rejeita uma solicitação de conexão pendente. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/node/\{id:guid\}} & Recupera, por identificador, os metadados de uma conexão específica. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/node/update/\{id:guid\}} & Atualiza atributos administrativos de uma conexão existente. & \texttt{C+S+U} \\ \hline
-\end{longtable}
+A \texttt{CaptureScreen} (Figura~\ref{fig:irisMobileTelaCaptura}) é a tela operacional do aplicativo durante a aquisição. O gráfico em primeiro plano apresenta a janela de quatro segundos do sinal sEMG na taxa de renderização discutida na Subseção~\ref{subsec:IRISMobileCaptura}; abaixo dele, os controles de início e parada de gravação, um cronômetro e o atalho para a criação imediata de uma anotação compõem o conjunto mínimo de comandos exigidos durante a coleta.
 
-% ----------------------------------------------------------------------
-\section{Autenticação de usuário}\label{sec:apendiceaAuthUsuario}
-% ----------------------------------------------------------------------
+\begin{figure}[htpb]
+\caption{Tela de captura ao vivo do IRIS \textit{Mobile}, com o gráfico do sinal sEMG, controles de gravação e atalho de criação de anotação.}
+\label{fig:irisMobileTelaCaptura}
+\centering
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-captura.png}
+\fonte{}
+\end{figure}
 
-Os \textit{endpoints} deste grupo emitem e renovam o \textit{token} JWT que materializa a camada de autenticação humana descrita na Subseção~\ref{subsec:NPIArquitetura}.
+A \texttt{HistoryScreen} (Figura~\ref{fig:irisMobileTelaHistorico}) consolida visualmente o estado da sincronização discutido na Subseção~\ref{subsec:IRISMobileCaptura}. Cada linha apresenta a data de início da sessão, o nome do voluntário e a estrutura anatômica alvo e, à direita, a etiqueta colorida correspondente ao \texttt{sync\_status}; sessões em estado de falha exibem ainda um botão \textit{Retry} alinhado à etiqueta, capaz de reenfileirar a entidade ao próximo ciclo do \texttt{SyncService}. A tela oferece, adicionalmente, a ação de exportação local da sessão em arquivo \texttt{ZIP} contendo os arquivos CSV das gravações e os metadados associados, recurso útil para análise \textit{offline} ou para o transporte do material adquirido a outras ferramentas externas ao NPI.
 
-\begin{longtable}{|p{0.36\textwidth}|p{0.42\textwidth}|p{0.10\textwidth}|}
-\caption{\textit{Endpoints} de autenticação de usuário.}\label{tab:apendiceaAuthUsuario} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaAuthUsuario})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{POST /api/userauth/login} & Recebe par \textit{e-mail}/senha e devolve um \textit{token} JWT RS256 com TTL de uma hora. & \texttt{C+S} \\ \hline
-\texttt{POST /api/userauth/refreshtoken} & Renova o \textit{token} JWT antes da expiração, sem nova apresentação de credencial. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/userauth/encrypt} & Utilitário de cifragem assimétrica de texto livre, empregado no provisionamento inicial de credenciais. & \texttt{A} \\ \hline
-\end{longtable}
-
-% ----------------------------------------------------------------------
-\section{Gestão de usuários e pesquisadores}\label{sec:apendiceaUsuarios}
-% ----------------------------------------------------------------------
-
-Este grupo concentra as operações de \textit{Create-Read-Update-Delete} (CRUD) sobre os atores humanos do NPI: usuários administrativos e pesquisadores vinculados aos projetos.
-
-\begin{longtable}{|p{0.42\textwidth}|p{0.40\textwidth}|p{0.07\textwidth}|}
-\caption{\textit{Endpoints} de gestão de usuários e pesquisadores.}\label{tab:apendiceaUsuarios} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaUsuarios})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{GET /api/user/getusers} & Lista usuários paginados. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/user/new} & Cria um novo usuário. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/user/\{id:guid\}} & Recupera um usuário por identificador. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/user/update/\{id:guid\}} & Atualiza dados de um usuário. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/researcher/getresearchers} & Lista pesquisadores paginados. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/researcher/new} & Cadastra um novo pesquisador. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/researcher/\{id:guid\}} & Recupera um pesquisador por identificador. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/researcher/getresearcherbynodeid/\{nodeId\}} & Lista os pesquisadores associados a um nó remoto. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/researcher/update/\{id:guid\}} & Atualiza dados de um pesquisador. & \texttt{C+S+U} \\ \hline
-\end{longtable}
-
-% ----------------------------------------------------------------------
-\section{Gestão de pesquisas}\label{sec:apendiceaPesquisas}
-% ----------------------------------------------------------------------
-
-Este grupo expõe as operações sobre projetos de pesquisa (\texttt{Research}), incluindo a manipulação dos vínculos com pesquisadores, voluntários, dispositivos, sensores e aplicações cliente.
-
-\begin{longtable}{|p{0.46\textwidth}|p{0.36\textwidth}|p{0.07\textwidth}|}
-\caption{\textit{Endpoints} de gestão de pesquisas.}\label{tab:apendiceaPesquisas} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaPesquisas})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{POST /api/research/new} & Cria um novo projeto de pesquisa. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/getallpaginatedasync} & Lista projetos paginados. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{id:guid\}} & Recupera um projeto por identificador. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/research/\{id:guid\}} & Atualiza um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/research/\{id:guid\}} & Remove um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/getbystatus} & Filtra projetos pelo atributo \textit{status}. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/getactive} & Lista os projetos atualmente em execução. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/researchers} & Lista pesquisadores vinculados a um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/research/\{researchId:guid\}/researchers} & Vincula um pesquisador a um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/research/\{researchId:guid\}/researchers/\{researcherId:guid\}} & Atualiza o vínculo de um pesquisador (papel, datas). & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/research/\{researchId:guid\}/researchers/\{researcherId:guid\}} & Remove o vínculo de um pesquisador. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/volunteers} & Lista voluntários inscritos em um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/research/\{researchId:guid\}/volunteers} & Inscreve um voluntário em um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/research/\{researchId:guid\}/volunteers/\{volunteerId:guid\}} & Atualiza a inscrição de um voluntário. & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/research/\{researchId:guid\}/volunteers/\{volunteerId:guid\}} & Remove a inscrição de um voluntário. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/applications} & Lista aplicações cliente autorizadas a operar sobre um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/research/\{researchId:guid\}/applications} & Autoriza uma aplicação cliente a operar sobre um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/research/\{researchId:guid\}/applications/\{applicationId:guid\}} & Atualiza a autorização de uma aplicação. & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/research/\{researchId:guid\}/applications/\{applicationId:guid\}} & Revoga a autorização de uma aplicação. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/devices} & Lista dispositivos vinculados a um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/research/\{researchId:guid\}/devices} & Vincula um dispositivo a um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/research/\{researchId:guid\}/devices/\{deviceId:guid\}} & Atualiza o vínculo de um dispositivo. & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/research/\{researchId:guid\}/devices/\{deviceId:guid\}} & Remove o vínculo de um dispositivo. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/sensors} & Lista todos os sensores associados a um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/devices/\{deviceId:guid\}/sensors} & Lista os sensores de um dispositivo específico no escopo de um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{id:guid\}/export} & Exporta o acervo completo de um projeto em arquivo \textit{ZIP}. & \texttt{C+S+U} \\ \hline
-\end{longtable}
-
-% ----------------------------------------------------------------------
-\section{Gestão de voluntários}\label{sec:apendiceaVoluntarios}
-% ----------------------------------------------------------------------
-
-Este grupo expõe o CRUD da entidade \texttt{Volunteer}, complementando os \textit{endpoints} contextuais oferecidos pelo recurso \texttt{Research}.
-
-\begin{longtable}{|p{0.36\textwidth}|p{0.42\textwidth}|p{0.10\textwidth}|}
-\caption{\textit{Endpoints} de gestão de voluntários.}\label{tab:apendiceaVoluntarios} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaVoluntarios})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{GET /api/volunteer/getallpaginated} & Lista voluntários paginados. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/volunteer/new} & Cadastra um novo voluntário. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/volunteer/\{id:guid\}} & Recupera um voluntário por identificador. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/volunteer/update/\{id:guid\}} & Atualiza dados de um voluntário. & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/volunteer/\{id:guid\}} & Remove um voluntário. & \texttt{C+S+U} \\ \hline
-\end{longtable}
-
-% ----------------------------------------------------------------------
-\section{Gestão de dispositivos e sensores}\label{sec:apendiceaDispositivos}
-% ----------------------------------------------------------------------
-
-Este grupo expõe as operações sobre as entidades \texttt{Device} e \texttt{Sensor}, que descrevem o \textit{hardware} responsável pela aquisição dos biossinais.
-
-\begin{longtable}{|p{0.36\textwidth}|p{0.42\textwidth}|p{0.10\textwidth}|}
-\caption{\textit{Endpoints} de gestão de dispositivos e sensores.}\label{tab:apendiceaDispositivos} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaDispositivos})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{GET /api/device/getdevices} & Lista dispositivos paginados. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/device/new} & Cadastra um novo dispositivo. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/device/\{id:guid\}} & Recupera um dispositivo por identificador. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/sensor/new} & Cadastra um novo sensor associado a um dispositivo. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/sensor/\{id:guid\}} & Recupera um sensor por identificador. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/sensor/\{id:guid\}} & Atualiza dados de um sensor. & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/sensor/\{id:guid\}} & Remove um sensor. & \texttt{C+S+U} \\ \hline
-\end{longtable}
-
-% ----------------------------------------------------------------------
-\section{Sessões clínicas, gravações e \textit{upload}}\label{sec:apendiceaSessoesClinicas}
-% ----------------------------------------------------------------------
-
-Este grupo cobre o ciclo de vida das sessões de coleta (\texttt{ClinicalSession}), suas gravações (\texttt{Recording}), as anotações temporais associadas e o \textit{upload} dos arquivos de biossinal propriamente ditos.
-
-\begin{longtable}{|p{0.46\textwidth}|p{0.36\textwidth}|p{0.07\textwidth}|}
-\caption{\textit{Endpoints} de sessões clínicas, gravações e \textit{upload}.}\label{tab:apendiceaSessoesClinicas} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaSessoesClinicas})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{POST /api/clinicalsession/new} & Cria uma nova sessão clínica de coleta com rótulos SNOMED CT. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/clinicalsession/getallpaginated} & Lista sessões clínicas paginadas, com filtros opcionais por pesquisa, voluntário, \textit{status} e janela temporal. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/clinicalsession/\{id:guid\}} & Recupera uma sessão clínica por identificador. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/clinicalsession/update/\{id:guid\}} & Atualiza atributos administrativos de uma sessão clínica. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/clinicalsession/\{sessionId:guid\}/recordings/new} & Registra uma nova gravação associada a uma sessão clínica. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/clinicalsession/\{sessionId:guid\}/recordings} & Lista as gravações de uma sessão clínica. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/clinicalsession/\{sessionId:guid\}/annotations/new} & Adiciona uma anotação temporal a uma sessão clínica. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/clinicalsession/\{sessionId:guid\}/annotations} & Lista as anotações de uma sessão clínica. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/upload/recording} & Recebe o conteúdo binário de um canal de biossinal em rota dedicada para não inflar o \textit{payload} JSON dos demais \textit{endpoints}. & \texttt{C+S+U} \\ \hline
-\end{longtable}
-
-% ----------------------------------------------------------------------
-\section{Vocabulário clínico SNOMED CT}\label{sec:apendiceaSNOMED}
-% ----------------------------------------------------------------------
-
-Este grupo concentra o CRUD das entidades de catálogo do vocabulário clínico, organizadas em quatro famílias: estruturas anatômicas (\texttt{BodyStructure}), regiões corporais (\texttt{BodyRegion}), modificadores topográficos (\texttt{TopographicalModifier}) e condições clínicas (\texttt{ClinicalCondition}). A chave natural é, em todos os casos, o código SNOMED.
-
-\begin{longtable}{|p{0.50\textwidth}|p{0.32\textwidth}|p{0.07\textwidth}|}
-\caption{\textit{Endpoints} de vocabulário clínico SNOMED CT.}\label{tab:apendiceaSNOMED} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaSNOMED})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{GET /api/snomed/BodyStructure/getactivebodystructures} & Lista estruturas anatômicas ativas. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/BodyStructure/getallbodystructurespaginatedasync} & Lista estruturas anatômicas paginadas. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/snomed/BodyStructure/new} & Cadastra uma nova estrutura anatômica. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/BodyStructure/\{snomedCode\}} & Recupera uma estrutura anatômica pelo código SNOMED. & \texttt{C} \\ \hline
-\texttt{PUT /api/snomed/BodyStructure/update/\{snomedCode\}} & Atualiza uma estrutura anatômica. & \texttt{C} \\ \hline
-\texttt{GET /api/snomed/BodyRegion/getactivebodyregions} & Lista regiões corporais ativas. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/BodyRegion/getallbodyregionspaginatedasync} & Lista regiões corporais paginadas. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/snomed/BodyRegion/new} & Cadastra uma nova região corporal. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/BodyRegion/\{snomedCode\}} & Recupera uma região corporal pelo código SNOMED. & \texttt{C} \\ \hline
-\texttt{PUT /api/snomed/BodyRegion/update/\{snomedCode\}} & Atualiza uma região corporal. & \texttt{C} \\ \hline
-\texttt{GET /api/snomed/TopographicalModifier/getactivetopographicalmodifiers} & Lista modificadores topográficos ativos. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/TopographicalModifier/getalltopographicalmodifierspaginatedasync} & Lista modificadores topográficos paginados. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/snomed/TopographicalModifier/new} & Cadastra um novo modificador topográfico. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/TopographicalModifier/\{snomedCode\}} & Recupera um modificador topográfico pelo código SNOMED. & \texttt{C} \\ \hline
-\texttt{PUT /api/snomed/TopographicalModifier/update/\{snomedCode\}} & Atualiza um modificador topográfico. & \texttt{C} \\ \hline
-\texttt{GET /api/snomed/ClinicalCondition/getactiveclinicalconditions} & Lista condições clínicas ativas. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/ClinicalCondition/getallclinicalconditionspaginatedasync} & Lista condições clínicas paginadas. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/snomed/ClinicalCondition/new} & Cadastra uma nova condição clínica. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/ClinicalCondition/\{snomedCode\}} & Recupera uma condição clínica pelo código SNOMED. & \texttt{C} \\ \hline
-\texttt{PUT /api/snomed/ClinicalCondition/update/\{snomedCode\}} & Atualiza uma condição clínica. & \texttt{C} \\ \hline
-\end{longtable}
-
-% ----------------------------------------------------------------------
-\section{Sincronização federada}\label{sec:apendiceaSincronizacao}
-% ----------------------------------------------------------------------
-
-Os \textit{endpoints} deste grupo materializam o protocolo de sincronização federada descrito na Subseção~\ref{subsec:NPITrocaDados}. As rotas de leitura honram a semântica incremental por meio do parâmetro de \textit{query} \texttt{since}, e as rotas de orquestração disparam o ciclo \textit{pull} desde o nó consumidor.
-
-\begin{longtable}{|p{0.42\textwidth}|p{0.40\textwidth}|p{0.07\textwidth}|}
-\caption{\textit{Endpoints} de sincronização federada.}\label{tab:apendiceaSincronizacao} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaSincronizacao})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{POST /api/sync/manifest} & Gera o manifesto das entidades disponíveis no nó produtor para um dado \texttt{since}. & \texttt{C+S(R/W)} \\ \hline
-\texttt{GET /api/sync/snomed/\{entityType\}} & Exporta entidades de catálogo SNOMED CT (estruturas, regiões, modificadores, condições) com paginação. & \texttt{C+S(R/W)} \\ \hline
-\texttt{GET /api/sync/volunteers} & Exporta voluntários com sub-entidades aninhadas. & \texttt{C+S(R/W)} \\ \hline
-\texttt{GET /api/sync/researchers} & Exporta pesquisadores. & \texttt{C+S(R/W)} \\ \hline
-\texttt{GET /api/sync/devices} & Exporta dispositivos. & \texttt{C+S(R/W)} \\ \hline
-\texttt{GET /api/sync/sensors} & Exporta sensores. & \texttt{C+S(R/W)} \\ \hline
-\texttt{GET /api/sync/research} & Exporta projetos de pesquisa com seus vínculos. & \texttt{C+S(R/W)} \\ \hline
-\texttt{GET /api/sync/sessions} & Exporta sessões de gravação com anotações e canais aninhados. & \texttt{C+S(R/W)} \\ \hline
-\texttt{GET /api/sync/recordings/\{id:guid\}/file} & Recupera o conteúdo binário de um canal de gravação por identificador, em envelope JSON cifrado. & \texttt{C+S(R/W)} \\ \hline
-\texttt{POST /api/sync/import} & Importa, em transação ACID, o lote de entidades coletadas durante uma operação de \textit{pull}. & \texttt{A} \\ \hline
-\texttt{GET /api/sync/log} & Lista o histórico paginado de operações de sincronização contra um nó remoto. & \texttt{A} \\ \hline
-\texttt{POST /api/sync/preview} & Solicita ao nó remoto o manifesto de sincronização sem executar a importação. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/sync/pull} & Dispara um ciclo completo de sincronização \textit{backend-to-backend}, incluindo \textit{handshake} de quatro fases. & \texttt{C+S+U} \\ \hline
-\end{longtable}
-
-% ----------------------------------------------------------------------
-\section{Utilitários de testes e diagnóstico}\label{sec:apendiceaTestes}
-% ----------------------------------------------------------------------
-
-Os \textit{endpoints} desta seção não compõem o contrato público da API e estão presentes apenas no perfil de execução de testes do NPI. Reproduzem-se aqui para fins de completude, uma vez que são utilizados pelo arcabouço automatizado de testes de integração e podem ser desabilitados em ambientes de produção pela alteração de uma \textit{feature flag}.
-
-\begin{longtable}{|p{0.42\textwidth}|p{0.40\textwidth}|p{0.07\textwidth}|}
-\caption{\textit{Endpoints} de utilitários de testes e diagnóstico.}\label{tab:apendiceaTestes} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endfirsthead
-\multicolumn{3}{l}{\small\textit{(continuação da \autoref{tab:apendiceaTestes})}} \\ \hline
-\textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
-\endhead
-\hline \multicolumn{3}{r}{\small\textit{Continua na próxima página}} \\
-\endfoot
-\hline
-\caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
-\endlastfoot
-\texttt{POST /api/testing/generate-certificate} & Gera um certificado X.509 autoassinado para uso em ambiente de testes. & \texttt{A} \\ \hline
-\texttt{POST /api/testing/sign-data} & Assina um \textit{payload} arbitrário com a chave privada de um certificado de testes. & \texttt{A} \\ \hline
-\texttt{POST /api/testing/verify-signature} & Verifica a validade de uma assinatura RSA-2048 com a chave pública correspondente. & \texttt{A} \\ \hline
-\texttt{POST /api/testing/generate-node-identity} & Gera um pacote completo de identidade (certificado, par de chaves e assinatura de teste). & \texttt{A} \\ \hline
-\texttt{POST /api/testing/encrypt-payload} & Cifra um \textit{payload} com a chave simétrica de um canal ativo (helper). & \texttt{A} \\ \hline
-\texttt{POST /api/testing/decrypt-payload} & Decifra um \textit{payload} com a chave simétrica de um canal ativo (helper). & \texttt{A} \\ \hline
-\texttt{POST /api/testing/request-challenge} & Solicita, no fluxo de testes, um desafio de autenticação remoto. & \texttt{A} \\ \hline
-\texttt{POST /api/testing/sign-challenge} & Assina um desafio recebido com a chave privada de testes. & \texttt{A} \\ \hline
-\texttt{POST /api/testing/authenticate} & Submete o desafio assinado e completa a autenticação no contexto de testes. & \texttt{A} \\ \hline
-\texttt{GET /api/testing/channel-info/\{channelId\}} & Inspeciona os atributos não sensíveis de um canal cifrado ativo. & \texttt{A} \\ \hline
-\texttt{POST /api/testing/complete-phase1-phase2} & Executa, em uma única chamada, as Fases~1 e 2 do \textit{handshake} (auxílio à automação de testes). & \texttt{A} \\ \hline
-\end{longtable}
-
-% ----------------------------------------------------------------------
-\section{Considerações finais sobre a referência}\label{sec:apendiceaConsideracoes}
-% ----------------------------------------------------------------------
-
-A referência exposta neste apêndice contempla cento e trinta e nove \textit{endpoints} distribuídos em dezesseis \textit{controllers} de \textit{ASP.NET Core}, organizados nos onze grupos funcionais reproduzidos nas Seções~\ref{sec:apendiceaCanal} a \ref{sec:apendiceaSincronizacao} e nos utilitários de testes da Seção~\ref{sec:apendiceaTestes}. Os esquemas detalhados de \textit{request} e \textit{response}, incluindo a definição completa dos DTOs e dos códigos de erro, permanecem disponíveis na rota \texttt{/swagger} do NPI quando o serviço está em execução, e podem ser exportados como artefato \textit{OpenAPI} 3.0 a partir do mesmo \textit{endpoint}. A consulta a esses esquemas é necessária apenas em situações de implementação de novos clientes da API; para fins de leitura do trabalho, as descrições aqui apresentadas são suficientes.
+\begin{figure}[htpb]
+\caption{Tela de histórico de coletas do IRIS \textit{Mobile}, com etiquetas indicativas do estado de sincronização de cada sessão.}
+\label{fig:irisMobileTelaHistorico}
+\centering
+\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-historico.png}
+\fonte{}
+\end{figure}

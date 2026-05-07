@@ -1,0 +1,88 @@
+%%%% APÊNDICE -- DIAGRAMAS DE BANCO DE DADOS DO NPI
+%%
+%% Apresenta a visão consolidada do modelo entidade-relacionamento do NPI e os
+%% recortes detalhados das quatro famílias funcionais discutidas no Capítulo
+%% de Desenvolvimento. Os diagramas foram deslocados para apêndice de modo a
+%% preservar a fluidez do texto principal e oferecer ao leitor interessado em
+%% leitura estrutural um material consolidado.
+
+\chapter{Diagramas de banco de dados do Nó de Pesquisa Interoperável}\label{cap:apendiceDiagramasBanco}
+
+Este apêndice reúne, em ordem temática, os cinco diagramas entidade-relacionamento que descrevem o modelo de dados do Nó de Pesquisa Interoperável (NPI), discutidos em alto nível na Subseção~\ref{subsec:NPIDados}. A apresentação inicia-se pela visão consolidada das quatro famílias funcionais (Seção~\ref{sec:apendiceBancoVisaoGeral}) e prossegue pelo recorte detalhado de cada uma delas: federação e identidade (Seção~\ref{sec:apendiceBancoFederacao}), pesquisa (Seção~\ref{sec:apendiceBancoPesquisa}), aquisição (Seção~\ref{sec:apendiceBancoAquisicao}) e vocabulário clínico (Seção~\ref{sec:apendiceBancoVocabulario}).
+
+A separação por família é deliberada e reflete o agrupamento funcional adotado pelo \texttt{PrismDbContext}: a visão consolidada permite ao leitor perceber as fronteiras de cada família e os pontos em que elas se conectam, enquanto os recortes detalhados revelam os atributos individuais e as cardinalidades das tabelas de junção, informação tipicamente omitida no diagrama global por uma questão de legibilidade. As entidades de catálogo SNOMED CT, em particular, materializam o uso de chaves naturais externas ao NPI, padrão decorrente da decisão arquitetural de delegar à autoridade mantenedora a unicidade global desses identificadores. Todas as demais entidades transacionais utilizam \textit{Universally Unique Identifier} (UUID) na versão~4 como chave primária, conforme detalhado no texto.
+
+% ----------------------------------------------------------------------
+\section{Visão geral das quatro famílias funcionais}\label{sec:apendiceBancoVisaoGeral}
+% ----------------------------------------------------------------------
+
+A Figura~\ref{fig:NPIModeloDados} apresenta um diagrama entidade-relacionamento simplificado do NPI agrupado pelas quatro famílias funcionais: federação e identidade, pesquisa, aquisição e vocabulário clínico. Por concisão, foram preservados apenas os atributos-chave e os relacionamentos principais entre famílias; os recortes individuais nas seções seguintes detalham os atributos e as cardinalidades omitidos nesta visão global.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.9\textwidth}
+\caption{Diagrama entidade-relacionamento simplificado do NPI agrupado pelas quatro famílias funcionais.}
+\label{fig:NPIModeloDados}
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/Desenvolvimento/NPI/modeloDados-visaoGeral.png}
+\fonte{}
+\end{figure}
+
+% ----------------------------------------------------------------------
+\section{Família de federação e identidade}\label{sec:apendiceBancoFederacao}
+% ----------------------------------------------------------------------
+
+A Figura~\ref{fig:NPIModeloDadosFederacao} detalha as entidades responsáveis pela operação multinó. A entidade \texttt{ResearchNode} representa cada nó da rede, armazena seu certificado X.509 e mantém o atributo \texttt{CertificateFingerprint} (resumo SHA-256 do certificado) declarado como índice único, configurando a chave natural pela qual nós se reconhecem mutuamente durante o \textit{handshake}. As entidades \texttt{User} e \texttt{Researcher} modelam os agentes humanos com acesso ao nó; \texttt{Application} representa as aplicações cliente registradas, incluindo outros NPIs, autorizadas a operar sobre os recursos do nó local. A entidade \texttt{SyncLog} mantém o histórico de cada sincronização realizada com nós remotos --- \textit{status}, marcas temporais, contadores em formato JSON e mensagens de erro --- e serve de base à estratégia de sincronização incremental discutida na Subseção~\ref{subsec:NPITrocaDados}.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.9\textwidth}
+\caption{Família de \textbf{federação e identidade}: atributos detalhados das entidades responsáveis pela operação multinó (\texttt{ResearchNode}, \texttt{User}, \texttt{Researcher}, \texttt{Application}, \texttt{SyncLog}).}
+\label{fig:NPIModeloDadosFederacao}
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/Desenvolvimento/NPI/modeloDados-familia-federacao.png}
+\fonte{}
+\end{figure}
+
+% ----------------------------------------------------------------------
+\section{Família de pesquisa}\label{sec:apendiceBancoPesquisa}
+% ----------------------------------------------------------------------
+
+A Figura~\ref{fig:NPIModeloDadosPesquisa} apresenta o recorte da família de pesquisa, organizada em torno da entidade \texttt{Research}. O projeto de pesquisa agrega relacionamentos N:N com pesquisadores (\texttt{Researcher}), voluntários (\texttt{Volunteer}), dispositivos (\texttt{Device}) e seus respectivos sensores (\texttt{Sensor}). As tabelas de junção materializam essas relações e carregam atributos de contexto --- por exemplo, o papel do pesquisador no projeto e a data de inscrição do voluntário --- que não pertencem nem à entidade-mãe nem à entidade vinculada. Essa modelagem permite que um mesmo voluntário participe simultaneamente de mais de um projeto sob papéis distintos sem duplicação de cadastro.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.9\textwidth}
+\caption{Família de \textbf{pesquisa}: entidades \texttt{Research}, \texttt{Volunteer}, \texttt{Device} e \texttt{Sensor}, com as tabelas de junção que materializam suas relações N:N.}
+\label{fig:NPIModeloDadosPesquisa}
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/Desenvolvimento/NPI/modeloDados-familia-pesquisa.png}
+\fonte{}
+\end{figure}
+
+% ----------------------------------------------------------------------
+\section{Família de aquisição}\label{sec:apendiceBancoAquisicao}
+% ----------------------------------------------------------------------
+
+A Figura~\ref{fig:NPIModeloDadosAquisicao} detalha o ciclo da coleta. A entidade \texttt{RecordSession} representa uma sessão de coleta vinculada a um voluntário e a uma pesquisa; \texttt{Record} agrega os registros gerados em cada sessão; \texttt{RecordChannel} corresponde a um canal individual de sinal, com sua taxa de amostragem, contagem de amostras e referência à URI do \textit{blob} bruto armazenado no Azure Blob Storage. A entidade \texttt{TargetArea} interliga as sessões de aquisição ao vocabulário clínico, registrando, para cada sessão, a região anatômica alvo da medição e os modificadores aplicáveis; anotações descritivas livres ficam em \texttt{SessionAnnotation}. O atributo \texttt{UpdatedAt} de \texttt{RecordChannel} é o \textit{watermark} consultado pelo protocolo de sincronização incremental (Subseção~\ref{subsec:NPITrocaDados}) para identificar as alterações posteriores ao último ponto de corte conhecido pelo nó consumidor.
+
+\begin{figure}[htpb]
+\captionsetup{width=0.9\textwidth}
+\caption{Família de \textbf{aquisição}: ciclo da coleta modelado por \texttt{RecordSession}, \texttt{Record}, \texttt{RecordChannel}, \texttt{TargetArea} e \texttt{SessionAnnotation}.}
+\label{fig:NPIModeloDadosAquisicao}
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/Desenvolvimento/NPI/modeloDados-familia-aquisicao.png}
+\fonte{}
+\end{figure}
+
+% ----------------------------------------------------------------------
+\section{Família de vocabulário clínico}\label{sec:apendiceBancoVocabulario}
+% ----------------------------------------------------------------------
+
+A Figura~\ref{fig:NPIModeloDadosVocabulario} detalha as entidades de vocabulário clínico mapeadas à terminologia SNOMED CT: estruturas anatômicas (\texttt{SnomedBodyStructure}), regiões corporais (\texttt{SnomedBodyRegion}), modificadores topográficos (\texttt{SnomedTopographicalModifier}), lateralidade (\texttt{SnomedLaterality}) e a entidade \texttt{ClinicalCondition}. As tabelas de junção que vinculam essas entidades a voluntários e a áreas-alvo materializam a contextualização semântica do biossinal: cada \texttt{RecordChannel} aponta para uma \texttt{TargetArea}, que por sua vez referencia uma estrutura anatômica, uma lateralidade e zero ou mais modificadores topográficos. A escolha do código SNOMED como chave natural global elimina a possibilidade de colisão semântica entre nós: dois NPIs que carreguem a mesma estrutura corporal o farão com o mesmo \texttt{SnomedCode}, ainda que tenham importado a partir de fontes distintas, sustentando a estratégia de \textit{last-write-wins} por \textit{watermark} \texttt{UpdatedAt} adotada pelo protocolo de sincronização (Subseção~\ref{subsec:NPITrocaDados}).
+
+\begin{figure}[htpb]
+\captionsetup{width=0.9\textwidth}
+\caption{Família de \textbf{vocabulário clínico}: entidades SNOMED CT (estruturas anatômicas, regiões corporais, modificadores topográficos e lateralidade) e \texttt{ClinicalCondition}, com as junções para voluntários e áreas-alvo.}
+\label{fig:NPIModeloDadosVocabulario}
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/Desenvolvimento/NPI/modeloDados-familia-vocabulario.png}
+\fonte{}
+\end{figure}
