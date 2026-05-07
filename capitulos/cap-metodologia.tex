@@ -2,7 +2,7 @@
 
 \chapter{Metodologia}\label{cap:metodologia}
 
-As etapas de desenvolvimento do Padrão de Rótulos e Interfaces para Sistemas Médicos (PRISM) foram inicialmente definidas de acordo com o demonstrado pela Figura \ref{fig:metodologiaGeral}. Primeiramente, é realizada a revisão da literatura sobre o assunto, na qual são identificados os requisitos e as tecnologias esperados de uma solução como a apresentada neste trabalho. Em seguida, na etapa de escopo da proposta, o autor delimita os processos que descrevem como os componentes participantes do sistema irão interagir entre si e quais as estruturas de dados obrigatórias para essa interação.
+As etapas de desenvolvimento do Padrão de Rótulos e Interfaces para Sistemas Médicos (PRISM) foram inicialmente definidas de acordo com o demonstrado pela Figura \ref{fig:metodologiaGeral}. Primeiramente, foi realizada a revisão da literatura sobre o assunto, na qual foram identificados os requisitos e as tecnologias esperados de uma solução como a apresentada neste trabalho. Em seguida, na etapa de escopo da proposta, o autor delimitou os processos que descrevem como os componentes participantes do sistema irão interagir entre si e quais as estruturas de dados obrigatórias para essa interação.
 
 \begin{figure}[htb]%% Ambiente figure
     %\captionsetup{width=0.55\textwidth}%% Largura da legenda
@@ -12,43 +12,43 @@ As etapas de desenvolvimento do Padrão de Rótulos e Interfaces para Sistemas M
     \fonte{Autoria própria (2025)}%% Fonte
 \end{figure}
 
-Definido o escopo, prossegue-se para a construção e implantação dos artefatos, iniciando-se pelo Nó de Pesquisa Interoperável (NPI), que servirá como meio de interoperabilidade e espinha dorsal da proposta. Finalizada a construção do NPI, é desenvolvido um projeto exemplo, constituído por um sistema de gestão de acesso e voluntários integrado a um sistema de captura de sEMG orquestrado pelo PRISM, no qual o armazenamento dos dados produzidos pela solução e a gestão de acesso às informações são realizados pelo NPI. Com o projeto exemplo pronto para uso, parte-se para a etapa de coleta de dados dos voluntários, populando o sistema com os dados e biossinais adquiridos. Por fim, são validados os resultados obtidos.
+Definido o escopo, prosseguiu-se para a construção e implantação dos artefatos, iniciando-se pelo Nó de Pesquisa Interoperável (NPI), que atua como meio de interoperabilidade e espinha dorsal da proposta. Finalizada a construção do NPI, foi desenvolvido um projeto exemplo, constituído por um sistema de gestão de acesso e voluntários integrado a um sistema de captura de sEMG orquestrado pelo PRISM, no qual o armazenamento dos dados produzidos pela solução e a gestão de acesso às informações são realizados pelo NPI. Com o projeto exemplo pronto para uso, partiu-se para a etapa de coleta de dados dos voluntários, populando o sistema com os dados e biossinais adquiridos. Por fim, foram validados os resultados obtidos.
 
 \section{Modelo proposto}\label{sec:modeloProposto}
 
-O PRISM busca resolver o problema propondo um modelo de organização para projetos de pesquisa de captura de biossinais, agrupando elementos de um projeto em supernós com funcionalidades específicas, permitindo a visualização e explicitando as principais trocas de informação dos componentes dos projetos de forma normalizada ao reduzir todo o projeto de pesquisa em elementos básicos, o \textit{dispositivo} e a \textit{aplicação}. Essa redução agrupa os componentes do projeto de acordo com suas funcionalidades principais buscando unir os fluxo de dados e seus participantes afim de evidenciar os principais pontos de integração que podem ser interligados a um NPÌ.
+O PRISM busca resolver o problema propondo um modelo de organização para projetos de pesquisa de captura de biossinais, agrupando elementos de um projeto em supernós com funcionalidades específicas, permitindo a visualização e explicitando as principais trocas de informação dos componentes dos projetos de forma normalizada ao reduzir todo o projeto de pesquisa em elementos básicos, o ``dispositivo'' e a ``aplicação''. Essa redução agrupa os componentes do projeto de acordo com suas funcionalidades principais buscando unir os fluxo de dados e seus participantes afim de evidenciar os principais pontos de integração que podem ser interligados a um NPÌ.
 
 Além disso, o PRISM obriga os projetos participantes a ter pelo menos um sistema que possua uma interface em conformidade com os requisitos de estrutura do padrão, incentivando que esse projetos sejam capazes de fazer a conversão de seus dados internos e armazenem seus dados em conformidade aos padrões propostos pelo trabalho, promovendo um consenso entre os projetos que adotem o padrão.
 
-O \textit{dispositivo} é um sistema construído com componentes de hardware e software especializados na captura e transmissão de registros de biossinais originados de seres vivos, ou seja, são sistemas embarcados especialistas em aquisição e transmissão de registros via sensores elétricos, mecânicos, ópticos e químicos que possuem limitações de recursos de memória e processamento. Eles obrigatoriamente entram em contato com o paciente de forma direta ou indireta, através de fluídos, e é operado pelo profissional através da aplicação. São representados por losangos nos diagramas.
+O ``dispositivo'' é um sistema construído com componentes de hardware e software especializados na captura e transmissão de registros de biossinais originados de seres vivos, ou seja, são sistemas embarcados especialistas em aquisição e transmissão de registros via sensores elétricos, mecânicos, ópticos e químicos que possuem limitações de recursos de memória e processamento. Eles obrigatoriamente entram em contato com o paciente de forma direta ou indireta, através de fluídos, e é operado pelo profissional através da aplicação. São representados por losangos nos diagramas.
 
-A \textit{aplicação} é um sistema construído com componentes de hardware e software generalistas que responsáveis pela adição de contexto, processamento e persistência de longo prazo dos registros enviados pelos dispositivos. Ou seja, computadores pessoais, servidores e dispositivos móveis que rodam um ou mais sistemas com interface gráfica que permitem operar os dispositivos e manipular as informações capturadas a partir deles pelos profissionais de saúde. São representados por círculos no diagrama
+A ``aplicação'' é um sistema construído com componentes de hardware e software generalistas que responsáveis pela adição de contexto, processamento e persistência de longo prazo dos registros enviados pelos dispositivos. Ou seja, computadores pessoais, servidores e dispositivos móveis que rodam um ou mais sistemas com interface gráfica que permitem operar os dispositivos e manipular as informações capturadas a partir deles pelos profissionais de saúde. São representados por círculos no diagrama
 
-O \textit{projeto} é um agrupamento de dispositivos e aplicações que se comunicam entre si com a função de capturar dados biomédicos e construir com contextos específicos com esses dados de acordo com seu objetivo. Ele assume o papel de entidade geradora de dados médicos contextualizados e é um produto da colaboração entre paciente, profissional de saúde, dispositivo e aplicação que é capaz de produzir dados com grande quantidade de rótulos e contexto agregados.
+O ``projeto'' é um agrupamento de dispositivos e aplicações que se comunicam entre si com a função de capturar dados biomédicos e construir com contextos específicos com esses dados de acordo com seu objetivo. Ele assume o papel de entidade geradora de dados médicos contextualizados e é um produto da colaboração entre paciente, profissional de saúde, dispositivo e aplicação que é capaz de produzir dados com grande quantidade de rótulos e contexto agregados.
 
-O componente central do PRISM é o \textit{Nó de Pesquisa Interoperável} (NPI), se trata de sistema que gerencia a autenticação, o armazenamento, a validação e o acesso aos dados requerido pelo PRISM para promover o compartilhamento dos dados e uso dos entre aplicações de projetos e outros NPIs, agindo  como um nó moderador da rede.
+O componente central do PRISM é o ``Nó de Pesquisa Interoperável'' (NPI), se trata de sistema que gerencia a autenticação, o armazenamento, a validação e o acesso aos dados requerido pelo PRISM para promover o compartilhamento dos dados e uso dos entre aplicações de projetos e outros NPIs, agindo  como um nó moderador da rede.
 
-As figuras \ref{fig:projetoBase}, \ref{fig:identificacao} e \ref{fig:reducaoPrism} mostram o processo de redução do PRISM aplicado a um projeto um sistema de captura de biossinais de sEMG.
+As Figuras \ref{fig:projetoBase}, \ref{fig:identificacao} e \ref{fig:reducaoPrism} apresentam o processo de redução do PRISM aplicado a um projeto um sistema de captura de biossinais de sEMG.
 
 \begin{figure}[htb]
-    \caption{Diagrama base do projeto}
+    \caption{Diagrama base do projeto desenvolvido neste trabalho}
 	\label{fig:projetoBase}
     \includegraphics[width=\textwidth]{figuras/metodologia/pre-adaptacao.png}%% Dimensões e 
-	\fonte{Autoria própria (2025)}
+	\fonte{}
 \end{figure}
 
 \begin{figure}[htb]
     \caption{Identificação dos componentes de acordo com o PRISM}
 	\label{fig:identificacao}
     \includegraphics[width=\textwidth]{figuras/metodologia/identificacao.png}%% Dimensões e 
-	\fonte{Autoria própria (2025)}
+	\fonte{}
 \end{figure}
 
 \begin{figure}[htb]
     \caption{Representação do projeto após redução ao PRISM}
 	\label{fig:reducaoPrism}
     \includegraphics[scale=0.25]{figuras/metodologia/convertido.png}%% Dimensões e 
-	\fonte{Autoria própria (2025)}
+	\fonte{}
 \end{figure}
 
 \section{Coleta de dados}\label{sec:coletaDeDados}
@@ -57,22 +57,18 @@ Esta seção descreve sobre os materiais e métodos utilizados para a coleta de 
 
 \subsection{NeuroEstimulator}
 
-O NeuroEstimulator é um dispositivo de eletroestimulação funcional(\textit{Functional Electrical Stimulation} --- FES) que emprega como gatilho a ativação muscular detectada por seu próprio sensor de sEMG de um canal. O microcontrolador adotado é o ESP32, responsável tanto pela orquestração da aquisição do sinal quanto pela comunicação com sistemas externos.
+O NeuroEstimulator é um dispositivo de eletroestimulação funcional (\textit{Functional Electrical Stimulation} --- FES) que emprega como gatilho a ativação muscular detectada por seu próprio sensor de sEMG de um canal. O microcontrolador adotado é o ESP32, responsável tanto pela aquisição do sinal quanto pela comunicação com sistemas externos.
 
 A etapa de aquisição utiliza o módulo AD8232, um \textit{front-end} analógico desenvolvido para sinais biopotenciais, encarregado da amplificação e do condicionamento do sinal de sEMG. A digitalização é realizada pelo conversor analógico-digital ADS1115 (Texas Instruments, 16~bits), configurado com taxa máxima de amostragem de 860~SPS (\textit{samples per second}). A comunicação com sistemas externos ocorre via módulo Bluetooth Classic HC-06, utilizando um protocolo de mensagens próprio. No nível de software, o firmware embarcado no ESP32 é estruturado sobre o sistema operacional de tempo real FreeRTOS, organizando as rotinas de aquisição, comunicação e estimulação em tarefas concorrentes. NeuroEstimulator recebe comandos e envia informação através de um aplicativo Android conectado pelo Bluetooth.
 
-O dispositivo utilizado neste trabalho é uma evolução do equipamento proposto por \citeonline{veroFES}, tendo sido implementado pelo presente autor em coautoria com colegas no âmbito da disciplina \textit{Oficinas de Integração 3} do curso de Engenharia de Computação da UTFPR. O módulo AD8232 incorpora as modificações propostas por \citeonline{jjj8232}.
-
-Para os fins deste trabalho, foram aproveitados exclusivamente os módulos relacionados à captura do sinal de sEMG, sendo descartadas as funcionalidades de eletroestimulação, uma vez que o foco da pesquisa
+O dispositivo utilizado neste trabalho é uma evolução do equipamento proposto por \citeonline{veroFES}. O módulo AD8232 incorpora as modificações propostas por \citeonline{jjj8232}. Para os fins deste trabalho, foram aproveitados exclusivamente os módulos relacionados à captura do sinal de sEMG, sendo descartadas as funcionalidades de eletroestimulação, uma vez que o foco da pesquisa
 recai sobre a interoperabilidade dos dados adquiridos e não sobre a intervenção terapêutica em voluntários.
 
 \subsection{Roteiro de Coleta de Dados}
 
-Com o objetivo de gerar dados para testar a funcionalidade de sincronização entre dois NPIs distintos, adotou-se como protocolo a contração isométrica do bíceps, com posterior criação das etiquetas correspondentes na plataforma.
+Com o objetivo de gerar dados para testar a funcionalidade de sincronização entre dois NPIs distintos, adotou-se como protocolo a contração isométrica do bíceps, com posterior criação das etiquetas correspondentes na plataforma. %Os procedimentos de aquisição foram aprovados pelo Comitê de Ética em Pesquisa com Seres Humanos da Universidade Tecnológica Federal do Paraná (CEP/UTFPR), sob parecer nº~7.218.395.
 
-Os procedimentos de aquisição foram aprovados pelo Comitê de Ética em Pesquisa com Seres Humanos da Universidade Tecnológica Federal do Paraná (CEP/UTFPR), sob parecer nº~7.218.395.
-
-Neste trabalho, os sinais foram coletados do próprio autor, uma vez que o cerne da investigação reside na estrutura dos dados e em sua sincronização entre nós, e não na qualidade do sinal capturado. Complementarmente, o Capítulo~\ref{cap:resultados} apresenta uma análise dos dados obtidos quando a entrada do sistema é alimentada por um gerador de funções com parâmetros conhecidos, permitindo avaliar quantitativamente a fidelidade da cadeia de aquisição.
+Neste trabalho, os sinais foram coletados do próprio autor, uma vez que o cerne da investigação reside na estrutura dos dados e em sua sincronização entre nós, e não na qualidade do sinal capturado. Complementarmente, apresenta uma análise dos dados obtidos quando a entrada do sistema é alimentada por um gerador de funções com parâmetros conhecidos, permitindo avaliar quantitativamente a fidelidade da cadeia de aquisição.
 
 \section{Ferramentas Utilizadas}\label{sec:ferramentas}
 
