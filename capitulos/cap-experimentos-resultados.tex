@@ -12,7 +12,7 @@ Para testar a hipótese de interoperabilidade através da troca de dados estrutu
     \captionsetup{width=1\textwidth}
     \caption{Estrutura institucional simulada para validação do PRISM.}
     \label{fig:estruturaSimulada}
-    \includegraphics[scale=0.12]{figuras/Desenvolvimento/visaoGeral/estrutura-simulada.png}
+    \includegraphics[width=\textwidth]{figuras/Desenvolvimento/visaoGeral/estrutura-simulada.png}
     \fonte{}
 \end{figure}
 
@@ -22,7 +22,7 @@ Dentro desse cenário, este trabalho estrutura o fluxo de consumo dos dados de p
 \captionsetup{width=1\textwidth}
 \caption{Fluxo de dados pretendido entre as instituições simuladas.}
 \label{fig:fluxo-simulado}
-\includegraphics[scale=0.12]{figuras/Desenvolvimento/visaoGeral/fluxo-simulado.png}
+\includegraphics[width=\textwidth]{figuras/Desenvolvimento/visaoGeral/fluxo-simulado.png}
 \fonte{}
 \end{figure}
 
@@ -227,9 +227,6 @@ A documentação completa da API --- com todos os \textit{endpoints}, parâmetro
 % ----------------------------------------------------------------------
 
 A troca de dados entre NPIs é o momento em que a hipótese central deste trabalho aparece em ato: dois nós autônomos, possivelmente operados por instituições distintas, devem reconciliar seus acervos de pesquisa sem perder semântica clínica e sem violar a soberania local sobre os dados. Nesta subseção, descreve-se o protocolo construído para essa reconciliação. Adota-se a convenção de que o NPI-A é o nó \textit{produtor}, aquele que detém a coleta original, e o NPI-B é o nó \textit{consumidor}, que solicita uma cópia parcial ou completa daquele acervo. Essa nomenclatura é assimétrica por escolha: o protocolo implementado segue o modelo \textit{pull}, no qual o consumidor é sempre o iniciador da transferência, conforme se justifica nas sub-subseções seguintes.
-
-% --- 4.2.5.1 ---
-\subsubsection{Descoberta e \textit{handshake} entre nós}
 
 A descoberta entre NPIs ocorre em dois tempos. O primeiro é administrativo: o operador do NPI-B registra previamente, em sua tabela local de nós conhecidos, o endereço (URL) e o certificado digital esperado do NPI-A. O segundo tempo é dinâmico e reusa integralmente o protocolo de identificação descrito na Subseção~\ref{subsec:NPIMiddleware} e ilustrado pelas Figuras~\ref{fig:auth-fase-1}, \ref{fig:auth-fase-2} e \ref{fig:auth-fase-3}: ao receber a primeira requisição do nó remoto, o NPI-B percorre as três fases ali detalhadas (abertura de canal, identificação por \textit{fingerprint} de certificado e desafio-resposta), só admitindo a continuidade da troca caso o estado registrado seja \textit{Authorized}.
 

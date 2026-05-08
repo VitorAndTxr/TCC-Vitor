@@ -28,27 +28,46 @@ O ``projeto'' é um agrupamento de dispositivos e aplicações que se comunicam 
 
 O componente central do PRISM é o ``Nó de Pesquisa Interoperável'' (NPI), se trata de sistema que gerencia a autenticação, o armazenamento, a validação e o acesso aos dados requerido pelo PRISM para promover o compartilhamento dos dados e uso dos entre aplicações de projetos e outros NPIs, agindo  como um nó moderador da rede.
 
-As Figuras \ref{fig:projetoBase}, \ref{fig:identificacao} e \ref{fig:reducaoPrism} apresentam o processo de redução do PRISM aplicado a um projeto um sistema de captura de biossinais de sEMG.
+Para exemplificar o processo de agrupamento de componentes e módulos
+de uma pesquisa segundo a redução proposta pelo PRISM, adota-se como
+caso de estudo o projeto de sEMG utilizado neste trabalho, representado
+pela Figura \ref{fig:projetoBase}. Como esse projeto é descrito por um
+conjunto extenso de diagramas que detalham seu funcionamento, faz-se
+necessária a elaboração de uma representação unificada capaz de
+evidenciar todos os pontos de troca de dados entre seus componentes.
 
 \begin{figure}[htb]
-    \caption{Diagrama base do projeto desenvolvido neste trabalho}
-	\label{fig:projetoBase}
-    \includegraphics[width=\textwidth]{figuras/metodologia/pre-adaptacao.png}%% Dimensões e 
-	\fonte{}
+    \caption{Representação de um projeto}
+    \label{fig:projetoBase}
+    \includegraphics[width=\textwidth]{figuras/metodologia/pre-adaptacao.png}
+    \fonte{}
 \end{figure}
+
+A partir desses diagramas, agrupam-se os componentes do projeto
+conforme as categorias de dispositivo, aplicação e nó de pesquisa
+apresentadas anteriormente, conforme ilustra a Figura
+\ref{fig:identificacao}.
 
 \begin{figure}[htb]
     \caption{Identificação dos componentes de acordo com o PRISM}
-	\label{fig:identificacao}
-    \includegraphics[width=\textwidth]{figuras/metodologia/identificacao.png}%% Dimensões e 
-	\fonte{}
+    \label{fig:identificacao}
+    \includegraphics[width=\textwidth]{figuras/metodologia/identificacao.png}
+    \fonte{}
 \end{figure}
+
+O agrupamento resultante, exibido na Figura \ref{fig:reducaoPrism},
+evidencia as principais comunicações entre os componentes e permite
+identificar possíveis pontos de integração entre o projeto e o NPI
+(Nó de Pesquisa Interoperável). Dessa forma, estruturas complexas
+de projetos compartilhados entre laboratórios podem ser representadas
+de maneira mais simples, como apresentado na Figura
+\ref{fig:modelo-proposto-fig}.
 
 \begin{figure}[htb]
     \caption{Representação do projeto após redução ao PRISM}
-	\label{fig:reducaoPrism}
-    \includegraphics[scale=0.25]{figuras/metodologia/convertido.png}%% Dimensões e 
-	\fonte{}
+    \label{fig:reducaoPrism}
+    \includegraphics[width=\textwidth]{figuras/metodologia/convertido.png}
+    \fonte{}
 \end{figure}
 
 \section{Coleta de dados}\label{sec:coletaDeDados}
