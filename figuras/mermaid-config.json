@@ -6,7 +6,6 @@
   "sequence": {
     "actorFontSize": 22,
     "noteFontSize": 22,
-    "messageFontSize": 22,
-    "wrap": true
+    "messageFontSize": 22
   }
 }

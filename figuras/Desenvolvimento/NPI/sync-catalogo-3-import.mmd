@@ -8,7 +8,7 @@ sequenceDiagram
     participant B as NPI-B (consumidor)
     participant LB as SyncLog (NPI-B)
 
-    Note over B: ImportSnomedAsync(payload.Snomed)
+    Note over B: ImportSnomedAsync<br/>(payload.Snomed)
     loop Para cada entidade SNOMED recebida
         B->>B: existing = FindAsync(SnomedCode)
         alt existing == null
