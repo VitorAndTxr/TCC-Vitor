@@ -8,11 +8,10 @@ sequenceDiagram
     participant B as NPI-B (consumidor)
     participant LB as SyncLog (NPI-B)
 
-    Note over B: Pre-requisito: handshake Fases 1-3 concluido<br/>(ChannelId e SessionToken vigentes)
-
+    Note over B,LB : Pre-requisito: handshake Fases 1-3 concluido
     B->>LB: GetLatestCompletedAsync(remoteNodeId)
     LB-->>B: SyncLog{LastSyncedAt = T_w}
     Note over B: resolvedSince = T_w
 
-    B->>B: SyncLog.Add{status="in_progress"}
+    B->>B: SyncLog.Add<br/>{status="in_progress"}
     B->>B: BeginTransactionAsync()
