@@ -1,0 +1,12 @@
+{
+  "theme": "default",
+  "themeVariables": {
+    "fontSize": "20px"
+  },
+  "sequence": {
+    "actorFontSize": 22,
+    "noteFontSize": 22,
+    "messageFontSize": 22,
+    "wrap": true
+  }
+}

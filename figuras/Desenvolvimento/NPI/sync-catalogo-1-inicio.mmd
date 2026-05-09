@@ -1,0 +1,18 @@
+%% ============================================================
+%% Sincronizacao SNOMED - Parte 1/3: inicio (watermark + tx)
+%% Referenciado em: cap-experimentos-resultados.tex (4.2.5.2)
+%% Label: fig:NPISyncCatalogoInicio
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant B as NPI-B (consumidor)
+    participant LB as SyncLog (NPI-B)
+
+    Note over B: Pre-requisito: handshake Fases 1-3 concluido<br/>(ChannelId e SessionToken vigentes)
+
+    B->>LB: GetLatestCompletedAsync(remoteNodeId)
+    LB-->>B: SyncLog{LastSyncedAt = T_w}
+    Note over B: resolvedSince = T_w
+
+    B->>B: SyncLog.Add{status="in_progress"}
+    B->>B: BeginTransactionAsync()

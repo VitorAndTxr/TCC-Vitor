@@ -62,23 +62,61 @@ Os cinco diagramas desta seção materializam, em sequência, as três primeiras
 \section{Sincronização de dados entre nós}\label{sec:apendiceSeqSync}
 % ----------------------------------------------------------------------
 
-Esta seção concentra os diagramas que detalham os três fluxos centrais discutidos na Subseção~\ref{subsec:NPITrocaDados}: a sincronização incremental do catálogo de rótulos SNOMED CT (Figura~\ref{fig:NPISyncCatalogo}); a transferência de metadados e de \textit{payload} binário das gravações de biossinais (Figura~\ref{fig:NPISyncBiossinais}); e a estratégia de idempotência adotada para que retransmissões não corrompam o estado do nó consumidor (Figura~\ref{fig:NPIIdempotencia}).
+Esta seção reúne os sete diagramas que detalham os três fluxos centrais discutidos na Subseção~\ref{subsec:NPITrocaDados}: a sincronização incremental do catálogo de rótulos SNOMED CT, decomposta em início, paginação e importação (Figuras~\ref{fig:NPISyncCatalogoInicio}, \ref{fig:NPISyncCatalogoFetch} e~\ref{fig:NPISyncCatalogoImport}); a transferência dos registros de biossinais, decomposta em metadados, conteúdo binário e \textit{commit} transacional (Figuras~\ref{fig:NPISyncBiossinaisMetadados}, \ref{fig:NPISyncBiossinaisBinarios} e~\ref{fig:NPISyncBiossinaisCommit}); e a estratégia de idempotência adotada para que retransmissões não corrompam o estado do nó consumidor (Figura~\ref{fig:NPIIdempotencia}). A decomposição dos dois primeiros fluxos em três diagramas cada deve-se à extensão do diálogo entre os nós envolvidos: ao isolar as etapas de início, transferência e fechamento da transação, busca-se preservar a legibilidade dos diagramas individuais sem sacrificar a representação completa do protocolo.
 
-A Figura~\ref{fig:NPISyncCatalogo} evidencia os dois \textit{loops} aninhados percorridos pelo protocolo --- o externo, sobre as quatro famílias de entidades SNOMED, e o interno, sobre as páginas de cada tipo --- e o papel do \texttt{SyncLog} local como ponto de partida do incremento. A Figura~\ref{fig:NPISyncBiossinais} explicita o desacoplamento entre a transferência paginada dos metadados de \texttt{RecordingSession} e a recuperação individualizada dos arquivos binários por canal, bem como a ação compensatória disparada em caso de falha de qualquer subetapa do lote. Por fim, a Figura~\ref{fig:NPIIdempotencia} percorre três tentativas consecutivas sobre uma mesma entidade, demonstrando como a combinação entre \textit{Universally Unique Identifier} (UUID) como chave global e \textit{watermark} \texttt{UpdatedAt} torna a retransmissão integral de um lote já aplicado uma operação \textit{no-op} sob a perspectiva de estado.
+O fluxo de sincronização do catálogo SNOMED CT é apresentado em três etapas. A Figura~\ref{fig:NPISyncCatalogoInicio} ilustra o início da operação no nó consumidor: a leitura do \textit{watermark} \texttt{LastSyncedAt} no \texttt{SyncLog} local, que delimita o ponto de corte do incremental, e a abertura da transação ACID que envelopa toda a importação subsequente. A Figura~\ref{fig:NPISyncCatalogoFetch} detalha os dois \textit{loops} aninhados percorridos pelo protocolo --- o externo, sobre as quatro famílias de entidades SNOMED, e o interno, sobre as páginas de cada tipo --- responsáveis pela coleta paginada das entidades atualizadas no nó produtor. A Figura~\ref{fig:NPISyncCatalogoImport} fecha o ciclo com o \textit{upsert} idempotente das entidades recebidas e o \textit{commit} da transação local, que materializa a atualização do \textit{watermark}.
+
+O fluxo de transferência dos biossinais segue a mesma estrutura tripartite. A Figura~\ref{fig:NPISyncBiossinaisMetadados} explicita a transferência paginada dos metadados de \texttt{RecordingSession}, incluindo \texttt{Records}, \texttt{RecordChannels} e anotações, com paginação por \textit{cursor} sobre o atributo \texttt{UpdatedAt}. A Figura~\ref{fig:NPISyncBiossinaisBinarios} apresenta a recuperação individualizada dos arquivos binários por canal e o respectivo \textit{upload} ao \textit{blob storage} local, etapa que opera de forma desacoplada da transferência dos metadados. A Figura~\ref{fig:NPISyncBiossinaisCommit} encerra o fluxo com o \textit{commit} transacional bem-sucedido e, no ramo alternativo, a ação compensatória que remove os \textit{blobs} já enviados quando qualquer subetapa do lote falha, garantindo que o nó consumidor jamais persista um estado parcial.
+
+Por fim, a Figura~\ref{fig:NPIIdempotencia} percorre três tentativas consecutivas sobre uma mesma entidade, demonstrando como a combinação entre \textit{Universally Unique Identifier} (UUID) como chave global e \textit{watermark} \texttt{UpdatedAt} torna a retransmissão integral de um lote já aplicado uma operação \textit{no-op} sob a perspectiva de estado.
 
 \begin{figure}[htpb]
-\caption{Sincronização incremental do catálogo de rótulos SNOMED CT.}
+\caption{Sincronização incremental do catálogo SNOMED CT --- início: leitura do \textit{watermark} e abertura da transação.}
 \label{fig:NPISyncCatalogo}
+\label{fig:NPISyncCatalogoInicio}
 \centering
-\includegraphics[scale=0.35]{figuras/Desenvolvimento/NPI/sync-catalogo.png}
+\includegraphics[scale=0.5]{figuras/Desenvolvimento/NPI/sync-catalogo-1-inicio.png}
 \fonte{}
 \end{figure}
 
 \begin{figure}[htpb]
-\caption{Transferência de metadados e \textit{payload} binário de biossinais.}
-\label{fig:NPISyncBiossinais}
+\caption{Sincronização incremental do catálogo SNOMED CT --- \textit{loops} aninhados de paginação por tipo de entidade.}
+\label{fig:NPISyncCatalogoFetch}
 \centering
-\includegraphics[scale=0.35]{figuras/Desenvolvimento/NPI/sync-biossinais.png}
+\includegraphics[scale=0.5]{figuras/Desenvolvimento/NPI/sync-catalogo-2-fetch.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Sincronização incremental do catálogo SNOMED CT --- \textit{upsert} idempotente e \textit{commit} da transação.}
+\label{fig:NPISyncCatalogoImport}
+\centering
+\includegraphics[scale=0.5]{figuras/Desenvolvimento/NPI/sync-catalogo-3-import.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Transferência de biossinais --- metadados paginados de \texttt{RecordingSession}.}
+\label{fig:NPISyncBiossinais}
+\label{fig:NPISyncBiossinaisMetadados}
+\centering
+\includegraphics[scale=0.5]{figuras/Desenvolvimento/NPI/sync-biossinais-1-metadados.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Transferência de biossinais --- recuperação de arquivos binários por \texttt{RecordChannel} e \textit{upload} ao \textit{blob storage}.}
+\label{fig:NPISyncBiossinaisBinarios}
+\centering
+\includegraphics[scale=0.5]{figuras/Desenvolvimento/NPI/sync-biossinais-2-binarios.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Transferência de biossinais --- \textit{commit} transacional e ação compensatória em caso de falha.}
+\label{fig:NPISyncBiossinaisCommit}
+\centering
+\includegraphics[scale=0.5]{figuras/Desenvolvimento/NPI/sync-biossinais-3-commit.png}
 \fonte{}
 \end{figure}
 

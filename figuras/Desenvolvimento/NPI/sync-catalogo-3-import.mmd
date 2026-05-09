@@ -1,0 +1,25 @@
+%% ============================================================
+%% Sincronizacao SNOMED - Parte 3/3: upsert + commit
+%% Referenciado em: cap-experimentos-resultados.tex (4.2.5.2)
+%% Label: fig:NPISyncCatalogoImport
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant B as NPI-B (consumidor)
+    participant LB as SyncLog (NPI-B)
+
+    Note over B: ImportSnomedAsync(payload.Snomed)
+    loop Para cada entidade SNOMED recebida
+        B->>B: existing = FindAsync(SnomedCode)
+        alt existing == null
+            B->>B: INSERT entidade
+        else updatedAt > existing.UpdatedAt
+            B->>B: UPDATE campos + UpdatedAt
+        else
+            B->>B: skip (no-op)
+        end
+    end
+
+    B->>B: SaveChangesAsync()
+    B->>LB: SyncLog.Update{status="completed",<br/>LastSyncedAt=manifest.GeneratedAt}
+    B->>B: transaction.CommitAsync()

@@ -1,0 +1,20 @@
+%% ============================================================
+%% Sync biossinais - Parte 2/3: arquivos binarios por canal
+%% Referenciado em: cap-experimentos-resultados.tex (4.2.5.3)
+%% Label: fig:NPISyncBiossinaisBinarios
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant B as NPI-B (consumidor)
+    participant Blob as Blob storage local (Azurite)
+    participant A as NPI-A (produtor)
+
+    Note over B,A: Arquivos binarios por RecordChannel.Id
+    loop Para cada RecordChannel.Id
+        B->>A: GET /api/sync/recordings/{id}/file
+        A-->>B: {ContentBase64, ContentType,<br/>FileName, BlobPath}
+        B->>B: bytes = Base64Decode(ContentBase64)
+        B->>Blob: UploadAsync(stream, overwrite=true)<br/>container "recordings"
+        Blob-->>B: blobUri
+        B->>B: uploadedBlobs.Add(container, blobName)
+    end

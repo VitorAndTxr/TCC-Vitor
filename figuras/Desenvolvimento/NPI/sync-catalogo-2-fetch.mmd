@@ -1,0 +1,22 @@
+%% ============================================================
+%% Sincronizacao SNOMED - Parte 2/3: paginacao (fetch)
+%% Referenciado em: cap-experimentos-resultados.tex (4.2.5.2)
+%% Label: fig:NPISyncCatalogoFetch
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant B as NPI-B (consumidor)
+    participant A as NPI-A (produtor)
+    participant DA as Banco SNOMED (NPI-A)
+
+    loop Para cada entityType em SnomedEntityTypes<br/>(body-regions, body-structures, lateralities,<br/>topographical-modifiers, clinical-conditions)
+        Note over B: page = 1, totalPages = 1
+        loop Enquanto page <= totalPages
+            B->>A: GET /api/sync/snomed/{entityType}<br/>?since=T_w&page=N&pageSize=100
+            A->>DA: WHERE UpdatedAt > T_w<br/>ORDER BY UpdatedAt<br/>SKIP (N-1)*100 TAKE 100
+            DA-->>A: items[], total
+            A-->>B: PagedSyncResult{Data, Page, TotalPages}
+            B->>B: payload.Snomed[entityType].AddRange(Data)
+            Note over B: totalPages = response.TotalPages<br/>page++
+        end
+    end

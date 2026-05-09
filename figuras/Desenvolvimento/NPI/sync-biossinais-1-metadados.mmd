@@ -1,0 +1,21 @@
+%% ============================================================
+%% Sync biossinais - Parte 1/3: metadados paginados
+%% Referenciado em: cap-experimentos-resultados.tex (4.2.5.3)
+%% Label: fig:NPISyncBiossinaisMetadados
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant B as NPI-B (consumidor)
+    participant A as NPI-A (produtor)
+
+    Note over B,A: Continuacao da janela de sincronizacao<br/>(catalogo SNOMED ja aplicado)
+    Note over B: BeginTransactionAsync() - escopo ACID
+
+    Note over B,A: Metadados paginados de RecordingSession
+    loop Enquanto page <= totalPages
+        B->>A: GET /api/sync/sessions<br/>?since=T_w&page=N&pageSize=100
+        A-->>B: PagedSyncResult{<br/>RecordSession + Records +<br/>RecordChannels + Annotations}
+        B->>B: payload.Sessions.AddRange(Data)
+    end
+
+    B->>B: ExtractRecordingChannelIds(payload.Sessions)<br/>=> [id_1, id_2, ..., id_n]

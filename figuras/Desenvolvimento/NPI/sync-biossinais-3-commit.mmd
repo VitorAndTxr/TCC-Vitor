@@ -1,0 +1,24 @@
+%% ============================================================
+%% Sync biossinais - Parte 3/3: import + commit/compensacao
+%% Referenciado em: cap-experimentos-resultados.tex (4.2.5.3)
+%% Label: fig:NPISyncBiossinaisCommit
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant B as NPI-B (consumidor)
+    participant DB as Banco local (NPI-B)
+    participant Blob as Blob storage local (Azurite)
+
+    Note over B,DB: ImportSessionsAsync + ImportRecordingsAsync
+    B->>DB: UPSERT sessions, records, channels<br/>channel.FileUrl = blobUri
+    B->>DB: SaveChangesAsync()
+
+    alt Sucesso em todas as etapas
+        B->>B: SyncLog.Update{status="completed"}
+        B->>B: transaction.CommitAsync()
+    else Falha em qualquer etapa
+        B->>Blob: DeleteBlobIfExistsAsync(uploadedBlobs)
+        Note over Blob: Compensating action:<br/>remove blobs ja enviados
+        B->>B: transaction.RollbackAsync()
+        B->>B: SyncLog.Update{status="failed",<br/>ErrorMessage=ex.Message}
+    end
