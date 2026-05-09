@@ -16,29 +16,45 @@ A organização do apêndice acompanha a estrutura do capítulo. A Seção~\ref{
 \section{Handshake de quatro fases do PRISM Middleware}\label{sec:apendiceSeqMiddleware}
 % ----------------------------------------------------------------------
 
-Os três diagramas desta seção materializam, em sequência, as três primeiras fases do protocolo de \textit{handshake} entre nós descrito na Subseção~\ref{subsec:NPIMiddleware}: a abertura do canal cifrado por troca \textit{Elliptic-Curve Diffie--Hellman} (ECDH) sobre a curva NIST P-384 (Figura~\ref{fig:auth-fase-1}); o registro e a identificação do nó por meio do \textit{fingerprint} SHA-256 do certificado X.509 (Figura~\ref{fig:auth-fase-2}); e a autenticação mútua por desafio-resposta com assinatura RSA-2048 (Figura~\ref{fig:auth-fase-3}). A quarta fase --- emissão e gestão da sessão de aplicação --- não foi diagramada como sequência por reduzir-se a uma operação de leitura contra o \textit{store} de sessões mantido em Redis, e está descrita textualmente na referida subseção.
+Os cinco diagramas desta seção materializam, em sequência, as três primeiras fases do protocolo de \textit{handshake} entre nós descrito na Subseção~\ref{subsec:NPIMiddleware}. A Fase~1 ocupa um único diagrama, dedicado à abertura do canal cifrado por troca \textit{Elliptic-Curve Diffie--Hellman} (ECDH) sobre a curva NIST P-384 (Figura~\ref{fig:auth-fase-1}). As Fases~2 e~3, por reunirem cada uma duas trocas distintas, foram desdobradas em dois diagramas. A Fase~2 separa o registro inicial do nó (Figura~\ref{fig:auth-fase-2a}), no qual um nó até então desconhecido submete seus metadados ao administrador local, e a identificação propriamente dita (Figura~\ref{fig:auth-fase-2b}), que recupera o nó já cadastrado por meio do \textit{fingerprint} SHA-256 do certificado X.509. A Fase~3 separa a solicitação do desafio aleatório (Figura~\ref{fig:auth-fase-3a}) da resposta assinada com a chave privada RSA-2048, que comprova a posse do certificado e libera a emissão da sessão de aplicação (Figura~\ref{fig:auth-fase-3b}). A quarta fase --- emissão e gestão da sessão de aplicação --- não foi diagramada como sequência por reduzir-se a uma operação de leitura contra o \textit{store} de sessões mantido em Redis, e está descrita textualmente na referida subseção.
 
 \begin{figure}[htpb]
 \caption{Abertura de canal criptografado entre nós (Fase~1 do \textit{handshake} do PRISM \textit{Middleware}).}
 \label{fig:auth-fase-1}
 \centering
-\includegraphics[scale=0.35]{figuras/Desenvolvimento/auth/fase-1.png}
+\includegraphics[width=\textwidth]{figuras/Desenvolvimento/auth/fase-1.png}
 \fonte{}
 \end{figure}
 
 \begin{figure}[htpb]
-\caption{Registro e identificação do nó (Fase~2 do \textit{handshake} do PRISM \textit{Middleware}).}
-\label{fig:auth-fase-2}
+\caption{Registro do nó (Fase~2A do \textit{handshake} do PRISM \textit{Middleware}).}
+\label{fig:auth-fase-2a}
 \centering
-\includegraphics[scale=0.3]{figuras/Desenvolvimento/auth/fase-2.png}
+\includegraphics[scale=0.32]{figuras/Desenvolvimento/auth/fase-2a.png}
 \fonte{}
 \end{figure}
 
 \begin{figure}[htpb]
-\caption{Autenticação mútua por desafio-resposta (Fase~3 do \textit{handshake} do PRISM \textit{Middleware}).}
-\label{fig:auth-fase-3}
+\caption{Identificação do nó (Fase~2B do \textit{handshake} do PRISM \textit{Middleware}).}
+\label{fig:auth-fase-2b}
 \centering
-\includegraphics[scale=0.30]{figuras/Desenvolvimento/auth/fase-3.png}
+\includegraphics[scale=0.32]{figuras/Desenvolvimento/auth/fase-2b.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Solicitação do desafio (Fase~3A do \textit{handshake} do PRISM \textit{Middleware}).}
+\label{fig:auth-fase-3a}
+\centering
+\includegraphics[width=\textwidth]{figuras/Desenvolvimento/auth/fase-3a.png}
+\fonte{}
+\end{figure}
+
+\begin{figure}[htpb]
+\caption{Resposta ao desafio (Fase~3B do \textit{handshake} do PRISM \textit{Middleware}).}
+\label{fig:auth-fase-3b}
+\centering
+\includegraphics[scale=0.4,angle=90]{figuras/Desenvolvimento/auth/fase-3b.png}
 \fonte{}
 \end{figure}
 

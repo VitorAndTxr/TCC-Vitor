@@ -285,7 +285,7 @@ A Figura \ref{fig:IRISArquitetura} sintetiza a organização interna do IRIS e s
 
 \caption{Arquitetura interna do IRIS e relação com o NPI.}
 \label{fig:IRISArquitetura}
-\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRIS/arquitetura-iris.png}
+\includegraphics[scale=0.25]{figuras/Desenvolvimento/IRIS/arquitetura-iris.png}
 \fonte{}
 \end{figure}
 
@@ -376,7 +376,7 @@ A Figura \ref{fig:IRISMobileArquitetura} sintetiza a organização interna do IR
 \begin{figure}[htpb]
 \caption{Arquitetura interna do IRIS \textit{Mobile}, suas dependências nativas e relação com o NeuroEstimulator e o NPI.}
 \label{fig:IRISMobileArquitetura}
-\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/arquitetura-iris-mobile.png}
+\includegraphics[scale=0.20]{figuras/Desenvolvimento/IRISMobile/arquitetura-iris-mobile.png}
 \fonte{}
 \end{figure}
 
@@ -562,7 +562,7 @@ O acoplamento entre as tarefas de aquisição e de \textit{streaming} é feito p
 
 O protocolo de comunicação do \textit{firmware} original era inteiramente baseado em mensagens JSON encapsuladas em um envelope \verb|{"cd": <code>, "mt": "<method>", "bd": {...}}| trafegando sobre a UART2. Para a aquisição de sEMG, o aplicativo enviava periodicamente uma requisição de leitura e o \textit{firmware} respondia com um pequeno bloco de amostras codificado em JSON. Esse padrão tem dois inconvenientes em uma aplicação de \textit{streaming}: o aplicativo precisa manter um relógio sincronizado com o \textit{firmware} apenas para temporizar suas requisições, e a redundância textual do JSON (chaves de objeto, vírgulas, representação decimal de cada amostra como \textit{string}) consome largura de banda desproporcional à informação efetivamente transportada.
 
-No \textit{firmware} adaptado, o protocolo passou a ser dual: comandos de controle continuam em JSON, mantendo legibilidade e compatibilidade com ferramentas existentes; o fluxo de dados de sEMG, entretanto, é transmitido como uma sequência de pacotes binários enviados de forma autônoma pelo \textit{firmware} entre as transições \texttt{START\_STREAM} e \texttt{STOP\_STREAM}. O aplicativo abre o \textit{streaming} enviando \verb|{"cd":11,"mt":"x"}|, recebe um \textit{acknowledgment} \verb|{"cd":11,"mt":"a"}| e, a partir desse momento, recebe pacotes binários até enviar \verb|{"cd":12,"mt":"x"}| para encerrar. O Quadro~\ref{tab:campos-pacote-binario} descreve os campos do novo \textit{frame} de dados, e a Figura~\ref{fig:pacoteBinario} ilustra graficamente seu \textit{layout}.
+No \textit{firmware} adaptado, o protocolo passou a ser dual: comandos de controle continuam em JSON, mantendo legibilidade e compatibilidade com ferramentas existentes; o fluxo de dados de sEMG, entretanto, é transmitido como uma sequência de pacotes binários enviados de forma autônoma pelo \textit{firmware} entre as transições \texttt{START\_STREAM} e \texttt{STOP\_STREAM}. O aplicativo abre o \textit{streaming} enviando \verb|{"cd":11,"mt":"x"}|, recebe um \textit{acknowledgment} \verb|{"cd":11,"mt":"a"}| e, a partir desse momento, recebe pacotes binários até enviar \verb|{"cd":12,"mt":"x"}| para encerrar. O Quadro~\ref{tab:campos-pacote-binario} descreve os campos do novo \textit{frame} de dados.
 
 \begin{comment}
    A transição inversa -- voltar a um modelo comando-resposta para o canal de dados -- foi descartada como design alternativo, em razão das desvantagens já discutidas; a configuração de taxa em tempo de execução, presente em uma versão intermediária do \textit{firmware} sob o código de mensagem \texttt{cd:14}, também foi removida, em favor da configuração fixa de 215\,SPS discutida na Subseção~\ref{subsubsec:NEDecimacao}.  
@@ -591,14 +591,6 @@ No \textit{firmware} adaptado, o protocolo passou a ser dual: comandos de contro
     \end{tabular}
     \fonte{}
 \end{table}
-
-\begin{figure}[htb]
-    \caption{\textit{Layout} binário do pacote de \textit{streaming}}
-    \label{fig:pacoteBinario}
-    \centering
-    \includegraphics[width=0.40\textwidth]{figuras/Desenvolvimento/NeuroEstimulator/pacote-binario.png}
-    \fonte{}
-\end{figure}
 
 A Figura~\ref{fig:protocoloStreaming}, reproduzida no Apêndice~\ref{cap:apendiceDiagramasSequencia} (Seção~\ref{sec:apendiceSeqStreaming}), resume o diálogo completo entre o IRIS Mobile, o tratador de mensagens, as tarefas internas do \textit{firmware} e o canal Bluetooth durante uma sessão de aquisição.
 
@@ -641,7 +633,7 @@ A composição do \textit{stack} do NPI foi dividida em duas camadas com ciclos 
 \captionsetup{width=0.85\textwidth}
 \caption{Topologia de implantação do NPI em dois nós federados.}
 \label{fig:NPIDeployTopologia}
-\includegraphics[scale=0.30]{figuras/Desenvolvimento/NPI/topologiaImplantacao.png}
+\includegraphics[width=\textwidth]{figuras/Desenvolvimento/NPI/topologiaImplantacao.png}
 \fonte{}
 \end{figure}
 
