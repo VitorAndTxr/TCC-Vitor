@@ -74,10 +74,9 @@ Por fim, a Figura~\ref{fig:NPIIdempotencia} percorre três tentativas consecutiv
 
 \begin{figure}[htpb]
 \caption{Sincronização incremental do catálogo SNOMED CT --- início: leitura do \textit{watermark} e abertura da transação.}
-\label{fig:NPISyncCatalogo}
 \label{fig:NPISyncCatalogoInicio}
 \centering
-\includegraphics[width=\textwidth]{figuras/Desenvolvimento/NPI/sync-catalogo-1-inicio.png}
+\includegraphics[scale=0.2]{figuras/Desenvolvimento/NPI/sync-catalogo-1-inicio.png}
 \fonte{}
 \end{figure}
 
@@ -85,7 +84,7 @@ Por fim, a Figura~\ref{fig:NPIIdempotencia} percorre três tentativas consecutiv
 \caption{Sincronização incremental do catálogo SNOMED CT --- \textit{loops} aninhados de paginação por tipo de entidade.}
 \label{fig:NPISyncCatalogoFetch}
 \centering
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/NPI/sync-catalogo-2-fetch.png}
+\includegraphics[width=\textwidth]{figuras/Desenvolvimento/NPI/sync-catalogo-2-fetch.png}
 \fonte{}
 \end{figure}
 
@@ -93,7 +92,7 @@ Por fim, a Figura~\ref{fig:NPIIdempotencia} percorre três tentativas consecutiv
 \caption{Sincronização incremental do catálogo SNOMED CT --- \textit{upsert} idempotente e \textit{commit} da transação.}
 \label{fig:NPISyncCatalogoImport}
 \centering
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/NPI/sync-catalogo-3-import.png}
+\includegraphics[scale=0.2]{figuras/Desenvolvimento/NPI/sync-catalogo-3-import.png}
 \fonte{}
 \end{figure}
 
