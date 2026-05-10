@@ -1,0 +1,16 @@
+%% ============================================================
+%% IRIS Mobile - Sync 1/3: geração local (offline-first)
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.4)
+%% Label: fig:IRISMobileFluxoSyncGeracao
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant App as App (CaptureScreen,<br/>NewAnnotationScreen)
+    participant DB as SQLite local<br/>(iris_clinical.db)
+    participant FS as expo-file-system<br/>(recording_*.csv)
+
+    Note over App,FS: Geração de dados locais (offline-first)
+    App->>FS: grava CSV ao longo da captura
+    App->>DB: INSERT clinical_sessions<br/>sync_status = 'pending'
+    App->>DB: INSERT recordings<br/>(file_path, blob_url=NULL,<br/>sync_status = 'pending')
+    App->>DB: INSERT annotations<br/>(session_id, text, created_at)<br/>sync_status = 'pending'

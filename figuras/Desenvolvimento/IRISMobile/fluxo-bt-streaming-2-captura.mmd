@@ -1,0 +1,37 @@
+%% ============================================================
+%% IRIS Mobile - Parte 2/3: captura e streaming a 215 Hz
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.3)
+%% Label: fig:IRISMobileFluxoCapturaStream
+%% ============================================================
+sequenceDiagram
+    autonumber
+    actor U as Pesquisador
+    participant Tela as CaptureScreen
+    participant Ctx as BluetoothContext
+    participant RN as react-native-<br/>bluetooth-classic
+    participant Disp as NeuroEstimulator<br/>(ESP32 + HC-06)
+    participant Acc as BinaryFrameAccumulator
+    participant Hook as useStreamData
+    participant Chart as SEMGChart
+    participant FS as expo-file-system
+
+    Note over U,Chart: Captura e streaming a 215 Hz
+    U->>Tela: Inicia captura
+    Tela->>Ctx: startStream() + startRecording()
+    Ctx->>FS: cria recording_<ts>.csv<br/>com cabeçalho "timestamp,value"
+    Ctx->>Disp: comando "Start Stream" (código 11)
+
+    loop A cada 50 amostras (~232 ms)
+        Disp-->>RN: quadro binário 108 B<br/>[0xAA, 0x0D, ts32 LE,<br/>cnt16 LE, 50 x int16 LE]
+        RN-->>Ctx: callback onDataReceived (Base64)
+        Ctx->>Acc: feed(bytes)
+        Acc-->>Ctx: StreamDataPacket{ timestamp, samples[50] }
+        Ctx->>Ctx: append em streamBufferRef<br/>+ csvPendingRef
+    end
+
+    loop A cada 500 ms (Hook)
+        Hook->>Ctx: drena streamBufferRef
+        Hook->>Hook: downsample (fator 5)<br/>+ janela de 4 s / 160 pontos
+        Hook-->>Chart: setData(amostras)
+        Ctx->>FS: append CSV (linha-a-linha)
+    end

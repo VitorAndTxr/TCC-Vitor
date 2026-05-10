@@ -1,0 +1,40 @@
+%% ============================================================
+%% IRIS Mobile - Sync 2/3: ciclo de upload por dependências
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.4)
+%% Label: fig:IRISMobileFluxoSyncUpload
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant Ctx as SyncContext
+    participant Sync as SyncService<br/>(loop 60 s)
+    participant DB as SQLite local
+    participant FS as expo-file-system
+    participant NPI as NPI<br/>(via middleware.ts + JWT)
+
+    Ctx->>Sync: syncAll() (a cada 60 s ou syncNow() manual)
+    Sync->>DB: SELECT pendentes<br/>(sessions -> recordings -> annotations)
+
+    Note over Sync,NPI: (i) Sessões
+    loop Para cada sessão pendente
+        Sync->>NPI: POST /api/ClinicalSession/New<br/>(idempotente via UUID local)
+        NPI-->>Sync: 201 Created (id remoto)
+        Sync->>DB: UPDATE sync_status = 'synced'
+    end
+
+    Note over Sync,NPI: (ii) Gravações (metadados + arquivo)
+    loop Para cada recording pendente
+        Sync->>NPI: POST /api/ClinicalSession/{id}/<br/>recordings/New (metadados)
+        NPI-->>Sync: 201 Created
+        Sync->>FS: readAsStringAsync(filePath, base64)
+        Sync->>NPI: POST /api/Upload/recording<br/>(payload base64)
+        NPI-->>Sync: 200 OK + blob_url
+        Sync->>DB: UPDATE blob_url = ...,<br/>sync_status = 'synced'
+        Sync->>FS: deleteAsync(filePath)
+    end
+
+    Note over Sync,NPI: (iii) Anotações
+    loop Para cada anotação pendente
+        Sync->>NPI: POST /api/ClinicalSession/{id}/<br/>annotations/New
+        NPI-->>Sync: 201 Created
+        Sync->>DB: UPDATE sync_status = 'synced'
+    end

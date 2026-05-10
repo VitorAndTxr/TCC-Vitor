@@ -1,0 +1,22 @@
+%% ============================================================
+%% IRIS Mobile - Rotulagem 2/2: envio assíncrono ao NPI
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.5)
+%% Label: fig:IRISMobileFluxoRotulagemEnvio
+%% Nota: o vínculo temporal é dado pela FK session_id e por
+%% created_at (ISO8601), permitindo correlacionar a anotação ao
+%% trecho do sinal cuja janela temporal a contém.
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant Sync as SyncService
+    participant DB as SQLite<br/>(tabela annotations)
+    participant NPI as NPI<br/>/api/ClinicalSession/{id}/<br/>annotations/New
+
+    Note over Sync,NPI: Envio assíncrono ao NPI
+    Sync->>DB: SELECT WHERE sync_status='pending'<br/>AND session_id IN (sincronizadas)
+    DB-->>Sync: anotações pendentes
+    loop Para cada anotação pendente
+        Sync->>NPI: POST /annotations/New<br/>{ text, created_at, session_id_remoto }
+        NPI-->>Sync: 201 Created
+        Sync->>DB: UPDATE sync_status='synced'
+    end

@@ -1,0 +1,30 @@
+%% ============================================================
+%% IRIS Mobile - Parte 3/3: encerramento e recuperação de falha
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.3 e 4.4.4)
+%% Label: fig:IRISMobileFluxoCapturaEncerramento
+%% ============================================================
+sequenceDiagram
+    autonumber
+    actor U as Pesquisador
+    participant Tela as CaptureScreen
+    participant Ctx as BluetoothContext
+    participant RN as react-native-<br/>bluetooth-classic
+    participant Disp as NeuroEstimulator<br/>(ESP32 + HC-06)
+    participant Acc as BinaryFrameAccumulator
+    participant FS as expo-file-system
+    participant Sess as SessionContext
+
+    Note over U,FS: (i) Encerramento da captura
+    U->>Tela: Para captura
+    Tela->>Ctx: stopStream() + stopRecording()
+    Ctx->>Disp: comando "Stop Stream" (código 12)
+    Ctx->>Acc: reset()
+    Ctx->>FS: flush final + close
+    Ctx->>Sess: addRecording({ filePath, sampleCount,<br/>duration, sampleRate })
+    Sess->>Sess: persiste em SQLite com<br/>sync_status = 'pending'
+
+    Note over U,Disp: (ii) Falha de conexão (recuperação)
+    Disp-->>RN: desconexão inesperada
+    RN-->>Ctx: onDeviceDisconnected
+    Ctx-->>Tela: showConnectionErrorModal = true
+    Tela-->>U: alerta + opção de reconectar

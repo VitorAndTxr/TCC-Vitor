@@ -1,0 +1,29 @@
+%% ============================================================
+%% IRIS Mobile - Parte 1/3: permissões e conexão SPP
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.3)
+%% Label: fig:IRISMobileFluxoCapturaPareamento
+%% ============================================================
+sequenceDiagram
+    autonumber
+    actor U as Pesquisador
+    participant Tela as BluetoothScreen
+    participant Ctx as BluetoothContext
+    participant RN as react-native-<br/>bluetooth-classic
+    participant Disp as NeuroEstimulator<br/>(ESP32 + HC-06)
+
+    Note over U,Tela: (i) Permissões e listagem de pareados
+    U->>Tela: Abre tela de Bluetooth
+    Tela->>Ctx: requestPermissions()
+    Ctx->>Ctx: PermissionsAndroid.requestMultiple<br/>(BLUETOOTH_CONNECT, BLUETOOTH_SCAN,<br/>ACCESS_FINE_LOCATION)
+    Ctx->>RN: getBondedDevices()
+    RN-->>Ctx: lista de pareados
+    Ctx->>Ctx: filtra por nome "NeuroEstimulator"
+    Ctx-->>Tela: neuraDevices[]
+
+    Note over U,Disp: (ii) Conexão SPP
+    U->>Tela: Toca em dispositivo
+    Tela->>Ctx: connectBluetooth(address)
+    Ctx->>RN: connectToDevice(<br/>{ secureSocket: false,<br/>connectionType: 'binary' })
+    RN->>Disp: socket SPP estabelecido
+    Disp-->>RN: ok
+    Ctx->>RN: subscribe onDataReceived,<br/>onDeviceDisconnected

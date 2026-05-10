@@ -1,0 +1,21 @@
+%% ============================================================
+%% IRIS Mobile - Sync 3/3: tratamento do resultado e relatório
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.4)
+%% Label: fig:IRISMobileFluxoSyncResultado
+%% ============================================================
+sequenceDiagram
+    autonumber
+    participant Sync as SyncService
+    participant DB as SQLite local
+    participant Ctx as SyncContext
+    participant App as App (HistoryScreen)
+
+    alt Sucesso
+        Sync->>Ctx: syncReport{ synced, pending: 0 }
+    else Falha transiente (5xx, 408, 429)
+        Sync->>Sync: backoff exponencial<br/>(2^n s + jitter, máx. 5 min)
+    else Falha permanente (4xx)
+        Sync->>DB: UPDATE sync_status = 'failed'
+        Sync->>Ctx: syncReport{ failed[], errorDetails }
+    end
+    Ctx-->>App: badge na HistoryScreen<br/>(Synced / Pending / Failed)

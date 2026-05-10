@@ -1,0 +1,32 @@
+%% ============================================================
+%% IRIS Mobile - Rotulagem 1/2: criação e persistência local
+%% Referenciado em: cap-experimentos-resultados.tex (4.4.5)
+%% Label: fig:IRISMobileFluxoRotulagemCriacao
+%% ============================================================
+sequenceDiagram
+    autonumber
+    actor U as Pesquisador
+    participant Cap as CaptureScreen<br/>(captura ativa)
+    participant List as AnnotationsListScreen
+    participant Form as NewAnnotationScreen
+    participant Repo as AnnotationRepository
+    participant DB as SQLite<br/>(tabela annotations)
+
+    Note over U,Cap: Sessão de captura em andamento
+    Cap->>Cap: mantém session_id ativo<br/>e timestamp do quadro corrente
+
+    U->>Cap: Toca em "Adicionar anotação"
+    Cap->>List: navega com session_id
+
+    U->>List: Toca em "+ Add annotation"
+    List->>Form: abre formulário
+    U->>Form: Digita texto livre<br/>(observação clínica)
+    U->>Form: Salvar
+    Form->>Repo: create({ sessionId, text })
+    Repo->>Repo: id = uuid()<br/>created_at = ISO8601
+    Repo->>DB: INSERT (id, session_id, text,<br/>created_at, sync_status='pending')
+    DB-->>Repo: ok
+    Repo-->>Form: anotação salva
+    Form-->>List: goBack()
+    List->>Repo: getBySession(session_id)
+    Repo-->>List: anotações ordenadas por created_at
