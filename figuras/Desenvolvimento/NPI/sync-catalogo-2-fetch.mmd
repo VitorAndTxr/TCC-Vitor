@@ -7,7 +7,7 @@ sequenceDiagram
     autonumber
     participant B as NPI-B (consumidor)
     participant A as NPI-A (produtor)
-    participant DA as Banco SNOMED (NPI-A)
+    participant DA as Banco de Dados (NPI-A)
 
     loop Para cada entityType em SnomedEntityTypes<br/>(body-regions, body-structures, lateralities,<br/>topographical-modifiers, clinical-conditions)
         Note over B: page = 1, totalPages = 1

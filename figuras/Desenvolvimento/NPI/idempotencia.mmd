@@ -9,10 +9,10 @@ sequenceDiagram
     participant DB as Banco local (NPI-B)
     participant A as NPI-A (produtor)
 
-    Note over B,A: Cenario: a mesma entidade Volunteer{id=X, UpdatedAt=T1}<br/>e transferida tres vezes consecutivas
+    Note over B,A: Cenário: a mesma entidade Volunteer{id=X, UpdatedAt=T1}<br/>e transferida três vezes consecutivas
 
     rect rgba(220,255,220,0.35)
-        Note over B,A: Tentativa 1 - primeira aplicacao
+        Note over B,A: Tentativa 1 - primeira aplicação
         B->>A: GET /api/sync/volunteers?since=T0
         A-->>B: [{id=X, UpdatedAt=T1, ...}]
         B->>DB: existing = FirstOrDefault(VolunteerId == X)
@@ -22,12 +22,12 @@ sequenceDiagram
     end
 
     rect rgba(255,250,205,0.45)
-        Note over B,A: Tentativa 2 - retransmissao identica<br/>(falha de rede levou a retry)
+        Note over B,A: Tentativa 2 - retransmissão idêntica<br/>(falha de rede levou a retry)
         B->>A: GET /api/sync/volunteers?since=T0
         A-->>B: [{id=X, UpdatedAt=T1, ...}]
         B->>DB: existing = FirstOrDefault(VolunteerId == X)
         DB-->>B: Volunteer{id=X, UpdatedAt=T1}
-        Note over B: incoming.UpdatedAt (T1)<br/>NAO e estritamente posterior a<br/>existing.UpdatedAt (T1)
+        Note over B: incoming.UpdatedAt (T1)<br/>NÃO e estritamente posterior a<br/>existing.UpdatedAt (T1)
         B->>B: skip - no-op
         Note over DB: estado inalterado:<br/>id=X, UpdatedAt=T1
     end
@@ -43,4 +43,4 @@ sequenceDiagram
         Note over DB: estado: id=X, UpdatedAt=T2
     end
 
-    Note over B,A: Invariantes garantidas:<br/>(a) UUID elimina colisao entre nos<br/>(b) UpdatedAt impede regressao de versao<br/>(c) retransmissao e no-op de estado
+    Note over B,A: Invariantes garantidas:<br/>(a) UUID elimina colisão entre nos<br/>(b) UpdatedAt impede regressão de versão<br/>(c) Retransmissão e no-op de estado

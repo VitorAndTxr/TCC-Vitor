@@ -4,37 +4,37 @@
 %% Label: fig:IRISEstadosConexao
 %% ============================================================
 stateDiagram-v2
-    [*] --> UNKNOWN: POST /api/node/NewConnection
+    direction LR
 
-    UNKNOWN --> PENDING: Submeter para aprovacao
+    [*] --> UNKNOWN: NewConnection
 
-    PENDING --> AUTHORIZED: POST /api/node/{id}/approve
-    PENDING --> REVOKED: POST /api/node/{id}/reject
+    UNKNOWN --> PENDING: Submeter
+    PENDING  --> AUTHORIZED: approve
+    PENDING  --> REVOKED: reject
 
-    AUTHORIZED --> REVOKED: Revogar (admin local)
-    REVOKED --> AUTHORIZED: Reaprovar
+    AUTHORIZED --> REVOKED: Revogar
+    REVOKED    --> AUTHORIZED: Reaprovar
 
-    AUTHORIZED --> AUTHORIZED: POST /api/sync/pull<br/>(atualiza lastSyncedAt)
+    AUTHORIZED --> AUTHORIZED: pull<br/>(atualiza lastSyncedAt)
 
     note right of UNKNOWN
-        Conexao recem-criada
-        localmente. Aguarda
-        submissao.
+        Criada localmente.
+        Aguarda submissão.
     end note
 
     note right of PENDING
-        Visivel na aba Requests
-        do NodeConnectionsScreen.
-        Aguarda decisao do admin.
+        Aba Requests do
+        NodeConnectionsScreen.
+        Aguarda decisão do admin.
     end note
 
     note right of AUTHORIZED
-        Sincronizacao permitida apenas
+        Sincronização habilitada
         se NodeAccessLevel for
         READ_WRITE ou ADMIN.
     end note
 
     note right of REVOKED
-        Conexao bloqueada;
-        nao pode sincronizar.
+        Bloqueada; não sincroniza.
+        Reversível via Reaprovar.
     end note

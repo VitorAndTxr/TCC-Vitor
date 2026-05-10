@@ -18,7 +18,7 @@ sequenceDiagram
         B->>B: transaction.CommitAsync()
     else Falha em qualquer etapa
         B->>Blob: DeleteBlobIfExistsAsync(uploadedBlobs)
-        Note over Blob: Compensating action:<br/>remove blobs ja enviados
+        Note over Blob: Compensating action:<br/>remove blobs já enviados
         B->>B: transaction.RollbackAsync()
         B->>B: SyncLog.Update{status="failed",<br/>ErrorMessage=ex.Message}
     end

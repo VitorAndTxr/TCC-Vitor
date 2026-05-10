@@ -9,7 +9,7 @@ sequenceDiagram
     participant Blob as Blob storage local (Azurite)
     participant A as NPI-A (produtor)
 
-    Note over B,A: Arquivos binarios por RecordChannel.Id
+    Note over B,A: Arquivos binários por RecordChannel.Id
     loop Para cada RecordChannel.Id
         B->>A: GET /api/sync/recordings/{id}/file
         A-->>B: {ContentBase64, ContentType,<br/>FileName, BlobPath}
