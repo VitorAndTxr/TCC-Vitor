@@ -27,7 +27,7 @@ sequenceDiagram
         A-->>B: [{id=X, UpdatedAt=T1, ...}]
         B->>DB: existing = FirstOrDefault(VolunteerId == X)
         DB-->>B: Volunteer{id=X, UpdatedAt=T1}
-        Note over B: incoming.UpdatedAt (T1)<br/>NÃO e estritamente posterior a<br/>existing.UpdatedAt (T1)
+        Note over B: incoming.UpdatedAt (T1)<br/>NÃO é estritamente posterior a<br/>existing.UpdatedAt (T1)
         B->>B: skip - no-op
         Note over DB: estado inalterado:<br/>id=X, UpdatedAt=T1
     end
@@ -38,9 +38,9 @@ sequenceDiagram
         A-->>B: [{id=X, UpdatedAt=T2, ...}]
         B->>DB: existing = FirstOrDefault(VolunteerId == X)
         DB-->>B: Volunteer{id=X, UpdatedAt=T1}
-        Note over B: incoming.UpdatedAt (T2)<br/>E estritamente posterior a<br/>existing.UpdatedAt (T1)
+        Note over B: incoming.UpdatedAt (T2)<br/>é estritamente posterior a<br/>existing.UpdatedAt (T1)
         B->>DB: UPDATE Volunteer{id=X,<br/>campos=novos, UpdatedAt=T2}
         Note over DB: estado: id=X, UpdatedAt=T2
     end
 
-    Note over B,A: Invariantes garantidas:<br/>(a) UUID elimina colisão entre nos<br/>(b) UpdatedAt impede regressão de versão<br/>(c) Retransmissão e no-op de estado
+    Note over B,A: Invariantes garantidas:<br/>(a) UUID elimina colisão entre nós<br/>(b) UpdatedAt impede regressão de versão<br/>(c) Retransmissão e no-op de estado

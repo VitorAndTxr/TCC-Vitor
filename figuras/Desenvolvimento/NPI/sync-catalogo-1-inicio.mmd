@@ -8,7 +8,7 @@ sequenceDiagram
     participant B as NPI-B (consumidor)
     participant LB as SyncLog (NPI-B)
 
-    Note over B,LB : Pré-requisito: handshake Fases 1-3 concluido
+    Note over B,LB : Pré-requisito: handshake Fases 1-3 concluído
     B->>LB: GetLatestCompletedAsync(remoteNodeId)
     LB-->>B: SyncLog{LastSyncedAt = T_w}
     Note over B: resolvedSince = T_w
