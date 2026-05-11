@@ -1,16 +1,8 @@
-%%%% APÊNDICE -- DIAGRAMAS DE SEQUÊNCIA E DE FLUXO
-%%
-%% Reúne os diagramas de sequência e de estado que detalham os protocolos do
-%% PRISM, do PRISM Middleware ao streaming Bluetooth do NeuroEstimulator. Os
-%% diagramas foram deslocados do Capítulo de Desenvolvimento para preservar a
-%% fluidez da leitura textual sem sacrificar o registro detalhado dos
-%% protocolos discutidos.
-
 \chapter{Diagramas de sequência e de fluxo dos protocolos do PRISM}\label{cap:apendiceDiagramasSequencia}
 
 Este apêndice reúne, em ordem temática, os diagramas de sequência e de fluxo que detalham os protocolos descritos ao longo do Capítulo~\ref{cap:desenvolvimento}. A reunião dos diagramas em apêndice atende a duas finalidades complementares: preservar, no corpo do texto, uma narrativa contínua sobre cada protocolo, e oferecer ao leitor interessado em uma leitura técnica aprofundada um material consolidado que pode ser consultado de forma autônoma. As referências cruzadas das subseções de origem ao apêndice são feitas individualmente para cada figura, de modo que o leitor possa decidir, a cada ponto da leitura, se prossegue com o texto principal ou se desloca a atenção para o detalhe gráfico.
 
-A organização do apêndice acompanha a estrutura do capítulo. A Seção~\ref{sec:apendiceSeqMiddleware} apresenta os três diagramas que descrevem o \textit{handshake} de quatro fases do PRISM \textit{Middleware}, conforme discutidos na Subseção~\ref{subsec:NPIMiddleware}. A Seção~\ref{sec:apendiceSeqSync} reúne os diagramas associados aos protocolos de troca de dados entre nós, abordados na Subseção~\ref{subsec:NPITrocaDados}. A Seção~\ref{sec:apendiceSeqIRIS} traz os diagramas de estado e de fluxo da camada de orquestração do IRIS \emph{web}, vinculados à discussão da Subseção~\ref{subsubsec:IRISFederacao}. A Seção~\ref{sec:apendiceSeqMobile} apresenta os diagramas que descrevem os fluxos de pareamento, sincronização e etiquetagem do IRIS \textit{Mobile} (Seção~\ref{sec:desenvolvimentoIRISMobile}). Por fim, a Seção~\ref{sec:apendiceSeqStreaming} concentra o diagrama de sequência do protocolo de \textit{streaming} binário do NeuroEstimulator adaptado, complementando a discussão da Subseção~\ref{subsubsec:NEProtocolo}.
+A organização do apêndice acompanha a estrutura do capítulo. A Seção~\ref{sec:apendiceSeqMiddleware} apresenta os diagramas que descrevem o \textit{handshake} de quatro fases do PRISM \textit{Middleware}, conforme discutidos na Subseção~\ref{subsec:NPIMiddleware}. A Seção~\ref{sec:apendiceSeqSync} reúne os diagramas associados aos protocolos de troca de dados entre nós, abordados na Subseção~\ref{subsec:NPITrocaDados}. A Seção~\ref{sec:apendiceSeqIRIS} traz os diagramas de estado e de fluxo da camada de orquestração do IRIS \emph{web}, vinculados à discussão da Subseção~\ref{subsubsec:IRISFederacao}. A Seção~\ref{sec:apendiceSeqMobile} apresenta os diagramas que descrevem os fluxos de pareamento, sincronização e etiquetagem do IRIS \textit{Mobile} (Seção~\ref{sec:desenvolvimentoIRISMobile}). Por fim, a Seção~\ref{sec:apendiceSeqStreaming} concentra o diagrama de sequência do protocolo de \textit{streaming} binário do NeuroEstimulator adaptado, complementando a discussão da Subseção~\ref{subsubsec:NEProtocolo}.
 
 % ----------------------------------------------------------------------
 \section{Handshake de quatro fases do PRISM Middleware}\label{sec:apendiceSeqMiddleware}
@@ -156,20 +148,17 @@ Os dois diagramas desta seção complementam a discussão da Subseção~\ref{sub
 \section{Fluxos do IRIS \textit{Mobile}}\label{sec:apendiceSeqMobile}
 % ----------------------------------------------------------------------
 
-Esta seção reúne os oito diagramas que detalham os três fluxos centrais do IRIS \textit{Mobile}, em correspondência com as Subseções~\ref{subsec:IRISMobileBT}, \ref{subsec:IRISMobileCaptura} e \ref{subsec:IRISMobileRotulos}. À semelhança do que ocorreu com os fluxos de sincronização entre nós (Seção~\ref{sec:apendiceSeqSync}), a extensão do diálogo entre o aplicativo, o dispositivo e o NPI tornou inviável a representação de cada fluxo em um único diagrama, e a decomposição em etapas privilegia a legibilidade individual sem sacrificar a representação completa do protocolo.
+Esta seção reúne os seis diagramas que detalham os dois fluxos centrais do IRIS \textit{Mobile}, em correspondência com as Subseções~\ref{subsec:IRISMobileBT} e \ref{subsec:IRISMobileCaptura}. À semelhança do que ocorreu com os fluxos de sincronização entre nós (Seção~\ref{sec:apendiceSeqSync}), a extensão do diálogo entre o aplicativo, o dispositivo e o NPI tornou inviável a representação de cada fluxo em um único diagrama, e a decomposição em etapas privilegia a legibilidade individual sem sacrificar a representação completa do protocolo.
 
 O fluxo de captura via Bluetooth é apresentado em três etapas. A Figura~\ref{fig:IRISMobileFluxoCapturaPareamento} ilustra o pareamento Bluetooth e a abertura do canal \textit{Serial Port Profile} (SPP) com o NeuroEstimulator, incluindo a solicitação de permissões nativas do Android e o registro dos \textit{listeners} de dados recebidos e de desconexão. A Figura~\ref{fig:IRISMobileFluxoCapturaStream} apresenta o regime estacionário de captura e \textit{streaming} a 215~Hz, evidenciando o papel do decodificador binário \texttt{BinaryFrameAccumulator} e a renderização decimada do sinal sEMG na \texttt{CaptureScreen}. A Figura~\ref{fig:IRISMobileFluxoCapturaEncerramento} fecha o ciclo com o encerramento ordenado da captura --- comando de \textit{stop streaming} e \textit{flush} do \textit{buffer} de CSV --- e descreve o ramo alternativo de recuperação acionado em caso de desconexão Bluetooth inesperada.
 
 O fluxo de sincronização com o NPI é apresentado em três etapas que separam a fase \textit{offline-first} do envio assíncrono e do tratamento de seu resultado. A Figura~\ref{fig:IRISMobileFluxoSyncGeracao} mostra a geração local da sessão clínica, da gravação e das anotações em modo \textit{offline-first}, com persistência em SQLite e marcação de \texttt{sync\_status = 'pending'}. A Figura~\ref{fig:IRISMobileFluxoSyncUpload} sintetiza o ciclo periódico do \texttt{SyncService}, que percorre as três tabelas pendentes respeitando a ordem de dependências do contrato do NPI --- sessão clínica, gravação (metadados e arquivo binário) e anotações. A Figura~\ref{fig:IRISMobileFluxoSyncResultado} fecha o ciclo apresentando o tratamento do resultado da sincronização, incluindo a transição de \texttt{sync\_status} para \texttt{'synced'} ou \texttt{'failed'} e a atualização do \textit{badge} colorido exibido na \texttt{HistoryScreen}.
 
-O fluxo de etiquetagem em tempo real é apresentado em duas etapas. A Figura~\ref{fig:IRISMobileFluxoRotulagemCriacao} percorre a criação local da anotação clínica pelo pesquisador, sua persistência em SQLite com \texttt{sync\_status = 'pending'} e o vínculo à sessão clínica em curso por meio da chave estrangeira \texttt{session\_id}. A Figura~\ref{fig:IRISMobileFluxoRotulagemEnvio} apresenta o envio assíncrono das anotações ao NPI pelo \texttt{SyncService}, condicionado à prévia sincronização da sessão à qual elas pertencem, política que preserva a integridade referencial sem necessidade de mensagens de coordenação adicionais.
-
 \begin{figure}[htpb]
 \caption{IRIS \textit{Mobile} --- pareamento Bluetooth e abertura do canal SPP com o NeuroEstimulator.}
-\label{fig:IRISMobileFluxoCaptura}
 \label{fig:IRISMobileFluxoCapturaPareamento}
 \centering
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/IRISMobile/fluxo-bt-streaming-1-pareamento.png}
+\includegraphics[scale=0.2]{figuras/Desenvolvimento/IRISMobile/fluxo-bt-streaming-1-pareamento.png}
 \fonte{}
 \end{figure}
 
@@ -177,7 +166,7 @@ O fluxo de etiquetagem em tempo real é apresentado em duas etapas. A Figura~\re
 \caption{IRIS \textit{Mobile} --- captura e \textit{streaming} a 215~Hz, com decodificação binária e renderização do sinal sEMG.}
 \label{fig:IRISMobileFluxoCapturaStream}
 \centering
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/IRISMobile/fluxo-bt-streaming-2-captura.png}
+\includegraphics[scale=0.3, angle=90]{figuras/Desenvolvimento/IRISMobile/fluxo-bt-streaming-2-captura.png}
 \fonte{}
 \end{figure}
 
@@ -185,7 +174,7 @@ O fluxo de etiquetagem em tempo real é apresentado em duas etapas. A Figura~\re
 \caption{IRIS \textit{Mobile} --- encerramento da captura e recuperação de desconexão Bluetooth.}
 \label{fig:IRISMobileFluxoCapturaEncerramento}
 \centering
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/IRISMobile/fluxo-bt-streaming-3-encerramento.png}
+\includegraphics[scale=0.3, angle=90]{figuras/Desenvolvimento/IRISMobile/fluxo-bt-streaming-3-encerramento.png}
 \fonte{}
 \end{figure}
 
@@ -194,7 +183,7 @@ O fluxo de etiquetagem em tempo real é apresentado em duas etapas. A Figura~\re
 \label{fig:IRISMobileFluxoSync}
 \label{fig:IRISMobileFluxoSyncGeracao}
 \centering
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/IRISMobile/fluxo-sync-mobile-1-geracao.png}
+\includegraphics[scale=0.2]{figuras/Desenvolvimento/IRISMobile/fluxo-sync-mobile-1-geracao.png}
 \fonte{}
 \end{figure}
 
@@ -203,7 +192,7 @@ O fluxo de etiquetagem em tempo real é apresentado em duas etapas. A Figura~\re
 \caption{IRIS \textit{Mobile} --- ciclo periódico de \textit{upload} respeitando a ordem de dependências (sessão, gravação, anotação).}
 \label{fig:IRISMobileFluxoSyncUpload}
 \centering
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/IRISMobile/fluxo-sync-mobile-2-upload.png}
+\includegraphics[scale=0.2]{figuras/Desenvolvimento/IRISMobile/fluxo-sync-mobile-2-upload.png}
 \fonte{}
 \end{figure}
 
@@ -211,24 +200,7 @@ O fluxo de etiquetagem em tempo real é apresentado em duas etapas. A Figura~\re
 \caption{IRIS \textit{Mobile} --- tratamento do resultado da sincronização e atualização do \textit{badge} na \texttt{HistoryScreen}.}
 \label{fig:IRISMobileFluxoSyncResultado}
 \centering
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/IRISMobile/fluxo-sync-mobile-3-resultado.png}
-\fonte{}
-\end{figure}
-
-\begin{figure}[htpb]
-\caption{IRIS \textit{Mobile} --- criação local da anotação clínica e persistência em SQLite.}
-\label{fig:IRISMobileFluxoRotulagem}
-\label{fig:IRISMobileFluxoRotulagemCriacao}
-\centering
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/IRISMobile/fluxo-rotulagem-1-criacao.png}
-\fonte{}
-\end{figure}
-
-\begin{figure}[htpb]
-\caption{IRIS \textit{Mobile} --- envio assíncrono das anotações ao NPI pelo \texttt{SyncService}.}
-\label{fig:IRISMobileFluxoRotulagemEnvio}
-\centering
-\includegraphics[scale=0.5]{figuras/Desenvolvimento/IRISMobile/fluxo-rotulagem-2-envio.png}
+\includegraphics[scale=0.2]{figuras/Desenvolvimento/IRISMobile/fluxo-sync-mobile-3-resultado.png}
 \fonte{}
 \end{figure}
 
