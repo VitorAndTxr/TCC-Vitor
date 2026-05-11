@@ -61,11 +61,11 @@ Os \textit{endpoints} deste grupo materializam as Fases~1, 2 e 3 do protocolo de
 \endlastfoot
 \texttt{POST /api/channel/open} & Abre um novo canal cifrado por meio de troca ECDH P-384 efêmera; retorna o \texttt{channelId} a ser utilizado nas demais requisições. & \texttt{A} \\ \hline
 \texttt{POST /api/channel/initiate} & Inicia o \textit{handshake} contra um nó remoto, atuando como cliente do canal cifrado. & \texttt{A} \\ \hline
-\texttt{GET /api/channel/\{channelId\}} & Consulta os metadados de um canal aberto (uso diagnóstico). & \texttt{A} \\ \hline
+\texttt{GET /api/channel/\newline\{channelId\}} & Consulta os metadados de um canal aberto (uso diagnóstico). & \texttt{A} \\ \hline
 \texttt{GET /api/channel/health} & \textit{Health check} do serviço de canal cifrado. & \texttt{A} \\ \hline
 \texttt{POST /api/node/identify} & Fase~2: identifica o nó remoto no canal recém-aberto, apresentando o \textit{fingerprint} SHA-256 do certificado X.509. & \texttt{C} \\ \hline
 \texttt{POST /api/node/challenge} & Fase~3: solicita um desafio aleatório (32~bytes, TTL de cinco minutos) para autenticação mútua. & \texttt{C} \\ \hline
-\texttt{POST /api/node/authenticate} & Fase~3: submete o desafio assinado com a chave privada RSA-2048 e recebe o \textit{token} de sessão de aplicação. & \texttt{C} \\ \hline
+\texttt{POST /api/node/\newline authenticate} & Fase~3: submete o desafio assinado com a chave privada RSA-2048 e recebe o \textit{token} de sessão de aplicação. & \texttt{C} \\ \hline
 \end{longtable}
 
 % ----------------------------------------------------------------------
@@ -74,7 +74,7 @@ Os \textit{endpoints} deste grupo materializam as Fases~1, 2 e 3 do protocolo de
 
 Os \textit{endpoints} deste grupo permitem inspecionar, renovar e revogar a sessão de aplicação emitida na Fase~3.
 
-\begin{longtable}{|p{0.36\textwidth}|p{0.42\textwidth}|p{0.10\textwidth}|}
+\begin{longtable}{|p{0.35\textwidth}|p{0.45\textwidth}|p{0.15\textwidth}|}
 \caption{\textit{Endpoints} de sessão de aplicação.}\label{tab:apendiceaSessao} \\ \hline
 \textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
 \endfirsthead
@@ -114,10 +114,10 @@ Os \textit{endpoints} deste grupo cobrem o registro, a aprovação e a listagem 
 \texttt{GET /api/node/nodes} & Lista todos os nós conhecidos com seus respectivos estados de autorização. & \texttt{A} \\ \hline
 \texttt{PUT /api/node/\{id\}/status} & Altera o estado de autorização de um nó (\textit{Pending}, \textit{Authorized}, \textit{Revoked}). & \texttt{A} \\ \hline
 \texttt{POST /api/node/newconnection} & Solicita uma nova conexão lógica com um nó remoto previamente registrado. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/node/getactiveconnectionspaginated} & Lista, paginadamente, as conexões aprovadas e ativas. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/node/getallunaprovedpaginated} & Lista, paginadamente, as conexões pendentes de aprovação. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/node/\{connectionId\}/approve} & Aprova uma solicitação de conexão pendente. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/node/\{connectionId\}/reject} & Rejeita uma solicitação de conexão pendente. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/node/\newline getactiveconnectionspaginated} & Lista, paginadamente, as conexões aprovadas e ativas. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/node/\newline getallunaprovedpaginated} & Lista, paginadamente, as conexões pendentes de aprovação. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/node/\newline \{connectionId\}/approve} & Aprova uma solicitação de conexão pendente. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/node/\newline \{connectionId\}/reject} & Rejeita uma solicitação de conexão pendente. & \texttt{C+S+U} \\ \hline
 \texttt{GET /api/node/\{id:guid\}} & Recupera, por identificador, os metadados de uma conexão específica. & \texttt{C+S+U} \\ \hline
 \texttt{PUT /api/node/update/\{id:guid\}} & Atualiza atributos administrativos de uma conexão existente. & \texttt{C+S+U} \\ \hline
 \end{longtable}
@@ -141,7 +141,7 @@ Os \textit{endpoints} deste grupo emitem e renovam o \textit{token} JWT que mate
 \caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
 \endlastfoot
 \texttt{POST /api/userauth/login} & Recebe par \textit{e-mail}/senha e devolve um \textit{token} JWT RS256 com TTL de uma hora. & \texttt{C+S} \\ \hline
-\texttt{POST /api/userauth/refreshtoken} & Renova o \textit{token} JWT antes da expiração, sem nova apresentação de credencial. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/userauth/\newline refreshtoken} & Renova o \textit{token} JWT antes da expiração, sem nova apresentação de credencial. & \texttt{C+S+U} \\ \hline
 \texttt{POST /api/userauth/encrypt} & Utilitário de cifragem assimétrica de texto livre, empregado no provisionamento inicial de credenciais. & \texttt{A} \\ \hline
 \end{longtable}
 
@@ -167,11 +167,11 @@ Este grupo concentra as operações de \textit{Create-Read-Update-Delete} (CRUD)
 \texttt{POST /api/user/new} & Cria um novo usuário. & \texttt{C+S+U} \\ \hline
 \texttt{GET /api/user/\{id:guid\}} & Recupera um usuário por identificador. & \texttt{C+S+U} \\ \hline
 \texttt{PUT /api/user/update/\{id:guid\}} & Atualiza dados de um usuário. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/researcher/getresearchers} & Lista pesquisadores paginados. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/researcher/\newline getresearchers} & Lista pesquisadores paginados. & \texttt{C+S+U} \\ \hline
 \texttt{POST /api/researcher/new} & Cadastra um novo pesquisador. & \texttt{C+S+U} \\ \hline
 \texttt{GET /api/researcher/\{id:guid\}} & Recupera um pesquisador por identificador. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/researcher/getresearcherbynodeid/\{nodeId\}} & Lista os pesquisadores associados a um nó remoto. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/researcher/update/\{id:guid\}} & Atualiza dados de um pesquisador. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/researcher/\newline getresearcherbynodeid/\{nodeId\}} & Lista os pesquisadores associados a um nó remoto. & \texttt{C+S+U} \\ \hline
+\texttt{PUT /api/researcher/update/\newline \{id:guid\}} & Atualiza dados de um pesquisador. & \texttt{C+S+U} \\ \hline
 \end{longtable}
 
 % ----------------------------------------------------------------------
@@ -193,31 +193,31 @@ Este grupo expõe as operações sobre projetos de pesquisa (\texttt{Research}),
 \caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
 \endlastfoot
 \texttt{POST /api/research/new} & Cria um novo projeto de pesquisa. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/getallpaginatedasync} & Lista projetos paginados. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/research/\newline getallpaginatedasync} & Lista projetos paginados. & \texttt{C+S+U} \\ \hline
 \texttt{GET /api/research/\{id:guid\}} & Recupera um projeto por identificador. & \texttt{C+S+U} \\ \hline
 \texttt{PUT /api/research/\{id:guid\}} & Atualiza um projeto. & \texttt{C+S+U} \\ \hline
 \texttt{DELETE /api/research/\{id:guid\}} & Remove um projeto. & \texttt{C+S+U} \\ \hline
 \texttt{GET /api/research/getbystatus} & Filtra projetos pelo atributo \textit{status}. & \texttt{C+S+U} \\ \hline
 \texttt{GET /api/research/getactive} & Lista os projetos atualmente em execução. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/researchers} & Lista pesquisadores vinculados a um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/research/\{researchId:guid\}/researchers} & Vincula um pesquisador a um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/research/\{researchId:guid\}/researchers/\{researcherId:guid\}} & Atualiza o vínculo de um pesquisador (papel, datas). & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/research/\{researchId:guid\}/researchers/\{researcherId:guid\}} & Remove o vínculo de um pesquisador. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/volunteers} & Lista voluntários inscritos em um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/research/\{researchId:guid\}/volunteers} & Inscreve um voluntário em um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/research/\{researchId:guid\}/volunteers/\{volunteerId:guid\}} & Atualiza a inscrição de um voluntário. & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/research/\{researchId:guid\}/volunteers/\{volunteerId:guid\}} & Remove a inscrição de um voluntário. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/applications} & Lista aplicações cliente autorizadas a operar sobre um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/research/\{researchId:guid\}/applications} & Autoriza uma aplicação cliente a operar sobre um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/research/\{researchId:guid\}/applications/\{applicationId:guid\}} & Atualiza a autorização de uma aplicação. & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/research/\{researchId:guid\}/applications/\{applicationId:guid\}} & Revoga a autorização de uma aplicação. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/devices} & Lista dispositivos vinculados a um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/research/\{researchId:guid\}/devices} & Vincula um dispositivo a um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/research/\{researchId:guid\}/devices/\{deviceId:guid\}} & Atualiza o vínculo de um dispositivo. & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/research/\{researchId:guid\}/devices/\{deviceId:guid\}} & Remove o vínculo de um dispositivo. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/sensors} & Lista todos os sensores associados a um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{researchId:guid\}/devices/\{deviceId:guid\}/sensors} & Lista os sensores de um dispositivo específico no escopo de um projeto. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/research/\{id:guid\}/export} & Exporta o acervo completo de um projeto em arquivo \textit{ZIP}. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/research/\newline\{researchId:guid\}/researchers} & Lista pesquisadores vinculados a um projeto. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/research/\newline\{researchId:guid\}/researchers} & Vincula um pesquisador a um projeto. & \texttt{C+S+U} \\ \hline
+\texttt{PUT /api/research/\newline\{researchId:guid\}/researchers/\newline\{researcherId:guid\}} & Atualiza o vínculo de um pesquisador (papel, datas). & \texttt{C+S+U} \\ \hline
+\texttt{DELETE /api/research/\newline\{researchId:guid\}/researchers/\newline\{researcherId:guid\}} & Remove o vínculo de um pesquisador. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/research/\newline\{researchId:guid\}/volunteers} & Lista voluntários inscritos em um projeto. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/research/\newline\{researchId:guid\}/volunteers} & Inscreve um voluntário em um projeto. & \texttt{C+S+U} \\ \hline
+\texttt{PUT /api/research/\newline\{researchId:guid\}/volunteers/\newline\{volunteerId:guid\}} & Atualiza a inscrição de um voluntário. & \texttt{C+S+U} \\ \hline
+\texttt{DELETE /api/research/\newline\{researchId:guid\}/volunteers/\newline\{volunteerId:guid\}} & Remove a inscrição de um voluntário. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/research/\newline\{researchId:guid\}/applications} & Lista aplicações cliente autorizadas a operar sobre um projeto. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/research/\newline\{researchId:guid\}/applications} & Autoriza uma aplicação cliente a operar sobre um projeto. & \texttt{C+S+U} \\ \hline
+\texttt{PUT /api/research/\newline\{researchId:guid\}/applications/\newline\{applicationId:guid\}} & Atualiza a autorização de uma aplicação. & \texttt{C+S+U} \\ \hline
+\texttt{DELETE /api/research/\newline\{researchId:guid\}/applications/\newline\{applicationId:guid\}} & Revoga a autorização de uma aplicação. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/research/\newline\{researchId:guid\}/devices} & Lista dispositivos vinculados a um projeto. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/research/\newline\{researchId:guid\}/devices} & Vincula um dispositivo a um projeto. & \texttt{C+S+U} \\ \hline
+\texttt{PUT /api/research/\newline\{researchId:guid\}/devices/\newline\{deviceId:guid\}} & Atualiza o vínculo de um dispositivo. & \texttt{C+S+U} \\ \hline
+\texttt{DELETE /api/research/\newline\{researchId:guid\}/devices/\newline\{deviceId:guid\}} & Remove o vínculo de um dispositivo. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/research/\newline\{researchId:guid\}/sensors} & Lista todos os sensores associados a um projeto. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/research/\newline\{researchId:guid\}/devices/\newline\{deviceId:guid\}/sensors} & Lista os sensores de um dispositivo específico no escopo de um projeto. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/research/\newline\{id:guid\}/export} & Exporta o acervo completo de um projeto em arquivo \textit{ZIP}. & \texttt{C+S+U} \\ \hline
 \end{longtable}
 
 % ----------------------------------------------------------------------
@@ -238,11 +238,11 @@ Este grupo expõe o CRUD da entidade \texttt{Volunteer}, complementando os \text
 \hline
 \caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
 \endlastfoot
-\texttt{GET /api/volunteer/getallpaginated} & Lista voluntários paginados. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/volunteer/\newline getallpaginated} & Lista voluntários paginados. & \texttt{C+S+U} \\ \hline
 \texttt{POST /api/volunteer/new} & Cadastra um novo voluntário. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/volunteer/\{id:guid\}} & Recupera um voluntário por identificador. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/volunteer/update/\{id:guid\}} & Atualiza dados de um voluntário. & \texttt{C+S+U} \\ \hline
-\texttt{DELETE /api/volunteer/\{id:guid\}} & Remove um voluntário. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/volunteer/\newline \{id:guid\}} & Recupera um voluntário por identificador. & \texttt{C+S+U} \\ \hline
+\texttt{PUT /api/volunteer/\newline update/\{id:guid\}} & Atualiza dados de um voluntário. & \texttt{C+S+U} \\ \hline
+\texttt{DELETE /api/volunteer/\newline \{id:guid\}} & Remove um voluntário. & \texttt{C+S+U} \\ \hline
 \end{longtable}
 
 % ----------------------------------------------------------------------
@@ -291,13 +291,13 @@ Este grupo cobre o ciclo de vida das sessões de coleta (\texttt{ClinicalSession
 \caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
 \endlastfoot
 \texttt{POST /api/clinicalsession/new} & Cria uma nova sessão clínica de coleta com rótulos SNOMED CT. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/clinicalsession/getallpaginated} & Lista sessões clínicas paginadas, com filtros opcionais por pesquisa, voluntário, \textit{status} e janela temporal. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/clinicalsession/\{id:guid\}} & Recupera uma sessão clínica por identificador. & \texttt{C+S+U} \\ \hline
-\texttt{PUT /api/clinicalsession/update/\{id:guid\}} & Atualiza atributos administrativos de uma sessão clínica. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/clinicalsession/\{sessionId:guid\}/recordings/new} & Registra uma nova gravação associada a uma sessão clínica. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/clinicalsession/\{sessionId:guid\}/recordings} & Lista as gravações de uma sessão clínica. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/clinicalsession/\{sessionId:guid\}/annotations/new} & Adiciona uma anotação temporal a uma sessão clínica. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/clinicalsession/\{sessionId:guid\}/annotations} & Lista as anotações de uma sessão clínica. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/clinicalsession/\newline getallpaginated} & Lista sessões clínicas paginadas, com filtros opcionais por pesquisa, voluntário, \textit{status} e janela temporal. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/clinicalsession/\newline \{id:guid\}} & Recupera uma sessão clínica por identificador. & \texttt{C+S+U} \\ \hline
+\texttt{PUT /api/clinicalsession/\newline update/\{id:guid\}} & Atualiza atributos administrativos de uma sessão clínica. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/clinicalsession/\newline \{sessionId:guid\}/recordings/new} & Registra uma nova gravação associada a uma sessão clínica. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/clinicalsession/\newline \{sessionId:guid\}/recordings} & Lista as gravações de uma sessão clínica. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/clinicalsession/\newline \{sessionId:guid\}/annotations/new} & Adiciona uma anotação temporal a uma sessão clínica. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/clinicalsession/\newline \{sessionId:guid\}/annotations} & Lista as anotações de uma sessão clínica. & \texttt{C+S+U} \\ \hline
 \texttt{POST /api/upload/recording} & Recebe o conteúdo binário de um canal de biossinal em rota dedicada para não inflar o \textit{payload} JSON dos demais \textit{endpoints}. & \texttt{C+S+U} \\ \hline
 \end{longtable}
 
@@ -319,26 +319,26 @@ Este grupo concentra o CRUD das entidades de catálogo do vocabulário clínico,
 \hline
 \caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
 \endlastfoot
-\texttt{GET /api/snomed/BodyStructure/getactivebodystructures} & Lista estruturas anatômicas ativas. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/BodyStructure/getallbodystructurespaginatedasync} & Lista estruturas anatômicas paginadas. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/snomed/BodyStructure/\newline getactivebodystructures} & Lista estruturas anatômicas ativas. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/snomed/BodyStructure/\newline getallbodystructurespaginatedasync} & Lista estruturas anatômicas paginadas. & \texttt{C+S+U} \\ \hline
 \texttt{POST /api/snomed/BodyStructure/new} & Cadastra uma nova estrutura anatômica. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/BodyStructure/\{snomedCode\}} & Recupera uma estrutura anatômica pelo código SNOMED. & \texttt{C} \\ \hline
-\texttt{PUT /api/snomed/BodyStructure/update/\{snomedCode\}} & Atualiza uma estrutura anatômica. & \texttt{C} \\ \hline
-\texttt{GET /api/snomed/BodyRegion/getactivebodyregions} & Lista regiões corporais ativas. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/BodyRegion/getallbodyregionspaginatedasync} & Lista regiões corporais paginadas. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/snomed/BodyStructure/\newline \{snomedCode\}} & Recupera uma estrutura anatômica pelo código SNOMED. & \texttt{C} \\ \hline
+\texttt{PUT /api/snomed/BodyStructure/\newline update/\{snomedCode\}} & Atualiza uma estrutura anatômica. & \texttt{C} \\ \hline
+\texttt{GET /api/snomed/BodyRegion/\newline getactivebodyregions} & Lista regiões corporais ativas. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/snomed/BodyRegion/\newline getallbodyregionspaginatedasync} & Lista regiões corporais paginadas. & \texttt{C+S+U} \\ \hline
 \texttt{POST /api/snomed/BodyRegion/new} & Cadastra uma nova região corporal. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/BodyRegion/\{snomedCode\}} & Recupera uma região corporal pelo código SNOMED. & \texttt{C} \\ \hline
-\texttt{PUT /api/snomed/BodyRegion/update/\{snomedCode\}} & Atualiza uma região corporal. & \texttt{C} \\ \hline
-\texttt{GET /api/snomed/TopographicalModifier/getactivetopographicalmodifiers} & Lista modificadores topográficos ativos. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/TopographicalModifier/getalltopographicalmodifierspaginatedasync} & Lista modificadores topográficos paginados. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/snomed/TopographicalModifier/new} & Cadastra um novo modificador topográfico. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/TopographicalModifier/\{snomedCode\}} & Recupera um modificador topográfico pelo código SNOMED. & \texttt{C} \\ \hline
-\texttt{PUT /api/snomed/TopographicalModifier/update/\{snomedCode\}} & Atualiza um modificador topográfico. & \texttt{C} \\ \hline
-\texttt{GET /api/snomed/ClinicalCondition/getactiveclinicalconditions} & Lista condições clínicas ativas. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/ClinicalCondition/getallclinicalconditionspaginatedasync} & Lista condições clínicas paginadas. & \texttt{C+S+U} \\ \hline
-\texttt{POST /api/snomed/ClinicalCondition/new} & Cadastra uma nova condição clínica. & \texttt{C+S+U} \\ \hline
-\texttt{GET /api/snomed/ClinicalCondition/\{snomedCode\}} & Recupera uma condição clínica pelo código SNOMED. & \texttt{C} \\ \hline
-\texttt{PUT /api/snomed/ClinicalCondition/update/\{snomedCode\}} & Atualiza uma condição clínica. & \texttt{C} \\ \hline
+\texttt{GET /api/snomed/BodyRegion/\newline \{snomedCode\}} & Recupera uma região corporal pelo código SNOMED. & \texttt{C} \\ \hline
+\texttt{PUT /api/snomed/BodyRegion/\newline update/\{snomedCode\}} & Atualiza uma região corporal. & \texttt{C} \\ \hline
+\texttt{GET /api/snomed/\newline TopographicalModifier/\newline getactivetopographicalmodifiers} & Lista modificadores topográficos ativos. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/snomed/\newline TopographicalModifier/\newline getalltopographicalmodifierspaginatedasync} & Lista modificadores topográficos paginados. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/snomed/\newline TopographicalModifier/new} & Cadastra um novo modificador topográfico. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/snomed/\newline TopographicalModifier/\{snomedCode\}} & Recupera um modificador topográfico pelo código SNOMED. & \texttt{C} \\ \hline
+\texttt{PUT /api/snomed/\newline TopographicalModifier/update/\newline \{snomedCode\}} & Atualiza um modificador topográfico. & \texttt{C} \\ \hline
+\texttt{GET /api/snomed/ClinicalCondition/\newline getactiveclinicalconditions} & Lista condições clínicas ativas. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/snomed/ClinicalCondition/\newline getallclinicalconditionspaginated} & Lista condições clínicas paginadas. & \texttt{C+S+U} \\ \hline
+\texttt{POST /api/snomed/ClinicalCondition/\newline new} & Cadastra uma nova condição clínica. & \texttt{C+S+U} \\ \hline
+\texttt{GET /api/snomed/ClinicalCondition/\newline \{snomedCode\}} & Recupera uma condição clínica pelo código SNOMED. & \texttt{C} \\ \hline
+\texttt{PUT /api/snomed/ClinicalCondition/\newline update/\{snomedCode\}} & Atualiza uma condição clínica. & \texttt{C} \\ \hline
 \end{longtable}
 
 % ----------------------------------------------------------------------
@@ -347,7 +347,7 @@ Este grupo concentra o CRUD das entidades de catálogo do vocabulário clínico,
 
 Os \textit{endpoints} deste grupo materializam o protocolo de sincronização federada descrito na Subseção~\ref{subsec:NPITrocaDados}. As rotas de leitura honram a semântica incremental por meio do parâmetro de \textit{query} \texttt{since}, e as rotas de orquestração disparam o ciclo \textit{pull} desde o nó consumidor.
 
-\begin{longtable}{|p{0.42\textwidth}|p{0.40\textwidth}|p{0.07\textwidth}|}
+\begin{longtable}{|p{0.35\textwidth}|p{0.40\textwidth}|p{0.15\textwidth}|}
 \caption{\textit{Endpoints} de sincronização federada.}\label{tab:apendiceaSincronizacao} \\ \hline
 \textbf{Verbo e Rota} & \textbf{Descrição} & \textbf{Auth.} \\ \hline
 \endfirsthead
@@ -360,19 +360,22 @@ Os \textit{endpoints} deste grupo materializam o protocolo de sincronização fe
 \caption*{\ABNTEXfontereduzida{\bfseries\nomefonte: Autoria própria (2026).}} \\
 \endlastfoot
 \texttt{POST /api/sync/manifest} & Gera o manifesto das entidades disponíveis no nó produtor para um dado \texttt{since}. & \texttt{C+S(R/W)} \\ \hline
-\texttt{GET /api/sync/snomed/\{entityType\}} & Exporta entidades de catálogo SNOMED CT (estruturas, regiões, modificadores, condições) com paginação. & \texttt{C+S(R/W)} \\ \hline
+\texttt{GET /api/sync/snomed/\newline \{entityType\}} & Exporta entidades de catálogo SNOMED CT (estruturas, regiões, modificadores, condições) com paginação. & \texttt{C+S(R/W)} \\ \hline
 \texttt{GET /api/sync/volunteers} & Exporta voluntários com sub-entidades aninhadas. & \texttt{C+S(R/W)} \\ \hline
 \texttt{GET /api/sync/researchers} & Exporta pesquisadores. & \texttt{C+S(R/W)} \\ \hline
 \texttt{GET /api/sync/devices} & Exporta dispositivos. & \texttt{C+S(R/W)} \\ \hline
 \texttt{GET /api/sync/sensors} & Exporta sensores. & \texttt{C+S(R/W)} \\ \hline
 \texttt{GET /api/sync/research} & Exporta projetos de pesquisa com seus vínculos. & \texttt{C+S(R/W)} \\ \hline
 \texttt{GET /api/sync/sessions} & Exporta sessões de gravação com anotações e canais aninhados. & \texttt{C+S(R/W)} \\ \hline
-\texttt{GET /api/sync/recordings/\{id:guid\}/file} & Recupera o conteúdo binário de um canal de gravação por identificador, em envelope JSON cifrado. & \texttt{C+S(R/W)} \\ \hline
+\texttt{GET /api/sync/recordings/\newline \{id:guid\}/file} & Recupera o conteúdo binário de um canal de gravação por identificador, em envelope JSON cifrado. & \texttt{C+S(R/W)} \\ \hline
 \texttt{POST /api/sync/import} & Importa, em transação ACID, o lote de entidades coletadas durante uma operação de \textit{pull}. & \texttt{A} \\ \hline
 \texttt{GET /api/sync/log} & Lista o histórico paginado de operações de sincronização contra um nó remoto. & \texttt{A} \\ \hline
 \texttt{POST /api/sync/preview} & Solicita ao nó remoto o manifesto de sincronização sem executar a importação. & \texttt{C+S+U} \\ \hline
 \texttt{POST /api/sync/pull} & Dispara um ciclo completo de sincronização \textit{backend-to-backend}, incluindo \textit{handshake} de quatro fases. & \texttt{C+S+U} \\ \hline
 \end{longtable}
+
+\begin{comment}
+
 
 % ----------------------------------------------------------------------
 \section{Utilitários de testes e diagnóstico}\label{sec:apendiceaTestes}
@@ -405,8 +408,10 @@ Os \textit{endpoints} desta seção não compõem o contrato público da API e e
 \texttt{POST /api/testing/complete-phase1-phase2} & Executa, em uma única chamada, as Fases~1 e 2 do \textit{handshake} (auxílio à automação de testes). & \texttt{A} \\ \hline
 \end{longtable}
 
+\end{comment}
+
 % ----------------------------------------------------------------------
 \section{Considerações finais sobre a referência}\label{sec:apendiceaConsideracoes}
 % ----------------------------------------------------------------------
 
-A referência exposta neste apêndice contempla cento e trinta e nove \textit{endpoints} distribuídos em dezesseis \textit{controllers} de \textit{ASP.NET Core}, organizados nos onze grupos funcionais reproduzidos nas Seções~\ref{sec:apendiceaCanal} a \ref{sec:apendiceaSincronizacao} e nos utilitários de testes da Seção~\ref{sec:apendiceaTestes}. Os esquemas detalhados de \textit{request} e \textit{response}, incluindo a definição completa dos DTOs e dos códigos de erro, permanecem disponíveis na rota \texttt{/swagger} do NPI quando o serviço está em execução, e podem ser exportados como artefato \textit{OpenAPI} 3.0 a partir do mesmo \textit{endpoint}. A consulta a esses esquemas é necessária apenas em situações de implementação de novos clientes da API; para fins de leitura do trabalho, as descrições aqui apresentadas são suficientes.
+A referência exposta neste apêndice contempla cento e vinte e oito \textit{endpoints} distribuídos em quinze \textit{controllers} de \textit{ASP.NET Core}, organizados nos onze grupos funcionais reproduzidos nas Seções~\ref{sec:apendiceaCanal} a \ref{sec:apendiceaSincronizacao}. Os esquemas detalhados de \textit{request} e \textit{response}, incluindo a definição completa dos DTOs e dos códigos de erro, permanecem disponíveis na rota \texttt{/swagger} do NPI quando o serviço está em execução, e podem ser exportados como artefato \textit{OpenAPI} 3.0 a partir do mesmo \textit{endpoint}. A consulta a esses esquemas é necessária apenas em situações de implementação de novos clientes da API; para fins de leitura do trabalho, as descrições aqui apresentadas são suficientes.
