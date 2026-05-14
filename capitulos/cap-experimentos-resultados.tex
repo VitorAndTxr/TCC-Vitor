@@ -10,7 +10,7 @@ Para testar a hipótese de interoperabilidade através da troca de dados estrutu
 
 \begin{figure}[htpb]
     \captionsetup{width=1\textwidth}
-    \caption{Estrutura institucional simulada para validação do PRISM.}
+    \caption{Estrutura institucional simulada para validação do PRISM}
     \label{fig:estruturaSimulada}
     \includegraphics[width=\textwidth]{figuras/Desenvolvimento/visaoGeral/estrutura-simulada.png}
     \fonte{}
@@ -20,7 +20,7 @@ Dentro desse cenário, este trabalho estrutura o fluxo de consumo dos dados de p
 
 \begin{figure}[htpb]
 \captionsetup{width=1\textwidth}
-\caption{Fluxo de dados pretendido entre as instituições simuladas.}
+\caption{Fluxo de dados pretendido entre as instituições simuladas}
 \label{fig:fluxo-simulado}
 \includegraphics[width=\textwidth]{figuras/Desenvolvimento/visaoGeral/fluxo-simulado.png}
 \fonte{}
@@ -31,7 +31,7 @@ A materialização desse cenário exigiu o desenvolvimento de quatro elementos, 
 A delimitação acima resulta das restrições de equipe (um único autor) e de prazo (ciclo acadêmico de um ano) aplicadas ao trabalho. Nessas condições, priorizou-se a profundidade do NPI --- componente central da hipótese --- em detrimento da amplitude do padrão: optou-se por uma única modalidade de biossinal (sEMG), um único projeto-exemplo e federação entre apenas dois nós. Essas escolhas preservam a capacidade do experimento de testar a hipótese, uma vez que o contrato do NPI foi implementado de forma agnóstica ao tipo de biossinal, mantendo o padrão extensível a outras modalidades sem alteração da camada de \textit{middleware}. 
 
 \begin{tabframed}[htb]%% Ambiente tabframed
-\caption{Síntese dos elementos desenvolvidos e suas contribuições à validação do PRISM.}%% Legenda
+\caption{Síntese dos elementos desenvolvidos e suas contribuições à validação do PRISM}%% Legenda
 \label{quad:elementosDesenvolvidos}%% Rótulo
 \begin{tabular}{|p{0.15\textwidth-\columnsep}|p{0.33\textwidth-\columnsep}|p{0.25\textwidth-\columnsep}|p{0.27\textwidth-\columnsep}|}%% Ambiente tabular
 \hline
@@ -46,8 +46,7 @@ A delimitação acima resulta das restrições de equipe (um único autor) e de 
 
 O restante deste capítulo detalha cada um dos elementos apresentados nesta visão geral, na ordem em que se conectam ao fluxo de dados ilustrado na Figura \ref{fig:fluxo-simulado}. A Seção \ref{sec:DesenvolvimentoNPI} descreve a arquitetura interna do Nó de Pesquisa Interoperável, com ênfase na camada de \textit{PRISM Middleware} responsável pelas rotinas de identificação, autenticação e troca segura entre nós. A Seção \ref{sec:desenvolvimentoIRIS} apresenta o IRIS, a interface web generalista que opera sobre o NPI e materializa o papel de aplicação no modelo PRISM. A Seção \ref{sec:desenvolvimentoIRISMobile} estende essa discussão para a versão móvel do IRIS, especializada na captura de biossinais e no comando do dispositivo. Por fim, a Seção \ref{sec:adaptacaoNeuroEstimulator} documenta as modificações aplicadas ao firmware do NeuroEstimulator que viabilizaram sua integração ao ecossistema, demonstrando o caminho de adaptação de dispositivos legados ao padrão.
 
-\newpage
-% ======================================================================
+%======================================================================
 \section{Nó de Pesquisa Interoperável}\label{sec:DesenvolvimentoNPI}
 % ======================================================================
 
@@ -91,7 +90,7 @@ A entidade \texttt{TargetArea} interliga as sessões de aquisição ao vocabulá
 A persistência foi distribuída entre três tecnologias com perfis complementares de armazenamento, sintetizadas no \autoref{quad:NPIPersistencia}. Os metadados estruturados de todas as famílias descritas anteriormente residem em PostgreSQL, mediados pelo \textit{Entity Framework Core} a partir de mais de uma dezena de \texttt{DbSet} expostos no contexto \texttt{PrismDbContext}. Os registros temporários associados ao ciclo de vida da requisição são alocados no Redis. Os contextos de canal cifrado, criados no \textit{handshake} entre nós e portadores da chave simétrica utilizada na comunicação, são descartáveis e expiram após 30~minutos. As sessões de usuário e de aplicação, por sua vez, residem como pares \texttt{session:\{token\}}, são indexadas por nó via \texttt{session:node:\{nodeId\}:sessions} e têm seu TTL renovado a cada acesso até a expiração final depois de 1 hora sem renovação. As séries temporais brutas dos biossinais, por fim, são armazenadas como \textit{blobs} em servidor compatível com a interface do Azure Blob Storage, emulado em ambiente de desenvolvimento pelo Azurite. O caminho dos objetos segue a convenção \texttt{\{research\}/\{sessionId\}/\{recordingId\}.csv}, em que \texttt{\{research\}} é o identificador da pesquisa associada. O atributo \texttt{RecordChannel.FileUrl} guarda apenas a URI do \textit{blob} correspondente, evitando duplicação do dado bruto no banco relacional.
 
 \begin{tabframed}[htpb]
-\caption{Distribuição da persistência do NPI entre tecnologias.}
+\caption{Distribuição da persistência do NPI entre tecnologias}
 \label{quad:NPIPersistencia}
 \begin{tabular}{|p{0.20\textwidth-\columnsep}|p{0.34\textwidth-\columnsep}|p{0.18\textwidth-\columnsep}|p{0.23\textwidth-\columnsep}|}
 \hline
@@ -151,7 +150,7 @@ A API pública do NPI é o ponto onde o modelo de dados descrito na Subseção~\
 Os recursos expostos podem ser organizados em seis grupos funcionais, sintetizados no \autoref{quad:NPIEndpoints}. O agrupamento aproxima-se da divisão das famílias de entidades apresentada anteriormente, com a distinção de que a federação se desdobra em três grupos operacionais (canal cifrado, sessão e gestão de nós-pares) e a aquisição é tratada como um único bloco que cobre sessões clínicas, gravações e anotações.
 
 \begin{tabframed}[htpb]
-\caption{Grupos de \textit{endpoints} expostos pela API pública do NPI.}
+\caption{Grupos de \textit{endpoints} expostos pela API pública do NPI}
 \label{quad:NPIEndpoints}
 \begin{tabular}{|p{0.20\textwidth-\columnsep}|p{0.25\textwidth-\columnsep}|p{0.55\textwidth-\columnsep}|}
 \hline
@@ -283,7 +282,7 @@ A Figura \ref{fig:IRISArquitetura} sintetiza a organização interna do IRIS e s
 
 \begin{figure}[htpb]
 
-\caption{Arquitetura interna do IRIS e relação com o NPI.}
+\caption{Arquitetura interna do IRIS e relação com o NPI}
 \label{fig:IRISArquitetura}
 \includegraphics[scale=0.25]{figuras/Desenvolvimento/IRIS/arquitetura-iris.png}
 \fonte{}
@@ -352,8 +351,6 @@ As capturas das telas do IRIS \emph{web}, organizadas por módulo funcional, for
 %% Os \textbf{padrões de navegação} consolidam-se em três elementos: uma barra lateral persistente para alternância entre módulos funcionais, um cabeçalho superior com identidade visual e menu de usuário, e o uso disciplinado de modais para operações de criação ou confirmação que devem preservar o contexto da tela origem. Esses padrões são candidatos naturais à reutilização: aplicações futuras que pretendam operar sobre o NPI em domínios distintos --- por exemplo, dosimetria, gestão de instrumentação ou auditoria de coletas --- podem adotar o mesmo arcabouço sem reimplementar suas decisões estruturais, importando os componentes do pacote \texttt{packages/ui-components} compartilhado.
 
 %% Quanto à \textbf{acessibilidade}, a aplicação observa o conjunto mínimo de práticas exigido pela diretriz \textit{Web Content Accessibility Guidelines} --- WCAG no nível AA: uso de marcação semântica (\texttt{button}, \texttt{label}, \texttt{input}) em detrimento de elementos genéricos, atributos \texttt{aria-label} e \texttt{aria-describedby} em controles que demandem explicitação de propósito, contraste de cor verificado nos componentes do sistema de \textit{design} e suporte a navegação por teclado nos fluxos primários. A validação contínua dessas propriedades é apoiada pelo \textit{addon} de acessibilidade do \textit{Storybook}, integrado ao processo de desenvolvimento dos componentes. Embora a aplicação ainda não inclua um \textit{framework} de internacionalização, todas as cadeias de texto exibidas ao usuário estão centralizadas em arquivos de tela específicos, o que viabiliza, em trabalho futuro, a adoção de uma camada de tradução sem reescrita das telas.
-\newpage
-\newpage
 
 \section{IRIS --- Mobile}\label{sec:desenvolvimentoIRISMobile}
 
@@ -374,7 +371,7 @@ A justificativa para que a captura do sEMG seja conduzida por uma aplicação de
 A Figura \ref{fig:IRISMobileArquitetura} sintetiza a organização interna do IRIS \textit{Mobile} e suas relações com o dispositivo NeuroEstimulator e com o NPI. A aplicação é construída em \texttt{TypeScript} sobre \textit{React Native}~\cite{ReferenciaReactNative} versão 0.76.9 e o ferramental \textit{Expo}~\cite{ReferenciaExpo} versão 52. O projeto reside no monorepositório do IRIS, em \texttt{apps/mobile/}, e compartilha com o IRIS \textit{web} dois pacotes internos: \texttt{packages/domain}, que define os tipos de domínio comuns às duas aplicações, e \texttt{packages/middleware}, que encapsula o adaptador para o NPI. Essa partilha é deliberada: garantir que ambos os clientes operem sobre o mesmo modelo de dados elimina divergências silenciosas entre representações ao mesmo tempo em que mantém o NPI como única fonte de verdade do contrato.
 
 \begin{figure}[htpb]
-\caption{Arquitetura interna do IRIS \textit{Mobile}, suas dependências nativas e relação com o NeuroEstimulator e o NPI.}
+\caption{Arquitetura interna do IRIS \textit{Mobile}, suas dependências nativas e relação com o NeuroEstimulator e o NPI}
 \label{fig:IRISMobileArquitetura}
 \includegraphics[scale=0.20]{figuras/Desenvolvimento/IRISMobile/arquitetura-iris-mobile.png}
 \fonte{}
@@ -447,7 +444,6 @@ A serialização e o envio do rótulo seguem o mesmo padrão das demais entidade
 % ----------------------------------------------------------------------
 
 As cinco telas mais representativas do IRIS \textit{Mobile} foram deslocadas para o Apêndice~\ref{cap:apendiceTelas} (Seção~\ref{sec:apendiceTelasIRISMobile}) e ali apresentadas na ordem em que tipicamente são percorridas durante uma coleta: pareamento do dispositivo (Figura~\ref{fig:irisMobileTelaPareamento}), configuração da sessão clínica (Figura~\ref{fig:irisMobileTelaNewSession}), gerenciamento da sessão ativa (Figura~\ref{fig:irisMobileTelaSessaoAtiva}), captura ao vivo (Figura~\ref{fig:irisMobileTelaCaptura}) e consulta ao histórico de coletas (Figura~\ref{fig:irisMobileTelaHistorico}). As capturas reproduzem o estado da aplicação contra um NPI alimentado com os dados do experimento descrito neste capítulo e materializam visualmente as decisões de \textit{User Experience} discutidas ao longo das subseções anteriores: a entrada por pareamento Bluetooth (Subseção~\ref{subsec:IRISMobileBT}), a contextualização semântica da sessão por rótulos SNOMED CT (Subseção~\ref{subsec:IRISMobileArquitetura}), o fluxo de captura ao vivo com etiquetagem em tempo real (Subseções~\ref{subsec:IRISMobileCaptura} e~\ref{subsec:IRISMobileRotulos}) e o consolidado visual do estado de sincronização exibido na tela de histórico.
-\newpage
 
 \section{Adaptação do NeuroEstimulator}\label{sec:adaptacaoNeuroEstimulator}
 
@@ -458,7 +454,7 @@ O NeuroEstimulator descrito na Seção~\ref{sec:coletaDeDados} foi adotado, no p
 % ----------------------------------------------------------------------
 
 Para fins de contextualização, recapitulam-se aqui apenas os elementos do dispositivo original relevantes para a adaptação. O NeuroEstimulator é um sistema funcional de eletroestimulação descrito em detalhes na Seção~\ref{sec:coletaDeDados}, organizado em torno de um microcontrolador ESP32 (arquitetura Xtensa LX6 \textit{dual-core}), \textit{front-end} analógico AD8232 dedicado à condicionamento do sinal de eletromiografia de superfície (sEMG), conversor analógico-digital ADS1115 (16 bits de resolução, taxa máxima de 860 amostras por segundo na configuração utilizada) e módulo Bluetooth Classic HC-06 acoplado à UART2. O \textit{firmware} originalmente embarcado opera sobre o sistema operacional de tempo real FreeRTOS, distribuindo entre os dois núcleos do ESP32 as tarefas de gestão de sessão, geração de pulsos de estimulação elétrica funcional (FES, do inglês \textit{Functional Electrical Stimulation}) e leitura periódica do sEMG. A Figura \ref{fig:NeuroEstimulatorGeral} mostra a caixa do projeto finalizado, a Figura \ref{fig:NeuroEstimulatorPCB_design} o projeto de PCB e o a Figura \ref{fig:NeuroEstimulatorPCB_impresso} PCB impresso antes da instalação dos componentes.
-\newpage
+
 
 \begin{figure}[htpb]
 \caption{Visão externa do NeuroEstimulator utilizado como dispositivo-exemplo}
@@ -481,7 +477,7 @@ Para fins de contextualização, recapitulam-se aqui apenas os elementos do disp
 \fonte{}
 \end{figure}
 
-\newpage
+% \newpage
 % ----------------------------------------------------------------------
 \subsection{Diferencial pretendido para o trabalho}\label{subsec:NERequisitos}
 % ----------------------------------------------------------------------
@@ -489,7 +485,7 @@ Para fins de contextualização, recapitulam-se aqui apenas os elementos do disp
 A adoção do NeuroEstimulator como dispositivo-exemplo do PRISM exigiu uma reformulação parcial do \textit{firmware} para satisfazer requisitos que não eram contemplados pelo projeto original. Esses requisitos derivam diretamente do modelo de coleta proposto, em que o sinal de sEMG precisa ser exibido e etiquetado em tempo real pelo IRIS Mobile durante a sessão. As principais diretrizes que motivaram a refatoração foram:
 
 \begin{enumerate}
-    \item \textbf{Maximizar a taxa efetiva de amostragem entregue ao aplicativo}, aproximando-a do limite teórico do conversor empregado e estabilizando-a em um valor previsível. Na implementação anterior do \textit{firmware}, o pareamento entre o temporizador de amostragem e a leitura síncrona do ADS1115 causava bloqueios da ordem de milissegundos, fazendo com que apenas uma fração das amostras nominalmente programadas chegasse efetivamente ao aplicativo;
+    \item \textbf{Maximizar a taxa efetiva de amostragem entregue ao aplicativo}, aproximando-a do limite teórico do conversor empregado e estabilizando-a em um valor previsível.. Na implementação anterior do \textit{firmware}, o pareamento entre o temporizador de amostragem e a leitura síncrona do ADS1115 causava bloqueios da ordem de milissegundos, fazendo com que apenas uma fração das amostras nominalmente programadas chegasse efetivamente ao aplicativo;
     \item \textbf{Substituir o protocolo do tipo comando-resposta} por uma transmissão contínua orientada a fluxo (\textit{streaming}), de modo que cada amostra coletada seja entregue ao consumidor sem necessidade de requisição explícita;
     \item \textbf{Tornar o contrato de comunicação compatível com a rotulagem em tempo real} prevista pelo IRIS Mobile, agregando carimbo de tempo (\textit{timestamp}) consistente em cada bloco de amostras e reduzindo a sobrecarga de transporte para que o canal serial Bluetooth não se tornasse o gargalo do sistema;
     \item \textbf{Manter a compatibilidade com o \textit{hardware} existente}, sem qualquer alteração na placa, no \textit{front-end} analógico, no estágio de potência da estimulação ou no módulo \textit{Bluetooth Classic} já instalado.
@@ -564,14 +560,14 @@ O protocolo de comunicação do \textit{firmware} original era inteiramente base
 
 No \textit{firmware} adaptado, o protocolo passou a ser dual: comandos de controle continuam em JSON, mantendo legibilidade e compatibilidade com ferramentas existentes; o fluxo de dados de sEMG, entretanto, é transmitido como uma sequência de pacotes binários enviados de forma autônoma pelo \textit{firmware} entre as transições \texttt{START\_STREAM} e \texttt{STOP\_STREAM}. O aplicativo abre o \textit{streaming} enviando \verb|{"cd":11,"mt":"x"}|, recebe um \textit{acknowledgment} \verb|{"cd":11,"mt":"a"}| e, a partir desse momento, recebe pacotes binários até enviar \verb|{"cd":12,"mt":"x"}| para encerrar. O Quadro~\ref{tab:campos-pacote-binario} descreve os campos do novo \textit{frame} de dados.
 
-\begin{comment}
-   A transição inversa -- voltar a um modelo comando-resposta para o canal de dados -- foi descartada como design alternativo, em razão das desvantagens já discutidas; a configuração de taxa em tempo de execução, presente em uma versão intermediária do \textit{firmware} sob o código de mensagem \texttt{cd:14}, também foi removida, em favor da configuração fixa de 215\,SPS discutida na Subseção~\ref{subsubsec:NEDecimacao}.  
-\end{comment}
+% \begin{comment}
+%    A transição inversa -- voltar a um modelo comando-resposta para o canal de dados -- foi descartada como design alternativo, em razão das desvantagens já discutidas; a configuração de taxa em tempo de execução, presente em uma versão intermediária do \textit{firmware} sob o código de mensagem \texttt{cd:14}, também foi removida, em favor da configuração fixa de 215\,SPS discutida na Subseção~\ref{subsubsec:NEDecimacao}.  
+% \end{comment}
 
 
 \begin{table}[htb]
     \centering
-    \caption{Tabela -- Campos do pacote binário de \textit{streaming} de sEMG}\label{tab:campos-pacote-binario}
+    \caption{Campos do pacote binário de \textit{streaming} de sEMG}\label{tab:campos-pacote-binario}
     \begin{tabular}{|c|c|l|p{6cm}|}
         \hline
         \textbf{Offset} & \textbf{Tamanho} & \textbf{Campo} & \textbf{Descrição} \\
@@ -596,11 +592,10 @@ A Figura~\ref{fig:protocoloStreaming}, reproduzida no Apêndice~\ref{cap:apendic
 
 A escolha de codificar cada amostra em \texttt{int16\_t}, em vez de ponto flutuante foi guiada por três critérios: a preservação da precisão útil do sinal (a granularidade do ADS1115 a 16~\textit{bits} permite representar tensões em milivolts inteiros sem perda significativa para a aplicação); a economia de banda em relação às alternativas textuais (a transmissão equivalente em JSON consumiria mais do que o triplo da capacidade do canal a 215\,SPS); e a interoperabilidade com a arquitetura nativa do ESP32 e dos dispositivos móveis modernos.
 
-\begin{comment}
-    que são predominantemente \textit{little-endian} -- o que evita conversões de ordem de \textit{byte} no consumidor. A compatibilidade retroativa com o protocolo JSON anterior para o canal de dados foi descartada de forma deliberada: aplicações que ainda dependam do formato textual podem consumir o canal de controle, mas o IRIS Mobile e o NPI consomem exclusivamente o protocolo binário aqui descrito.
-\end{comment}
+% \begin{comment}
+%     que são predominantemente \textit{little-endian} -- o que evita conversões de ordem de \textit{byte} no consumidor. A compatibilidade retroativa com o protocolo JSON anterior para o canal de dados foi descartada de forma deliberada: aplicações que ainda dependam do formato textual podem consumir o canal de controle, mas o IRIS Mobile e o NPI consomem exclusivamente o protocolo binário aqui descrito.
+% \end{comment}
 
-\newpage
 % ======================================================================
 \section{Implantação}\label{sec:Implantacao}
 % ======================================================================
@@ -623,15 +618,15 @@ O \textit{Network Security Group} associado à máquina abre apenas as portas in
 
 A transformação do NPI em elemento executável foi conduzida com base nas ferramentas apresentadas na Seção \ref{sec:ferramentas}, organizadas em torno do empacotamento em contêineres e da orquestração local por \textit{docker-compose}. O empacotamento da aplicação utiliza um \textit{Dockerfile} \textit{multi-stage}: a imagem de compilação parte da \textit{Software Development Kit} (SDK) oficial do .NET 8.0, restaura as dependências e gera os binários publicados, enquanto a imagem final é derivada da imagem de \textit{runtime} (\textit{ASP.NET Core 8.0}), o que reduz a superfície de ataque e o tamanho final do contêiner. Uma única imagem é compartilhada por ambos os nós federados; a distinção entre eles ocorre em tempo de execução por meio da variável de ambiente \texttt{ASPNETCORE\_ENVIRONMENT}, que seleciona o arquivo de configuração correspondente (\texttt{appsettings.NodeA.json} ou \texttt{appsettings.NodeB.json}) e determina a identidade, o certificado e o par de credenciais que o nó utilizará nas trocas descritas na Subseção \ref{subsec:NPIMiddleware}. 
 
-\begin{comment}
-  O objetivo dessa estrutura é garantir que cada nó possa ser instanciado de forma reprodutível, independente do sistema operacional do hospedeiro, e que a topologia de validação possa ser replicada com um único comando de inicialização.  
-\end{comment}
+% \begin{comment}
+%   O objetivo dessa estrutura é garantir que cada nó possa ser instanciado de forma reprodutível, independente do sistema operacional do hospedeiro, e que a topologia de validação possa ser replicada com um único comando de inicialização.  
+% \end{comment}
 
 A composição do \textit{stack} do NPI foi dividida em duas camadas com ciclos de vida independentes, conforme ilustrado na Figura \ref{fig:NPIDeployTopologia}. A camada de persistência (\texttt{docker-compose.persistence.yml}) orquestra os serviços com estado --- duas instâncias de \textit{PostgreSQL} para o registro relacional de cada nó, duas instâncias de \textit{Redis} para o armazenamento efêmero de canais e sessões, o emulador \textit{Azurite} para o \textit{blob storage} dos sinais brutos e o \textit{pgAdmin} como ferramenta administrativa --- vinculados a volumes nomeados que preservam os dados entre recriações. A camada de aplicação (\texttt{docker-compose.application.yml}) orquestra os contêineres dos NPIs e é declaradamente sem estado, podendo ser destruída e recriada sem perda de informação. Ambas as camadas compartilham uma rede \textit{bridge} dedicada (\texttt{irn-network}) que isola o tráfego interno do experimento e permite que a comunicação entre nós ocorra por nomes de serviço, sem exposição direta ao hospedeiro. A aplicação das migrações de banco é executada automaticamente na inicialização do NPI, dispensando intervenção manual em ambientes recém-instanciados.
 
 \begin{figure}[htpb]
 \captionsetup{width=0.85\textwidth}
-\caption{Topologia de implantação do NPI em dois nós federados.}
+\caption{Topologia de implantação do NPI em dois nós federados}
 \label{fig:NPIDeployTopologia}
 \includegraphics[width=\textwidth]{figuras/Desenvolvimento/NPI/topologiaImplantacao.png}
 \fonte{}
@@ -673,9 +668,9 @@ A limitação mais visível é a coexistência de HTTP e HTTPS sem que esta segu
 
 A imagem do NPI é construída com \texttt{BUILD\_CONFIGURATION=Debug}, mantida assim por simplicidade durante o experimento; a troca para \texttt{Release} é trivial e produziria binários otimizados, mas foi adiada para preservar simetria com os ambientes locais de depuração utilizados no desenvolvimento. De modo análogo, o \textit{controller} \texttt{TestingController}, que expõe rotinas auxiliares de geração de certificados e de inspeção de canais, responde anonimamente em todos os ambientes, situação aceitável durante o experimento, mas que em produção precisaria ser bloqueada por um filtro de \texttt{ASPNETCORE\_ENVIRONMENT} ou pela exclusão condicional do \textit{controller} no momento da compilação.
 
-\begin{comment}
-  A política de \textit{deallocate} adotada para conter custos durante o ciclo acadêmico tem como efeito colateral a possibilidade de troca do IP público da máquina virtual quando ela é reativada. Esse evento, embora raro, requer a reconstrução dos \textit{bundles} do IRIS \emph{web} e do IRIS Mobile com a nova URL da API, dado que esses valores são incorporados em tempo de \textit{build}, e implica também a reemissão do certificado autoassinado utilizado pelo NGINX --- cujo \emph{Common Name} é o próprio IP. A adoção de IP estático ou de um nome de domínio mediado por DNS resolveria os dois problemas de forma definitiva e, no caso do nome de domínio, abriria o caminho para a substituição do certificado autoassinado por um emitido por autoridade confiável, conforme discutido anteriormente.  
-\end{comment}
+% \begin{comment}
+%   A política de \textit{deallocate} adotada para conter custos durante o ciclo acadêmico tem como efeito colateral a possibilidade de troca do IP público da máquina virtual quando ela é reativada. Esse evento, embora raro, requer a reconstrução dos \textit{bundles} do IRIS \emph{web} e do IRIS Mobile com a nova URL da API, dado que esses valores são incorporados em tempo de \textit{build}, e implica também a reemissão do certificado autoassinado utilizado pelo NGINX --- cujo \emph{Common Name} é o próprio IP. A adoção de IP estático ou de um nome de domínio mediado por DNS resolveria os dois problemas de forma definitiva e, no caso do nome de domínio, abriria o caminho para a substituição do certificado autoassinado por um emitido por autoridade confiável, conforme discutido anteriormente.  
+% \end{comment}
 
 
 Por fim, a topologia em máquina virtual única, já justificada na Subseção \ref{subsec:DeployAzure}, restringe a abrangência da validação aos aspectos lógicos da sincronização entre nós --- contratos de mensagens, sequência das fases do \textit{handshake}, idempotência e resolução de conflitos descritas na Subseção \ref{subsec:NPITrocaDados} ---, mas não captura efeitos típicos de ambientes geograficamente distribuídos, como latência interinstitucional, partições de rede e divergência de relógios. Como as cargas de trabalho dos nós permanecem isoladas em redes, volumes e bancos próprios, uma instalação multi-hospedeira que cobrisse esses cenários demandaria apenas a reconfiguração das variáveis de ambiente que apontam para os \emph{endpoints} de persistência, sem qualquer alteração na imagem do NPI ou na lógica do \textit{middleware}.
@@ -684,10 +679,9 @@ A Figura~\ref{fig:DeployTopologiaConsolidada} consolida a topologia desta implan
 
 \begin{figure}[htpb]
 \captionsetup{width=0.95\textwidth}
-\caption{Topologia consolidada da implantação experimental, incluindo NPIs federados, IRIS \emph{web} por nó, IRIS Mobile e o dispositivo NeuroEstimulator.}
+\caption{Topologia consolidada da implantação experimental, incluindo NPIs federados, IRIS \emph{web} por nó, IRIS Mobile e o dispositivo NeuroEstimulator}
 \label{fig:DeployTopologiaConsolidada}
 \includegraphics[width=\textwidth]{figuras/Desenvolvimento/NPI/topologiaConsolidada.png}
 \fonte{}
 \end{figure}
 
-\newpage

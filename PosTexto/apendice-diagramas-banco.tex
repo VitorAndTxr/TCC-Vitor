@@ -8,22 +8,22 @@
 
 \chapter{Diagramas de banco de dados do Nó de Pesquisa Interoperável}\label{cap:apendiceDiagramasBanco}
 
-Este apêndice reúne, em ordem temática, os cinco diagramas entidade-relacionamento que descrevem o modelo de dados do Nó de Pesquisa Interoperável (NPI), discutidos em alto nível na Subseção~\ref{subsec:NPIDados}. A apresentação inicia-se pela visão consolidada das quatro famílias funcionais (Seção~\ref{sec:apendiceBancoVisaoGeral}) e prossegue pelo recorte detalhado de cada uma delas: federação e identidade (Seção~\ref{sec:apendiceBancoFederacao}), pesquisa (Seção~\ref{sec:apendiceBancoPesquisa}), aquisição (Seção~\ref{sec:apendiceBancoAquisicao}) e vocabulário clínico (Seção~\ref{sec:apendiceBancoVocabulario}).
+Este apêndice reúne, em ordem temática, os cinco diagramas entidade-relacionamento que descrevem o modelo de dados do Nó de Pesquisa Interoperável (NPI), discutidos em alto nível na Subseção~\ref{subsec:NPIDados}. A apresentação inicia-se pela visão geral das entidades principais do banco (Seção~\ref{sec:apendiceBancoVisaoGeral}) e prossegue pelo recorte detalhado de cada uma das famílias funcionais: federação e identidade (Seção~\ref{sec:apendiceBancoFederacao}), pesquisa (Seção~\ref{sec:apendiceBancoPesquisa}), aquisição (Seção~\ref{sec:apendiceBancoAquisicao}) e vocabulário clínico (Seção~\ref{sec:apendiceBancoVocabulario}).
 
-A separação por família é deliberada e reflete o agrupamento funcional adotado pelo \texttt{PrismDbContext}: a visão consolidada permite ao leitor perceber as fronteiras de cada família e os pontos em que elas se conectam, enquanto os recortes detalhados revelam os atributos individuais e as cardinalidades das tabelas de junção, informação tipicamente omitida no diagrama global por uma questão de legibilidade. As entidades de catálogo SNOMED CT, em particular, materializam o uso de chaves naturais externas ao NPI, padrão decorrente da decisão arquitetural de delegar à autoridade mantenedora a unicidade global desses identificadores. Todas as demais entidades transacionais utilizam \textit{Universally Unique Identifier} (UUID) na versão~4 como chave primária, conforme detalhado no texto.
+A separação por família é deliberada e reflete o agrupamento funcional adotado pelo \texttt{PrismDbContext}: a visão geral permite ao leitor observar como as principais entidades se relacionam entre sim, enquanto os recortes detalhados revelam os atributos individuais, tabelas de relacionamento N:N e as cardinalidades das tabelas de junção, informação tipicamente omitida no diagrama global por uma questão de legibilidade. As entidades de catálogo SNOMED CT, em particular, materializam o uso de chaves naturais externas ao NPI, padrão decorrente da decisão arquitetural de delegar à autoridade mantenedora a unicidade global desses identificadores. Todas as demais entidades transacionais utilizam \textit{Universally Unique Identifier} (UUID) na versão~4 como chave primária, conforme detalhado no texto.
 
 % ----------------------------------------------------------------------
 \section{Visão geral das quatro famílias funcionais}\label{sec:apendiceBancoVisaoGeral}
 % ----------------------------------------------------------------------
 
-A Figura~\ref{fig:NPIModeloDados} apresenta um diagrama entidade-relacionamento simplificado do NPI agrupado pelas quatro famílias funcionais: federação e identidade, pesquisa, aquisição e vocabulário clínico. Por concisão, foram preservados apenas os atributos-chave e os relacionamentos principais entre famílias; os recortes individuais nas seções seguintes detalham os atributos e as cardinalidades omitidos nesta visão global.
+A Figura~\ref{fig:NPIModeloDados} apresenta um diagrama entidade-relacionamento simplificado do NPI. Por concisão, foram preservados apenas os nomes da entidades e seus relacionamentos principais; os recortes individuais nas seções seguintes detalham os atributos e as cardinalidades omitidos nesta visão global.
 
 \begin{figure}[htpb]
 \captionsetup{width=0.9\textwidth}
-\caption{Diagrama entidade-relacionamento simplificado do NPI agrupado pelas quatro famílias funcionais.}
+\caption{Diagrama entidade-relacionamento simplificado do NPI.}
 \label{fig:NPIModeloDados}
 \centering
-\includegraphics[width=0.9\textwidth]{figuras/Desenvolvimento/NPI/modeloDados-visaoGeral.png}
+\includegraphics[scale=0.5, angle=90]{figuras/Desenvolvimento/NPI/modeloDados-visaoGeral.png}
 \fonte{}
 \end{figure}
 
@@ -31,7 +31,7 @@ A Figura~\ref{fig:NPIModeloDados} apresenta um diagrama entidade-relacionamento 
 \section{Família de federação e identidade}\label{sec:apendiceBancoFederacao}
 % ----------------------------------------------------------------------
 
-A Figura~\ref{fig:NPIModeloDadosFederacao} detalha as entidades responsáveis pela operação multinó. A entidade \texttt{ResearchNode} representa cada nó da rede, armazena seu certificado X.509 e mantém o atributo \texttt{CertificateFingerprint} (resumo SHA-256 do certificado) declarado como índice único, configurando a chave natural pela qual nós se reconhecem mutuamente durante o \textit{handshake}. As entidades \texttt{User} e \texttt{Researcher} modelam os agentes humanos com acesso ao nó; \texttt{Application} representa as aplicações cliente registradas, incluindo outros NPIs, autorizadas a operar sobre os recursos do nó local. A entidade \texttt{SyncLog} mantém o histórico de cada sincronização realizada com nós remotos --- \textit{status}, marcas temporais, contadores em formato JSON e mensagens de erro --- e serve de base à estratégia de sincronização incremental discutida na Subseção~\ref{subsec:NPITrocaDados}.
+A Figura~\ref{fig:NPIModeloDadosFederacao} detalha as entidades responsáveis pela operação multinó. A entidade \texttt{ResearchNode} representa cada nó da rede, tanto outros NPIs quanto aplicações de pesquisas conectadas a esse nó, armazena seu certificado X.509 e mantém o atributo \texttt{CertificateFingerprint} (resumo SHA-256 do certificado) declarado como índice único, configurando a chave natural pela qual nós se reconhecem mutuamente durante o \textit{handshake}. As entidades \texttt{User} e \texttt{Researcher} modelam os agentes humanos com acesso ao nó. A entidade \texttt{SyncLog} mantém o histórico de cada sincronização realizada com nós remotos --- \textit{status}, marcas temporais, contadores em formato JSON e mensagens de erro --- e serve de base à estratégia de sincronização incremental discutida na Subseção~\ref{subsec:NPITrocaDados}.
 
 \begin{figure}[htpb]
 \captionsetup{width=0.9\textwidth}
@@ -76,7 +76,7 @@ A Figura~\ref{fig:NPIModeloDadosAquisicao} detalha o ciclo da coleta. A entidade
 \section{Família de vocabulário clínico}\label{sec:apendiceBancoVocabulario}
 % ----------------------------------------------------------------------
 
-A Figura~\ref{fig:NPIModeloDadosVocabulario} detalha as entidades de vocabulário clínico mapeadas à terminologia SNOMED CT: estruturas anatômicas (\texttt{SnomedBodyStructure}), regiões corporais (\texttt{SnomedBodyRegion}), modificadores topográficos (\texttt{SnomedTopographicalModifier}), lateralidade (\texttt{SnomedLaterality}) e a entidade \texttt{ClinicalCondition}. As tabelas de junção que vinculam essas entidades a voluntários e a áreas-alvo materializam a contextualização semântica do biossinal: cada \texttt{RecordChannel} aponta para uma \texttt{TargetArea}, que por sua vez referencia uma estrutura anatômica, uma lateralidade e zero ou mais modificadores topográficos. A escolha do código SNOMED como chave natural global elimina a possibilidade de colisão semântica entre nós: dois NPIs que carreguem a mesma estrutura corporal o farão com o mesmo \texttt{SnomedCode}, ainda que tenham importado a partir de fontes distintas, sustentando a estratégia de \textit{last-write-wins} por \textit{watermark} \texttt{UpdatedAt} adotada pelo protocolo de sincronização (Subseção~\ref{subsec:NPITrocaDados}).
+A Figura~\ref{fig:NPIModeloDadosVocabulario} detalha as entidades de vocabulário clínico mapeadas à terminologia SNOMED CT: estruturas anatômicas (\texttt{SnomedBodyStructure}), regiões corporais (\texttt{SnomedBodyRegion}), modificadores topográficos (\texttt{SnomedTopographicalModifier}) e a entidade \texttt{ClinicalCondition}. As tabelas de junção que vinculam essas entidades a voluntários e a áreas-alvo materializam a contextualização semântica do biossinal: cada \texttt{RecordChannel} aponta para uma \texttt{TargetArea}, que por sua vez referencia uma estrutura anatômica, uma lateralidade e zero ou mais modificadores topográficos. A escolha do código SNOMED como chave natural global elimina a possibilidade de colisão semântica entre nós: dois NPIs que carreguem a mesma estrutura corporal o farão com o mesmo \texttt{SnomedCode}, ainda que tenham importado a partir de fontes distintas, sustentando a estratégia de \textit{last-write-wins} por \textit{watermark} \texttt{UpdatedAt} adotada pelo protocolo de sincronização (Subseção~\ref{subsec:NPITrocaDados}).
 
 \begin{figure}[htpb]
 \captionsetup{width=0.9\textwidth}
