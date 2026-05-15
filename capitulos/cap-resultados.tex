@@ -281,16 +281,16 @@ na Subseção~\ref{subsec:NPIDados}.
 \end{figure}
 
 O Quadro~\ref{quad:resultadosSincMapeamento} relaciona, para cada
-família funcional do modelo de dados do NPI
+subárea funcional do modelo de dados do NPI
 (Subseção~\ref{subsec:NPIDados}), as entidades transferidas e a forma
 como elas se materializam no acervo importado pelo NPI-B.
 
 \begin{tabframed}[htb]
-\caption{Mapeamento entre famílias do modelo de dados e arquivos exportados.}
+\caption{Mapeamento entre subáreas do modelo de dados e arquivos exportados.}
 \label{quad:resultadosSincMapeamento}
 \begin{tabular}{|p{0.20\textwidth-\columnsep}|p{0.30\textwidth-\columnsep}|p{0.20\textwidth-\columnsep}|p{0.20\textwidth-\columnsep}|}
 \hline
-\textbf{Família} & \textbf{Entidades transferidas} & \textbf{Formato} & \textbf{Origem na API} \\ \hline
+\textbf{Subárea} & \textbf{Entidades transferidas} & \textbf{Formato} & \textbf{Origem na API} \\ \hline
 Vocabulário clínico & \texttt{SnomedBodyStructure}, \texttt{SnomedTopographical\newline Modifier}, \texttt{SnomedLaterality}, \texttt{ClinicalCondition} & JSON paginado em PostgreSQL & \texttt{GET /api/sync/\newline snomed/*} \\ \hline
 Pesquisa & \texttt{Research}, \texttt{Researcher}, \texttt{Volunteer}, \texttt{Device}, \texttt{Sensor} & JSON paginado em PostgreSQL & \texttt{GET /api/sync/\newline research} \\ \hline
 Aquisição (metadados) & \texttt{RecordingSession}, \texttt{Record}, \texttt{RecordChannel}, \texttt{TargetArea}, \texttt{SessionAnnotation} & JSON paginado em PostgreSQL & \texttt{GET /api/sync/\newline sessions} \\ \hline

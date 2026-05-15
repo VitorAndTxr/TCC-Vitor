@@ -1,0 +1,59 @@
+---
+config:
+  layout: elk
+---
+erDiagram
+    %% ============================================================
+    %% Familia 2b: Pesquisa - Voluntario e Dados Clinicos
+    %% ============================================================
+    RESEARCH_NODE { }
+    RESEARCH { }
+    CLINICAL_CONDITION { }
+    RECORD_SESSION { }
+
+    VOLUNTEER {
+        uuid VolunteerId PK
+        uuid ResearchNodeId FK
+        string VolunteerCode
+        string Name
+        string Email
+        datetime BirthDate
+        string Gender
+        string BloodType
+        float Height
+        float Weight
+        string ConsentStatus
+        timestamp EnrolledAt
+        timestamp UpdatedAt
+    }
+
+    RESEARCH_VOLUNTEER {
+        uuid ResearchId FK
+        uuid VolunteerId FK
+        string EnrollmentStatus
+        timestamp ConsentDate
+        string ConsentVersion
+        string ExclusionReason
+        timestamp EnrolledAt
+        timestamp WithdrawnAt
+    }
+
+    VOLUNTEER_CLINICAL_CONDITION {
+        uuid Id PK
+        uuid VolunteerId FK
+        string SnomedCode FK
+        string ClinicalStatus
+        uuid RecordedBy FK
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    %% Relacionamentos internos
+    VOLUNTEER ||--o{ RESEARCH_VOLUNTEER : possui
+    RESEARCH ||--o{ RESEARCH_VOLUNTEER : possui
+    VOLUNTEER ||--o{ VOLUNTEER_CLINICAL_CONDITION : possui
+    CLINICAL_CONDITION ||--o{ VOLUNTEER_CLINICAL_CONDITION : possuida
+
+    %% Relacionamentos com outras familias
+    RESEARCH_NODE ||--o{ VOLUNTEER : hospeda
+    VOLUNTEER ||--o{ RECORD_SESSION : participa

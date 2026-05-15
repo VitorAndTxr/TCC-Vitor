@@ -1,0 +1,74 @@
+---
+config:
+  layout: elk
+---
+erDiagram
+    %% ============================================================
+    %% Familia 2a: Pesquisa - Projeto, Equipe e Instrumentacao
+    %% ============================================================
+    RESEARCH_NODE { }
+    RESEARCHER { }
+
+    RESEARCH {
+        uuid Id PK
+        uuid ResearchNodeId FK
+        string Title
+        string Description
+        datetime StartDate
+        datetime EndDate
+        string Status
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    RESEARCH_RESEARCHER {
+        uuid ResearchId FK
+        uuid ResearcherId FK
+        bool IsPrincipal
+        timestamp AssignedAt
+        timestamp RemovedAt
+    }
+
+    DEVICE {
+        uuid DeviceId PK
+        string DeviceName
+        string Manufacturer
+        string Model
+        string AdditionalInfo
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    SENSOR {
+        uuid SensorId PK
+        uuid DeviceId FK
+        string SensorName
+        float MaxSamplingRate
+        string Unit
+        float MinRange
+        float MaxRange
+        float Accuracy
+        string AdditionalInfo
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    RESEARCH_DEVICE {
+        uuid ResearchId FK
+        uuid DeviceId FK
+        string Role
+        timestamp AddedAt
+        timestamp RemovedAt
+        string CalibrationStatus
+        timestamp LastCalibrationDate
+    }
+
+    %% Relacionamentos internos
+    RESEARCH ||--o{ RESEARCH_RESEARCHER : possui
+    RESEARCHER ||--o{ RESEARCH_RESEARCHER : possui
+    RESEARCH ||--o{ RESEARCH_DEVICE : possui
+    DEVICE ||--o{ RESEARCH_DEVICE : possui
+    DEVICE ||--o{ SENSOR : compoe
+
+    %% Relacionamentos com outras familias
+    RESEARCH_NODE ||--o{ RESEARCH : hospeda

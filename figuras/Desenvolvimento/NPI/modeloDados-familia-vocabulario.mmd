@@ -1,3 +1,7 @@
+---
+config:
+  layout: elk
+---
 erDiagram
     %% ============================================================
     %% Familia 4: Vocabulario Clinico
@@ -9,7 +13,10 @@ erDiagram
         string DisplayName
         string StructureType
         string ParentStructureCode FK
+        string Description
         bool IsActive
+        timestamp CreatedAt
+        timestamp UpdatedAt
     }
 
     SNOMED_BODY_REGION {
@@ -18,6 +25,8 @@ erDiagram
         string ParentRegionCode FK
         string Description
         bool IsActive
+        timestamp CreatedAt
+        timestamp UpdatedAt
     }
 
     SNOMED_TOPOGRAPHICAL_MODIFIER {
@@ -26,13 +35,8 @@ erDiagram
         string Category
         string Description
         bool IsActive
-    }
-
-    SNOMED_LATERALITY {
-        string Code PK
-        string DisplayName
-        string Description
-        bool IsActive
+        timestamp CreatedAt
+        timestamp UpdatedAt
     }
 
     CLINICAL_CONDITION {
@@ -40,16 +44,11 @@ erDiagram
         string DisplayName
         string Description
         bool IsActive
+        timestamp CreatedAt
+        timestamp UpdatedAt
     }
 
     VOLUNTEER_CLINICAL_CONDITION {
-        uuid Id PK
-        uuid VolunteerId FK
-        string SnomedCode FK
-        string ClinicalStatus
-        uuid RecordedBy FK
-        timestamp CreatedAt
-        timestamp UpdatedAt
     }
 
     TARGET_AREA_TOPOGRAPHICAL_MODIFIER {
@@ -57,17 +56,16 @@ erDiagram
         string TopographicalModifierCode FK
     }
 
-    %% Entidades de outras familias citadas em relacionamentos
-    VOLUNTEER { }
+
     TARGET_AREA { }
 
     %% Relacionamentos internos
+    %% Hierarquia auto-referencial expressa via FK ParentRegionCode / ParentStructureCode
     SNOMED_BODY_STRUCTURE ||--o| SNOMED_BODY_REGION : pertence
-    SNOMED_BODY_REGION ||--o{ SNOMED_BODY_REGION : hierarquia
-    SNOMED_BODY_STRUCTURE ||--o{ SNOMED_BODY_STRUCTURE : hierarquia
 
     %% Relacionamentos com outras familias
-    VOLUNTEER }o--o{ CLINICAL_CONDITION : VOLUNTEER_CLINICAL_CONDITION
+
+    CLINICAL_CONDITION ||--o{  VOLUNTEER_CLINICAL_CONDITION: "é possuida por"
     TARGET_AREA ||--|| SNOMED_BODY_STRUCTURE : refere
-    TARGET_AREA ||--o| SNOMED_LATERALITY : tem
-    TARGET_AREA }o--o{ SNOMED_TOPOGRAPHICAL_MODIFIER : TARGET_AREA_TOPOGRAPHICAL_MODIFIER
+    TARGET_AREA ||--o{  TARGET_AREA_TOPOGRAPHICAL_MODIFIER : "referida por"
+    SNOMED_TOPOGRAPHICAL_MODIFIER ||--o{TARGET_AREA_TOPOGRAPHICAL_MODIFIER : "referida por"

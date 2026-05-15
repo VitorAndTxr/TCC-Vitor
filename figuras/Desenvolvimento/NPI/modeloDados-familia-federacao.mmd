@@ -1,17 +1,25 @@
+---
+config:
+  layout: elk
+---
 erDiagram
-    %% ============================================================
-    %% Familia 1: Federacao e Identidade
-    %% ============================================================
+    RESEARCH {}
+    VOLUNTEER {}
 
     RESEARCH_NODE {
         uuid Id PK
         string NodeName
+        string Certificate
         string CertificateFingerprint
+        string NodeUrl
         string Status
         string NodeAccessLevel
+        string ContactInfo
+        string InstitutionDetails
         timestamp RegisteredAt
         timestamp UpdatedAt
         timestamp LastAuthenticatedAt
+        jsonb Metadata
     }
 
     USER {
@@ -31,14 +39,8 @@ erDiagram
         string Institution
         string Role
         string Orcid
-    }
-
-    APPLICATION {
-        uuid ApplicationId PK
-        uuid ResearchId FK
-        string AppName
-        string Url
-        string Description
+        timestamp CreatedAt
+        timestamp UpdatedAt
     }
 
     SYNC_LOG {
@@ -52,16 +54,11 @@ erDiagram
         string ErrorMessage
     }
 
-    %% Entidades de outras familias citadas em relacionamentos
-    RESEARCH { }
-    VOLUNTEER { }
-
     %% Relacionamentos internos
     USER ||--|| RESEARCHER : autentica
-    RESEARCH_NODE ||--o{ RESEARCHER : hospeda
     RESEARCH_NODE ||--o{ SYNC_LOG : registra
+    RESEARCH_NODE ||--o{ RESEARCHER : hospeda
 
     %% Relacionamentos com outras familias
-    RESEARCH_NODE ||--o{ RESEARCH : hospeda
-    RESEARCH_NODE ||--o{ VOLUNTEER : hospeda
-    RESEARCH ||--o{ APPLICATION : cataloga
+    VOLUNTEER }o--|| RESEARCH_NODE : hospeda
+    RESEARCH }o--||  RESEARCH_NODE : hospeda

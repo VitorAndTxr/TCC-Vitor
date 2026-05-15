@@ -16,9 +16,6 @@ erDiagram
     VOLUNTEER { }
     DEVICE { }
     SENSOR { }
-    RESEARCH_VOLUNTEER { }
-    RESEARCH_RESEARCHER { }
-    RESEARCH_DEVICE { }
 
     %% Familia 3: Aquisicao
     RECORD_SESSION { }
@@ -33,8 +30,6 @@ erDiagram
     SNOMED_TOPOGRAPHICAL_MODIFIER { }
     SNOMED_LATERALITY { }
     CLINICAL_CONDITION { }
-    VOLUNTEER_CLINICAL_CONDITION { }
-    TARGET_AREA_TOPOGRAPHICAL_MODIFIER { }
 
     %% ============================================================
     %% Relacionamentos
@@ -51,9 +46,9 @@ erDiagram
     RESEARCH ||--o{ APPLICATION : cataloga
 
     %% Internos a Familia 2
-    RESEARCH }o--o{ VOLUNTEER : RESEARCH_VOLUNTEER
-    RESEARCH }o--o{ RESEARCHER : RESEARCH_RESEARCHER
-    RESEARCH }o--o{ DEVICE : RESEARCH_DEVICE
+    RESEARCH }|--o{ VOLUNTEER : possui
+    RESEARCH }|--o{ RESEARCHER : possui
+    RESEARCH }|--o{ DEVICE : possui
     DEVICE ||--o{ SENSOR : compoe
 
     %% Familia 2 -> Familia 3
@@ -62,18 +57,18 @@ erDiagram
     RECORD_CHANNEL ||--o| SENSOR : mede
 
     %% Internos a Familia 3
-    RECORD_SESSION ||--o{ RECORD : contem
+    RECORD_SESSION ||--|{ RECORD : contem
     RECORD_SESSION ||--o{ SESSION_ANNOTATION : anota
-    RECORD_SESSION ||--o{ TARGET_AREA : ocorre_em
-    RECORD ||--o{ RECORD_CHANNEL : cataloga
+    RECORD_SESSION ||--|{ TARGET_AREA : ocorre_em
+    RECORD ||--|{ RECORD_CHANNEL : cataloga
 
     %% Familia 3 -> Familia 4
-    TARGET_AREA ||--|| SNOMED_BODY_STRUCTURE : refere
+    TARGET_AREA ||--|| SNOMED_BODY_STRUCTURE : "aplica-se a" 
     TARGET_AREA ||--o| SNOMED_LATERALITY : tem
-    TARGET_AREA }o--o{ SNOMED_TOPOGRAPHICAL_MODIFIER : TARGET_AREA_TOPOGRAPHICAL_MODIFIER
+    TARGET_AREA ||--o{ SNOMED_TOPOGRAPHICAL_MODIFIER : tem
 
     %% Familia 2 -> Familia 4
-    VOLUNTEER }o--o{ CLINICAL_CONDITION : VOLUNTEER_CLINICAL_CONDITION
+    VOLUNTEER }|--o{ CLINICAL_CONDITION : possui
 
     %% Internos a Familia 4
     SNOMED_BODY_STRUCTURE ||--o| SNOMED_BODY_REGION : pertence

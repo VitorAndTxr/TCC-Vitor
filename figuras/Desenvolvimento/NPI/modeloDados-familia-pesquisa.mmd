@@ -1,7 +1,23 @@
+---
+config:
+  layout: elk
+---
 erDiagram
+    direction LR
     %% ============================================================
     %% Familia 2: Pesquisa
     %% ============================================================
+    RESEARCHER { }
+
+
+
+    RESEARCH_RESEARCHER {
+        uuid ResearchId FK
+        uuid ResearcherId FK
+        bool IsPrincipal
+        timestamp AssignedAt
+        timestamp RemovedAt
+    }
 
     RESEARCH {
         uuid Id PK
@@ -11,25 +27,36 @@ erDiagram
         datetime StartDate
         datetime EndDate
         string Status
+        timestamp CreatedAt
+        timestamp UpdatedAt
     }
+    
 
     VOLUNTEER {
         uuid VolunteerId PK
         uuid ResearchNodeId FK
         string VolunteerCode
         string Name
+        string Email
         datetime BirthDate
         string Gender
+        string BloodType
         float Height
         float Weight
         string ConsentStatus
+        timestamp EnrolledAt
+        timestamp UpdatedAt
     }
+    RESEARCH_NODE { }
 
     DEVICE {
         uuid DeviceId PK
         string DeviceName
         string Manufacturer
         string Model
+        string AdditionalInfo
+        timestamp CreatedAt
+        timestamp UpdatedAt
     }
 
     SENSOR {
@@ -38,7 +65,12 @@ erDiagram
         string SensorName
         float MaxSamplingRate
         string Unit
+        float MinRange
+        float MaxRange
         float Accuracy
+        string AdditionalInfo
+        timestamp CreatedAt
+        timestamp UpdatedAt
     }
 
     RESEARCH_VOLUNTEER {
@@ -47,38 +79,54 @@ erDiagram
         string EnrollmentStatus
         timestamp ConsentDate
         string ConsentVersion
+        string ExclusionReason
+        timestamp EnrolledAt
+        timestamp WithdrawnAt
     }
 
-    RESEARCH_RESEARCHER {
-        uuid ResearchId FK
-        uuid ResearcherId FK
-        bool IsPrincipal
-        timestamp AssignedAt
-    }
+
 
     RESEARCH_DEVICE {
         uuid ResearchId FK
         uuid DeviceId FK
         string Role
         timestamp AddedAt
+        timestamp RemovedAt
         string CalibrationStatus
+        timestamp LastCalibrationDate
+    }
+
+    VOLUNTEER_CLINICAL_CONDITION {
+        uuid Id PK
+        uuid VolunteerId FK
+        string SnomedCode FK
+        string ClinicalStatus
+        uuid RecordedBy FK
+        timestamp CreatedAt
+        timestamp UpdatedAt
     }
 
     %% Entidades de outras familias citadas em relacionamentos
-    RESEARCH_NODE { }
-    RESEARCHER { }
+
     RECORD_SESSION { }
     CLINICAL_CONDITION { }
 
     %% Relacionamentos internos
-    RESEARCH }o--o{ VOLUNTEER : RESEARCH_VOLUNTEER
-    RESEARCH }o--o{ DEVICE : RESEARCH_DEVICE
+    RESEARCH ||--o{  RESEARCH_VOLUNTEER : possui
+    VOLUNTEER ||--o{ RESEARCH_VOLUNTEER : possui
+    RESEARCH ||--o{ RESEARCH_DEVICE: possui
+    DEVICE ||--o{ RESEARCH_DEVICE: possui
     DEVICE ||--o{ SENSOR : compoe
 
     %% Relacionamentos com outras familias
     RESEARCH_NODE ||--o{ RESEARCH : hospeda
     RESEARCH_NODE ||--o{ VOLUNTEER : hospeda
-    RESEARCH }o--o{ RESEARCHER : RESEARCH_RESEARCHER
+    RESEARCH ||--o{ RESEARCH_RESEARCHER : possui
+    RESEARCHER ||--o{ RESEARCH_RESEARCHER: possui
+    RESEARCHER ||--o{ RECORD_SESSION: executa
+
     RESEARCH ||--o{ RECORD_SESSION : executa
     VOLUNTEER ||--o{ RECORD_SESSION : participa
-    VOLUNTEER }o--o{ CLINICAL_CONDITION : VOLUNTEER_CLINICAL_CONDITION
+
+    VOLUNTEER ||--o{ VOLUNTEER_CLINICAL_CONDITION : possui
+    CLINICAL_CONDITION ||--o{ VOLUNTEER_CLINICAL_CONDITION : possuida

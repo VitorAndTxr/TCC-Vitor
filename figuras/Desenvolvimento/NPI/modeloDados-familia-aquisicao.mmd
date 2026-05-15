@@ -1,4 +1,9 @@
+---
+config:
+  layout: elk
+---
 erDiagram
+    direction LR
     %% ============================================================
     %% Familia 3: Aquisicao
     %% ============================================================
@@ -33,6 +38,7 @@ erDiagram
         float SamplingRate
         int SamplesCount
         timestamp StartTimestamp
+        timestamp CreatedAt
         timestamp UpdatedAt
     }
 
@@ -58,8 +64,6 @@ erDiagram
     VOLUNTEER { }
     SENSOR { }
     SNOMED_BODY_STRUCTURE { }
-    SNOMED_LATERALITY { }
-    SNOMED_TOPOGRAPHICAL_MODIFIER { }
 
     %% Relacionamentos internos
     RECORD_SESSION ||--o{ RECORD : contem
@@ -72,5 +76,4 @@ erDiagram
     VOLUNTEER ||--o{ RECORD_SESSION : participa
     RECORD_CHANNEL ||--o| SENSOR : mede
     TARGET_AREA ||--|| SNOMED_BODY_STRUCTURE : refere
-    TARGET_AREA ||--o| SNOMED_LATERALITY : tem
-    TARGET_AREA }o--o{ SNOMED_TOPOGRAPHICAL_MODIFIER : TARGET_AREA_TOPOGRAPHICAL_MODIFIER
+    TARGET_AREA }o--|| TARGET_AREA_TOPOGRAPHICAL_MODIFIER : "refere-se a"
