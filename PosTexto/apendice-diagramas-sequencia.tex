@@ -126,6 +126,7 @@ Por fim, a Figura~\ref{fig:NPIIdempotencia} percorre três tentativas consecutiv
 \section{Orquestração da federação no IRIS \emph{web}}\label{sec:apendiceSeqIRIS}
 % ----------------------------------------------------------------------
 
+
 Os dois diagramas desta seção complementam a discussão da Subseção~\ref{subsubsec:IRISFederacao} sobre o módulo de federação do IRIS \emph{web}. A Figura~\ref{fig:IRISEstadosConexao} apresenta a máquina de estados que rege o ciclo de vida de uma conexão federada \texttt{ResearchNodeConnection}: a transição de \texttt{UNKNOWN} para \texttt{PENDING} quando o administrador local submete a solicitação, a aprovação para \texttt{AUTHORIZED} e a possibilidade de revogação posterior para \texttt{REVOKED}, com reaprovação subsequente. A Figura~\ref{fig:IRISFluxoSync} representa o fluxo orquestrado pelo \texttt{SyncProgressModal} em conjunto com o serviço \texttt{NodeSyncServiceAdapter}, dividido em duas etapas explicitamente apresentadas ao usuário: a pré-visualização (\texttt{POST /api/sync/preview}) que retorna o manifesto das entidades disponíveis no nó remoto, e o \textit{pull} efetivo (\texttt{POST /api/sync/pull}) que dispara a transação atômica responsável pela ingestão dos dados.
 
 \begin{figure}[htpb]

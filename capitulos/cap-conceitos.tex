@@ -19,13 +19,13 @@ Foto detalhada do corpo humano do lado de uma placa-mãe?
 
 \chapter{Referencial te\'orico}\label{cap:referencialTeorico}
 
-Esta seção descreve os principais tópicos teóricos envolvidos neste trabalho.
+Este capítulo apresenta os fundamentos teóricos necessários ao entendimento da proposta. A Seção~\ref{sec:sistemasDistribuidos} introduz sistemas distribuídos e suas camadas de suporte --- \textit{middleware}, criptografia e transações ---, que sustentam a arquitetura federada do PRISM. A Seção~\ref{sec:biossinais} aborda biossinais, com foco em eletromiografia de superfície, que constitui o domínio de aplicação utilizado para validar a padronização proposta.
 
 \section{Sistemas Distribu\'idos}\label{sec:sistemasDistribuidos}
 
 Sistemas distribuídos são aplicações constituídas de elementos computacionais independentes, também conhecidos como nós, que cooperam entre si para fornecer um conjunto de funcionalidades apresentadas ao usuário como um único sistema coerente \cite{van2025distributed}. A comunicação entre os componentes do sistema ocorre por meio da troca de mensagens pela rede que os interliga.
 
-O desenvolvimento de sistemas distribuídos modernos baseia-se nas experiências obtidas no projeto e na construção de sistemas anteriores, nas falhas observadas nesses sistemas e nas soluções encontradas para superá-las~\cite{burns2024designing}. A necessidade de uso desse paradigma computacional surge quando é necessário garantir que dois requisitos do projeto sejam atendidos: escalabilidade e confiabilidade ~\cite{Coulouris2013}. A Figura~\ref{fig:internet} apresenta, de forma simplificada, a estrutura de redes, sub-redes e computadores que operam como um único sistema, apresentando-se ao usuário como a Internet.
+O desenvolvimento de sistemas distribuídos modernos baseia-se nas experiências obtidas no projeto e na construção de sistemas anteriores, nas falhas observadas nesses sistemas e nas soluções encontradas para superá-las~\cite{burns2024designing}. A necessidade de uso desse paradigma computacional surge quando é necessário garantir que dois requisitos do projeto sejam atendidos: escalabilidade e confiabilidade ~\cite{Coulouris2013}.A Figura~\ref{fig:internet} apresenta, de forma simplificada, a estrutura de redes, sub-redes e computadores que operam como um único sistema, apresentando-se ao usuário como a Internet. O enlace refere-se à estrutura física que transmite o sinal que trafega pela rede, sejam cabos de cobre, fibra óptica ou transmissões sem fio via satélite. O \textit{backbone} consiste na infraestrutura central de alta velocidade (composta por roteadores principais e links de grande capacidade) que interconecta as várias sub-redes, permitindo que elas se comuniquem entre si. O \gls{isp}, é a empresa responsável por providenciar a conexão do usuário final com a rede, permitindo que o mesmo possa trocar informações com os demais dispositivos conectados. Por fim, a intranet refere-se a sub-redes privadas que permitem a troca de informações locais entre dispositivos autorizados, sem a necessidade de expor esses dados publicamente na internet, como ocorre em redes internas domésticas e empresariais.
 
 \begin{figure}[htb]%% Ambiente figure
     %\captionsetup{width=0.55\textwidth}%% Largura da legenda
@@ -39,7 +39,7 @@ O desenvolvimento de sistemas distribuídos modernos baseia-se nas experiências
  
  A confiabilidade busca aprimorar a tolerância a falhas do sistema, de modo que a falha de um único nó (falha parcial) não comprometa a disponibilidade total do serviço. Esse requisito é cumprido pela aplicação de técnicas que geram redundância na solução, conferindo ao sistema a capacidade de mascarar falhas e de recuperar automaticamente a operação em curso sem que o usuário final perceba a interrupção. Esse princípio é conhecido como transparência de falhas \cite{Coulouris2013}.
 
- A manutenibilidade busca facilitar a manutenção do sistema, de modo que as atualizações e correções possam ser realizadas de forma eficiente e com mínimo impacto sobre o funcionamento do mesmo. Isso é alcançado através da utilização de práticas e ferramentas que promovem a modularidade, a reutilização de componentes e a documentação adequada~\cite{kleppmann2017designing}.
+ A manutenibilidade busca prover ferramentas e métodos para que as atualizações e correções possam ser realizadas de forma eficiente e com mínimo impacto sobre o funcionamento do mesmo. Isso é alcançado através da utilização de práticas e ferramentas que promovem a modularidade, a reutilização de componentes e a documentação adequada~\cite{kleppmann2017designing}.
 
 \subsection{Middleware}\label{subsec:middleware}
 
@@ -121,14 +121,7 @@ COMMIT;
 
 \end{comment}
 
-A confiabilidade transacional das operações é garantida pelas seguintes características \cite{harder1983principles, weikum2002transactional}:
-
-\begin{itemize}
-    \item Atomicidade: Na visão do usuário e da aplicação, operações de uma transação não são parcialmente executadas, sem exceção;
-    \item Consistência: Uma transação deve transportar o sistema de um estado válido para outro, preservando as restrições de integridade do esquema e a correção lógica da aplicação;
-    \item Isolação: O efeito de transações concorrentes é equivalente ao de alguma execução serial dessas mesmas transações;
-    \item Durabilidade: Após a efetivação da transação, todas as modificações devem ter garantia de sobrevivência em caso de falhas de hardware ou software.
-\end{itemize}
+A confiabilidade transacional é garantida pelas propriedades ACID \cite{harder1983principles, weikum2002transactional}: a atomicidade assegura que as operações de uma transação sejam efetivadas integralmente ou não produzam efeito algum; a consistência garante a transição do sistema entre estados válidos, preservando as restrições de integridade; o isolamento faz com que execuções concorrentes produzam resultado equivalente ao de alguma execução serial; e a durabilidade preserva as alterações efetivadas mesmo diante de falhas de hardware ou software.
 
 \section{Biossinais}\label{sec:biossinais}
 
@@ -158,13 +151,13 @@ A movimentação dos músculos é controlada por sinais elétricos que viajam en
     \fonte{Adaptado de \citeonline{webster2009medical}}%% Fonte
 \end{figure}
 
-A eletromiografia (EMG) é o registro do sinal elétrico gerado pela contração muscular \cite{hof1984emg}. O sinal é formado pela sobreposição dos potenciais de ação das unidades motoras ativadas simultaneamente e corresponde à corrente gerada pelo fluxo de íons através da membrana das fibras musculares que se propaga pelos tecidos intermediários até alcançar a superfície do eletrodo de medição~\cite{deluca2006}. Pode ser adquirido através de eletrodos posicionados na superfície da pele --- eletromiografia de superfície (sEMG) --- ou eletrodos inseridos diretamente no músculo, configuração conhecida como EMG intramuscular \cite{najarian2012biomedical, deluca2006}. A Figura~\ref{fig:emg-sinal} apresenta um registro de sEMG.
+A eletromiografia (EMG) é o registro do sinal elétrico gerado pela contração muscular \cite{hof1984emg}. O sinal é formado pela sobreposição dos potenciais de ação das unidades motoras ativadas simultaneamente e corresponde à corrente gerada pelo fluxo de íons através da membrana das fibras musculares que se propaga pelos tecidos intermediários até alcançar a superfície do eletrodo de medição~\cite{deluca2006}. Pode ser adquirido através de eletrodos posicionados na superfície da pele --- eletromiografia de superfície (sEMG) --- ou eletrodos inseridos diretamente no músculo, configuração conhecida como EMG intramuscular \cite{najarian2012biomedical, deluca2006}. A Figura~\ref{fig:emg-sinal} apresenta um registro de sEMG registrado com eletrodos de superfície posicionados sobre a pele, acima do músculo primeiro interósseo dorsal da mão.
 
  \begin{figure}[htb]%% Ambiente figure
     %\captionsetup{width=0.55\textwidth}%% Largura da legenda
-    \caption{O sinal EMG registrado com eletrodos de superfície posicionados sobre a pele, acima do músculo primeiro interósseo dorsal da mão. O sinal aumenta em amplitude à medida que a força produzida pelo músculo aumenta.}%% Legenda
+    \caption{Exemplo registro de sinal sEMG. O sinal aumenta em amplitude à medida que a força produzida pelo músculo aumenta.}%% Legenda
     \label{fig:emg-sinal}%% Rótulo
-    \includegraphics[scale=0.8]{figuras/conceitos/emg_sinal.png}%% Dimensões e localização
+    \includegraphics[scale=0.4]{figuras/conceitos/emg_sinal.png}%% Dimensões e localização
     \fonte{Adaptado de \citeonline{deluca2006}}%% Fonte
 \end{figure}
 

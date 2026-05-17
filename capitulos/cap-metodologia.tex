@@ -61,12 +61,11 @@ Esta seção descreve sobre os materiais e métodos utilizados para a coleta de 
 
 \subsection{NeuroEstimulator}
 
-O NeuroEstimulator é um dispositivo de eletroestimulação funcional (\textit{Functional Electrical Stimulation} --- FES) que emprega como gatilho a ativação muscular detectada por seu próprio sensor de sEMG de um canal. O microcontrolador adotado é o ESP32, responsável tanto pela aquisição do sinal quanto pela comunicação com sistemas externos.
+O NeuroEstimulator é um dispositivo de \gls{fes} que emprega como gatilho a ativação muscular detectada por seu próprio sensor de sEMG de um canal. O microcontrolador adotado é o ESP32, responsável tanto pela aquisição do sinal quanto pela comunicação com sistemas externos.
 
 A etapa de aquisição utiliza o módulo AD8232, um \textit{front-end} analógico desenvolvido para sinais biopotenciais, encarregado da amplificação e do condicionamento do sinal de sEMG. A digitalização é realizada pelo conversor analógico-digital ADS1115 (Texas Instruments, 16~bits), configurado com taxa máxima de amostragem de 860~SPS (\textit{samples per second}). A comunicação com sistemas externos ocorre via módulo Bluetooth Classic HC-06, utilizando um protocolo de mensagens próprio. No nível de software, o firmware embarcado no ESP32 é estruturado sobre o sistema operacional de tempo real FreeRTOS, organizando as rotinas de aquisição, comunicação e estimulação em tarefas concorrentes. NeuroEstimulator recebe comandos e envia informação através de um aplicativo Android conectado pelo Bluetooth.
 
-O dispositivo utilizado neste trabalho é uma evolução do equipamento proposto por \citeonline{veroFES}. O módulo AD8232 incorpora as modificações propostas por \citeonline{jjj8232}. Para os fins deste trabalho, foram aproveitados exclusivamente os módulos relacionados à captura do sinal de sEMG, sendo descartadas as funcionalidades de eletroestimulação, uma vez que o foco da pesquisa
-recai sobre a interoperabilidade dos dados adquiridos e não sobre a intervenção terapêutica em voluntários.
+O dispositivo utilizado neste trabalho é uma evolução do equipamento proposto por \citeonline{veroFES}. O módulo AD8232 incorpora as modificações propostas por \citeonline{jjj8232}. Para os fins deste trabalho, foram aproveitados exclusivamente os módulos relacionados à captura do sinal de sEMG, sendo descartadas as funcionalidades de eletroestimulação, uma vez que o foco da pesquisa recai sobre a interoperabilidade dos dados adquiridos e não sobre a intervenção terapêutica em voluntários.
 
 \subsection{Roteiro de Coleta de Dados}
 
