@@ -10,10 +10,6 @@
 
 \chapter{Resultados}\label{cap:resultados}
 
-% ======================================================================
-\section{Considerações iniciais}\label{sec:resultadosVisaoGeral}
-% ======================================================================
-
 Este capítulo apresenta a validação experimental do conjunto de artefatos descritos no Capítulo~\ref{cap:desenvolvimento}. A hipótese central deste trabalho, de que dois Nós de Pesquisa Interoperáveis (NPIs) autônomos podem reconciliar seus acervos preservando a semântica clínica e a soberania local sobre os dados, é exercitada por meio de dois testes complementares.
 
 \begin{comment}
@@ -26,7 +22,7 @@ gerador de funções com parâmetros conhecidos. O segundo, descrito na
 \end{comment}
 
 
-A Seção~\ref{sec:resultadosSincronizacao}, demonstra a operação fim a fim do PRISM \textit{Middleware} ao sincronizar dados de pesquisa criados em um NPI para outro, evidenciando a estrutura dos arquivos efetivamente exportados.
+A Seção~\ref{sec:resultadosSincronizacao}, demonstra a operação fim a fim do PRISM \textit{Middleware} ao sincronizar dados de pesquisa criados em um NPI para outro, evidenciando a estrutura dos arquivos efetivamente exportados. E a Seção~\ref{subsec:resultadosSincIdempotencia} expõem experimentalmente como o sistema tratou o compartilhamento de dados e a gestão de dados compartilhados entre dois NPIs.
 
 \begin{comment}
  A Seção~\ref{sec:resultadosAnaliseIntegrada} retoma o
@@ -483,25 +479,7 @@ A propriedade de idempotência prevista pela Subseção~\ref{subsec:NPITrocaDado
 \fonte{Autoria própria (2026)}
 \end{tabframed}
 
-A semântica de \textit{last-write-wins} sobre o atributo \texttt{UpdatedAt} foi observada em um experimento complementar no
-qual a mesma \texttt{SnomedBodyRegion} foi editada em ambos os nós em uma janela curta de tempo. A Figura~\ref{fig:resultadosSincLww} apresenta a linha do tempo das edições e o estado final reconhecido por cada nó após a próxima sincronização.
-
-\begin{figure}[htb]
-\caption{Resolução de conflito por \textit{last-write-wins} sobre uma \texttt{SnomedBodyRegion} editada em ambos os nós.}
-\label{fig:resultadosSincLww}
-% TODO Vitor: gerar a figura.
-\includegraphics[width=0.85\textwidth]{figuras/Resultados/sync-last-write-wins.png}
-\fonte{Autoria própria (2026)}
-\end{figure}
-
-O comportamento observado confirma a estratégia descrita na
-Subseção~\ref{subsec:NPITrocaDados}, segundo a qual o nó cuja escrita
-detém o maior \texttt{UpdatedAt} prevalece. Reconhece-se, contudo,
-que essa semântica é vulnerável ao desvio de relógio entre nós e não
-preserva a causalidade das modificações --- limitação retomada na
-Subseção~\ref{subsec:limitacoesProtocolo} e contemplada como
-trabalho futuro na
-Subseção~\ref{subsec:trabalhosFuturosPrism}.
+A semântica de \textit{last-write-wins} sobre o atributo \texttt{UpdatedAt} foi observada em um experimento complementar no qual a mesma \texttt{SnomedBodyRegion} foi editada em ambos os nós em uma janela curta de tempo. O comportamento observado confirma a estratégia descrita na Subseção~\ref{subsec:NPITrocaDados}, segundo a qual o nó cuja escrita detém o maior \texttt{UpdatedAt} prevalece. Reconhece-se, contudo, que essa semântica é vulnerável ao desvio de relógio entre nós e não preserva a causalidade das modificações --- limitação retomada na  subseção~\ref{subsec:limitacoesProtocolo} e contemplada como trabalho futuro na Subseção~\ref{subsec:trabalhosFuturosPrism}.
 
 \begin{comment}
     % ======================================================================
