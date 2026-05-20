@@ -10,7 +10,7 @@
 
 \chapter{Resultados}\label{cap:resultados}
 
-Este capítulo apresenta a validação experimental do conjunto de artefatos descritos no Capítulo~\ref{cap:desenvolvimento}. A hipótese central deste trabalho, de que dois Nós de Pesquisa Interoperáveis (NPIs) autônomos podem reconciliar seus acervos preservando a semântica clínica e a soberania local sobre os dados, é exercitada por meio de dois testes complementares.
+Este capítulo apresenta a validação experimental do conjunto de artefatos descritos no Capítulo~\ref{cap:desenvolvimento}. A hipótese central deste trabalho --- de que dois Nós de Pesquisa Interoperáveis (NPIs) autônomos são capazes de reconciliar seus acervos preservando a semântica clínica e a soberania local sobre os dados --- é exercitada por meio da execução fim a fim do protocolo de sincronização proposto pelo PRISM \textit{Middleware} entre duas instâncias federadas do NPI.
 
 \begin{comment}
     O primeiro, descrito na Seção~\ref{sec:resultadosCadeiaAquisicao},
@@ -22,7 +22,7 @@ gerador de funções com parâmetros conhecidos. O segundo, descrito na
 \end{comment}
 
 
-A Seção~\ref{sec:resultadosSincronizacao}, demonstra a operação fim a fim do PRISM \textit{Middleware} ao sincronizar dados de pesquisa criados em um NPI para outro, evidenciando a estrutura dos arquivos efetivamente exportados. E a Seção~\ref{subsec:resultadosSincIdempotencia} expõem experimentalmente como o sistema tratou o compartilhamento de dados e a gestão de dados compartilhados entre dois NPIs.
+A Seção~\ref{sec:resultadosSincronizacao} descreve o cenário experimental, demonstra a operação fim a fim do protocolo entre os dois NPIs federados e evidencia a estrutura dos artefatos efetivamente exportados pelo nó consumidor. Em seguida, a Subseção~\ref{subsec:resultadosSincIdempotencia} apresenta os experimentos que verificam as propriedades de idempotência e de \textit{last-write-wins} declaradas no contrato de troca de dados entre nós.
 
 \begin{comment}
  A Seção~\ref{sec:resultadosAnaliseIntegrada} retoma o
@@ -295,7 +295,7 @@ Aquisição (binários) & Conteúdo bruto de cada \texttt{RecordChannel} & CSV e
 \fonte{Autoria própria (2026)}
 \end{tabframed}
 
-A Listagem~\ref{codigo:resultadosSincPayloadJson} refere-se ao conteúdo do JSON que representa o objeto de uma gravação exportada de uma pesquisa do IRIS a partir do NPI B.
+A Listagem~\ref{codigo:resultadosSincPayloadJson} apresenta o \textit{payload} JSON de uma \texttt{RecordingSession} importada pelo NPI-B, no qual é possível verificar a preservação dos códigos SNOMED~CT que identificam a região anatômica do voluntário --- no exemplo, o bíceps (código \texttt{16225001}) com modificador de lateralidade direita (código \texttt{24028007}) --- bem como das anotações textuais associadas à sessão.
 
 \begin{sourcecode}[htpb]
 \caption{\label{codigo:resultadosSincPayloadJson}Excerto do \textit{payload} JSON de uma \texttt{Session} exportada do NPI-A para o NPI-B.}
@@ -347,7 +347,7 @@ A Listagem~\ref{codigo:resultadosSincPayloadJson} refere-se ao conteúdo do JSON
 \fonte{Autoria própria (2026)}
 \end{sourcecode}
 
-A Listagem~\ref{codigo:resultadosSincRecordJson} refere-se ao conteúdo do JSON que representa o objeto de uma gravação exportada de uma pesquisa do IRIS a partir do NPI B.
+Na sequência, a Listagem~\ref{codigo:resultadosSincRecordJson} exibe o \textit{payload} JSON do \texttt{Record} associado à \texttt{RecordingSession} exemplificada, contendo a referência ao \textit{blob} de cada \texttt{RecordChannel} hospedado no \textit{storage} do NPI-B, a taxa de amostragem efetiva (215\,Hz) e o número total de amostras transferidas.
 
 \begin{sourcecode}[htp]
 \caption{\label{codigo:resultadosSincRecordJson}Excerto do \textit{payload} JSON de uma \texttt{Recording} exportada do NPI-A para o NPI-B.}
@@ -379,7 +379,7 @@ A Listagem~\ref{codigo:resultadosSincRecordJson} refere-se ao conteúdo do JSON 
 \fonte{Autoria própria (2026)}
 \end{sourcecode}
 
-A Listagem~\ref{codigo:resultadosSincCsvCabecalho} refere-se ao conteúdo do CSV que armazena o registro do sinal sEMG da pesquisa exportada do IRIS a partir do NPI B.
+Já a Listagem~\ref{codigo:resultadosSincCsvCabecalho} reproduz o cabeçalho e as primeiras linhas do arquivo CSV correspondente a um \texttt{RecordChannel} importado, no qual cada linha registra o instante de amostragem em milissegundos e o valor numérico bruto produzido pelo conversor analógico-digital do NeuroEstimulator.
 
 \begin{sourcecode}[htp]
 \caption{\label{codigo:resultadosSincCsvCabecalho}Cabeçalho e primeiras linhas do arquivo CSV exportado de um \texttt{RecordChannel}.}
@@ -396,7 +396,7 @@ timestamp,value
 \fonte{Autoria própria (2026)}
 \end{sourcecode}
 
-A Figura~\ref{fig:resultadossEMGPlot} é um plot do arquivo CSV do o registro do sinal sEMG da pesquisa exportada do IRIS a partir do NPI B.
+Por fim, a Figura~\ref{fig:resultadossEMGPlot} apresenta a representação gráfica do mesmo arquivo CSV, na qual se observa, ao longo do tempo, o sinal sEMG capturado do bíceps direito do voluntário e importado pelo NPI-B ao término da sincronização.
 
 \begin{figure}[htb]
 \caption{Registro do sinal sEMG capturado do bíceps.}
@@ -494,7 +494,7 @@ A propriedade de idempotência prevista pela Subseção~\ref{subsec:NPITrocaDado
 \fonte{Autoria própria (2026)}
 \end{tabframed}
 
-A semântica de \textit{last-write-wins} sobre o atributo \texttt{UpdatedAt} foi observada em um experimento complementar no qual a mesma \texttt{SnomedBodyRegion} foi editada em ambos os nós em uma janela curta de tempo. O comportamento observado confirma a estratégia descrita na Subseção~\ref{subsec:NPITrocaDados}, segundo a qual o nó cuja escrita detém o maior \texttt{UpdatedAt} prevalece. Reconhece-se, contudo, que essa semântica é vulnerável ao desvio de relógio entre nós e não preserva a causalidade das modificações --- limitação retomada na  subseção~\ref{subsec:limitacoesProtocolo} e contemplada como trabalho futuro na Subseção~\ref{subsec:trabalhosFuturosPrism}.
+A semântica de \textit{last-write-wins} sobre o atributo \texttt{UpdatedAt} foi observada em um experimento complementar no qual a mesma \texttt{SnomedBodyRegion} foi editada em ambos os nós em uma janela curta de tempo. O comportamento observado confirma a estratégia descrita na Subseção~\ref{subsec:NPITrocaDados}, segundo a qual o nó cuja escrita detém o maior \texttt{UpdatedAt} prevalece. Reconhece-se, contudo, que essa semântica é vulnerável ao desvio de relógio entre nós e não preserva a causalidade das modificações --- limitação retomada na Subseção~\ref{subsec:limitacoesProtocolo} e contemplada como trabalho futuro na Subseção~\ref{subsec:trabalhosFuturosPrism}.
 
 \begin{comment}
     % ======================================================================
