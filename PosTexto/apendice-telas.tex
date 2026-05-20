@@ -117,40 +117,61 @@ Esta seção apresenta as cinco telas mais representativas do IRIS \textit{Mobil
 A \texttt{BluetoothScreen} (Figura~\ref{fig:irisMobileTelaPareamento}) é o ponto de entrada do fluxo de coleta e ilustra o padrão de listagem do aplicativo: cabeçalho com título da seção, conteúdo principal preenchido pela lista de dispositivos compatíveis e ações primárias agrupadas em rodapé.
 
 \begin{figure}[htpb]
-\caption{Tela de pareamento do IRIS \textit{Mobile}, com a listagem dos dispositivos NeuroEstimulator pareados ao sistema operacional.}
+\caption{Tela de pareamento do IRIS \textit{Mobile}, com a listagem dos dispositivos pareados ao sistema operacional.}
 \label{fig:irisMobileTelaPareamento}
 \centering
-\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-pareamento.png}
+\includegraphics[scale=0.20]{figuras/telasIrisMobile/bluetoth_devices.jpeg}
 \fonte{}
 \end{figure}
 
 A \texttt{SessionConfigScreen} (Figura~\ref{fig:irisMobileTelaNewSession}) é o local em que a sessão clínica recebe a contextualização semântica que distingue o IRIS \textit{Mobile} de um aplicativo genérico de captura de sinal. O formulário concentra a seleção do voluntário inscrito no projeto de pesquisa, da estrutura anatômica alvo da medição, dos modificadores topográficos aplicáveis --- todos extraídos do vocabulário SNOMED CT consumido por \texttt{SnomedService} (Subseção~\ref{subsec:IRISMobileArquitetura}) --- e do dispositivo e sensor que conduzirão a aquisição. Combinações frequentemente repetidas pelo pesquisador podem ser marcadas como configuração favorita; nesses casos, o \texttt{FavoriteRepository} grava localmente o conjunto completo de campos preenchidos, de modo que sessões posteriores possam ser pré-configuradas com um único toque.
 
 \begin{figure}[htpb]
-\caption{Tela de configuração de sessão do IRIS \textit{Mobile}, com a seleção de voluntário, estrutura anatômica alvo, modificadores topográficos, dispositivo e sensor.}
+\caption{Tela de configuração de sessão do IRIS \textit{Mobile}, com a seleção de voluntário, estrutura anatômica alvo, modificadores topográficos, dispositivo e sensor no estado vazio (a) e (b), e preenchida com dados para sessão (c) e (d).}
 \label{fig:irisMobileTelaNewSession}
 \centering
-\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-configuracao-sessao.png}
+\subfloat[Topo da tela vazio]{
+\includegraphics[scale=0.20]{figuras/telasIrisMobile/new_session_a.jpeg}
+}\hspace{0.15cm}
+\subfloat[Rodapé da tela vazio]{
+\includegraphics[scale=0.20]{figuras/telasIrisMobile/new_session_b.jpeg}
+}\
+\subfloat[Topo da tela preenchido]{
+\includegraphics[scale=0.20]{figuras/telasIrisMobile/new_session_preenchida_a.jpeg}
+}
+\subfloat[Rodapé da tela preenchido]{
+\includegraphics[scale=0.20]{figuras/telasIrisMobile/new_session_preenchida_b.jpeg}
+}
 \fonte{}
 \end{figure}
 
 A \texttt{ActiveSessionScreen} (Figura~\ref{fig:irisMobileTelaSessaoAtiva}) é a tela de coordenação da sessão clínica em curso. Nela, o pesquisador acompanha a relação de \texttt{recordings} já produzidas, dispara novas gravações e, por meio de um botão dedicado, navega para a \texttt{AnnotationsListScreen}, onde gerencia as anotações associadas à sessão. A separação entre essa tela e a \texttt{CaptureScreen} é uma decisão consciente: a sessão é a unidade que agrega as gravações e os rótulos discutidos na Subseção~\ref{subsec:IRISMobileRotulos}, enquanto a captura propriamente dita é uma operação pontual, repetível ao longo do tempo de duração da sessão.
 
 \begin{figure}[htpb]
-\caption{Tela de sessão ativa do IRIS \textit{Mobile}, com a listagem das gravações e das anotações associadas à sessão em curso.}
+\caption{Tela de sessão ativa do IRIS \textit{Mobile}(a), com a listagem das gravações e das anotações associadas à sessão em curso(b).}
 \label{fig:irisMobileTelaSessaoAtiva}
 \centering
-\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-sessao-ativa.png}
+\subfloat[Sessão Ativa]{
+    \includegraphics[scale=0.20]{figuras/telasIrisMobile/sessao_ativa.jpeg}
+}
+\subfloat[Anotações da Sessão]{
+    \includegraphics[scale=0.10]{figuras/telasIrisMobile/lista_anotacoes.jpeg}
+}\
 \fonte{}
 \end{figure}
 
 A \texttt{CaptureScreen} (Figura~\ref{fig:irisMobileTelaCaptura}) é a tela operacional do aplicativo durante a aquisição. O gráfico em primeiro plano apresenta a janela de quatro segundos do sinal sEMG na taxa de renderização discutida na Subseção~\ref{subsec:IRISMobileCaptura}; abaixo dele, os controles de início e parada de gravação, um cronômetro e o atalho para a criação imediata de uma anotação compõem o conjunto mínimo de comandos exigidos durante a coleta.
 
 \begin{figure}[htpb]
-\caption{Tela de captura ao vivo do IRIS \textit{Mobile}, com o gráfico do sinal sEMG e controles de gravação.}
+\caption{Tela de captura ao vivo do IRIS \textit{Mobile}, com o gráfico do sinal sEMG e controles de gravação, (a) bíceps em repouso e (b) bíceps contraído}
 \label{fig:irisMobileTelaCaptura}
 \centering
-\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-captura.png}
+\subfloat[Gráfico do sinal sEMG bíceps em repouso]{
+    \includegraphics[scale=0.20]{figuras/telasIrisMobile/grafico_sem_contracao.jpeg}
+}
+\subfloat[Gráfico do sinal sEMG bíceps contraído]{
+    \includegraphics[scale=0.20]{figuras/telasIrisMobile/grafico_com_contracao.jpeg}
+}\
 \fonte{}
 \end{figure}
 
@@ -160,6 +181,6 @@ A \texttt{HistoryScreen} (Figura~\ref{fig:irisMobileTelaHistorico}) consolida vi
 \caption{Tela de histórico de coletas do IRIS \textit{Mobile}, com etiquetas indicativas do estado de sincronização de cada sessão.}
 \label{fig:irisMobileTelaHistorico}
 \centering
-\includegraphics[scale=0.30]{figuras/Desenvolvimento/IRISMobile/tela-historico.png}
+\includegraphics[scale=0.20]{figuras/telasIrisMobile/historico.jpeg}
 \fonte{}
 \end{figure}

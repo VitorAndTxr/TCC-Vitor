@@ -295,7 +295,8 @@ Aquisição (binários) & Conteúdo bruto de cada \texttt{RecordChannel} & CSV e
 \fonte{Autoria própria (2026)}
 \end{tabframed}
 
-% Excerto do payload de metadados de uma RecordingSession.
+A Listagem~\ref{codigo:resultadosSincPayloadJson} refere-se ao conteúdo do JSON que representa o objeto de uma gravação exportada de uma pesquisa do IRIS a partir do NPI B.
+
 \begin{sourcecode}[htpb]
 \caption{\label{codigo:resultadosSincPayloadJson}Excerto do \textit{payload} JSON de uma \texttt{Session} exportada do NPI-A para o NPI-B.}
 \begin{lstlisting}[frame=single, language=json]
@@ -346,6 +347,8 @@ Aquisição (binários) & Conteúdo bruto de cada \texttt{RecordChannel} & CSV e
 \fonte{Autoria própria (2026)}
 \end{sourcecode}
 
+A Listagem~\ref{codigo:resultadosSincRecordJson} refere-se ao conteúdo do JSON que representa o objeto de uma gravação exportada de uma pesquisa do IRIS a partir do NPI B.
+
 \begin{sourcecode}[htp]
 \caption{\label{codigo:resultadosSincRecordJson}Excerto do \textit{payload} JSON de uma \texttt{Recording} exportada do NPI-A para o NPI-B.}
 \begin{lstlisting}[frame=single, language=json]
@@ -376,6 +379,8 @@ Aquisição (binários) & Conteúdo bruto de cada \texttt{RecordChannel} & CSV e
 \fonte{Autoria própria (2026)}
 \end{sourcecode}
 
+A Listagem~\ref{codigo:resultadosSincCsvCabecalho} refere-se ao conteúdo do CSV que armazena o registro do sinal sEMG da pesquisa exportada do IRIS a partir do NPI B.
+
 \begin{sourcecode}[htp]
 \caption{\label{codigo:resultadosSincCsvCabecalho}Cabeçalho e primeiras linhas do arquivo CSV exportado de um \texttt{RecordChannel}.}
 \begin{lstlisting}[frame=single]
@@ -390,6 +395,16 @@ timestamp,value
 \end{lstlisting}
 \fonte{Autoria própria (2026)}
 \end{sourcecode}
+
+A Figura~\ref{fig:resultadossEMGPlot} é um plot do arquivo CSV do o registro do sinal sEMG da pesquisa exportada do IRIS a partir do NPI B.
+
+\begin{figure}[htb]
+\caption{Registro do sinal sEMG capturado do bíceps.}
+\label{fig:resultadossEMGPlot}
+\includegraphics[width=1\textwidth]{figuras/Resultados/record_signal_plot.png}
+\fonte{Autoria própria (2026)}
+\end{figure}
+
 
 \begin{comment}
    O Quadro~\ref{quad:resultadosSincTamanhos} resume os tamanhos e
@@ -472,7 +487,7 @@ A propriedade de idempotência prevista pela Subseção~\ref{subsec:NPITrocaDado
 \begin{tabular}{|c|p{0.15\textwidth-\columnsep}|p{0.15\textwidth-\columnsep}|p{0.40\textwidth-\columnsep}|}
 \hline
 \textbf{Tentativa} & \textbf{Entidades inseridas} & \textbf{Entidades atualizadas} & \textbf{Observação} \\ \hline
-1ª & 0 & 0 & Primeira execução, esperado o conjunto completo \\ \hline
+1ª & 17 & 0 & Primeira execução, esperado o conjunto completo \\ \hline
 2ª & 0 & 0 & Esperado: operação \textit{no-op} sob mesmo estado \\ \hline
 3ª & 0 & 0 & Idem 2ª \\ \hline
 \end{tabular}
