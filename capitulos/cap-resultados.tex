@@ -10,7 +10,7 @@
 
 \chapter{Resultados}\label{cap:resultados}
 
-Este capítulo apresenta a validação experimental do conjunto de artefatos descritos no Capítulo~\ref{cap:desenvolvimento}. A hipótese central deste trabalho --- de que dois Nós de Pesquisa Interoperáveis (NPIs) autônomos são capazes de reconciliar seus acervos preservando a semântica clínica e a soberania local sobre os dados --- é exercitada por meio da execução fim a fim do protocolo de sincronização proposto pelo PRISM \textit{Middleware} entre duas instâncias federadas do NPI.
+Este capítulo apresenta a validação experimental do conjunto de artefatos descritos no Capítulo~\ref{cap:desenvolvimento}. A hipótese central deste trabalho --- de que dois Nós de Pesquisa Interoperáveis (NPIs) autônomos são capazes de reconciliar seus acervos preservando a semântica clínica e a soberania local sobre os dados --- é exercitada por meio da execução fim a fim do protocolo de sincronização proposto pelo PRISM \textit{Middleware}. No cenário avaliado, um nó produtor (NPI-A) cria registros de pesquisa e um nó consumidor (NPI-B) solicita uma cópia desses registros via \textit{pull}, demonstrando que o contrato detalhado na Subseção~\ref{subsec:NPITrocaDados} é exequível em condições reais e que os artefatos exportados preservam a semântica clínica do nó produtor.
 
 \begin{comment}
     O primeiro, descrito na Seção~\ref{sec:resultadosCadeiaAquisicao},
@@ -22,7 +22,7 @@ gerador de funções com parâmetros conhecidos. O segundo, descrito na
 \end{comment}
 
 
-A Seção~\ref{sec:resultadosSincronizacao} descreve o cenário experimental, demonstra a operação fim a fim do protocolo entre os dois NPIs federados e evidencia a estrutura dos artefatos efetivamente exportados pelo nó consumidor. Em seguida, a Subseção~\ref{subsec:resultadosSincIdempotencia} apresenta os experimentos que verificam as propriedades de idempotência e de \textit{last-write-wins} declaradas no contrato de troca de dados entre nós.
+A Seção~\ref{sec:resultadosSincCenario} detalha o cenário experimental e o procedimento executado; a Seção~\ref{sec:resultadosSincExport} examina a estrutura dos artefatos efetivamente exportados pelo NPI-B; e a Seção~\ref{sec:resultadosSincIdempotencia} verifica as propriedades de idempotência e de \textit{last-write-wins} declaradas no contrato de troca de dados entre nós.
 
 \begin{comment}
  A Seção~\ref{sec:resultadosAnaliseIntegrada} retoma o
@@ -204,21 +204,8 @@ retomada nas Seções~\ref{sec:limitacoesEstudo} e
 \end{comment}
 
 % ======================================================================
-\section{Validação da sincronização entre nós}\label{sec:resultadosSincronizacao}
+\section{Cenário e procedimento}\label{sec:resultadosSincCenario}
 % ======================================================================
-
-A presente seção descreve a execução fim a fim do protocolo de
-sincronização do PRISM \textit{Middleware}, no qual um nó produtor
-(NPI-A) cria registros de pesquisa e um nó consumidor (NPI-B)
-solicita uma cópia desses registros via \textit{pull}. O objetivo é
-demonstrar que o contrato detalhado na
-Subseção~\ref{subsec:NPITrocaDados} é exequível em condições reais e
-que os artefatos exportados preservam a semântica clínica do nó
-produtor.
-
-% ----------------------------------------------------------------------
-\subsection{Cenário e procedimento}\label{subsec:resultadosSincCenario}
-% ----------------------------------------------------------------------
 
 O cenário experimental reproduz a estrutura institucional simulada
 apresentada na Figura~\ref{fig:estruturaSimulada}, com os dois NPIs
@@ -259,9 +246,9 @@ a seguir.
     semântica de \textit{last-write-wins} adotada pelo protocolo.
 \end{enumerate}
 
-% ----------------------------------------------------------------------
-\subsection{Estrutura dos artefatos exportados}\label{subsec:resultadosSincExport}
-% ----------------------------------------------------------------------
+% ======================================================================
+\section{Estrutura dos artefatos exportados}\label{sec:resultadosSincExport}
+% ======================================================================
 
 A Figura~\ref{fig:resultadosSincArvoreExport} apresenta a árvore de
 diretórios efetivamente produzida pelo NPI-B após a conclusão do
@@ -475,9 +462,9 @@ encadeamento entre o nó consumidor (NPI-B), o nó produtor (NPI-A) e o
     
 \end{comment}
 
-% ----------------------------------------------------------------------
-\subsection{Verificação de idempotência e \textit{last-write-wins}}\label{subsec:resultadosSincIdempotencia}
-% ----------------------------------------------------------------------
+% ======================================================================
+\section{Verificação de idempotência e \textit{last-write-wins}}\label{sec:resultadosSincIdempotencia}
+% ======================================================================
 
 A propriedade de idempotência prevista pela Subseção~\ref{subsec:NPITrocaDados} foi exercitada por meio da execução consecutiva de três operações de \textit{pull} sobre o mesmo conjunto de entidades, sem qualquer alteração no NPI-A entre as execuções. O Quadro~\ref{quad:resultadosSincIdempotencia} reporta o estado do \texttt{SyncLog} e o número de \textit{upserts} efetivamente realizados em cada execução.
 
@@ -506,8 +493,8 @@ Quadro~\ref{quad:artefatosDesenvolvidos} apresentado na visão geral do
 Capítulo~\ref{cap:desenvolvimento} e relaciona, para cada artefato
 desenvolvido, a hipótese específica originalmente declarada, o teste
 que a exercitou e a evidência produzida nas Seções
-\ref{sec:resultadosCadeiaAquisicao} e
-\ref{sec:resultadosSincronizacao}.
+\ref{sec:resultadosCadeiaAquisicao}, \ref{sec:resultadosSincExport}
+e \ref{sec:resultadosSincIdempotencia}.
 
 \begin{tabframed}[htb]
 \caption{Hipóteses específicas dos artefatos e evidência experimental produzida.}
@@ -515,9 +502,9 @@ que a exercitou e a evidência produzida nas Seções
 \begin{tabular}{|p{0.13\textwidth-\columnsep}|p{0.27\textwidth-\columnsep}|p{0.20\textwidth-\columnsep}|p{0.30\textwidth-\columnsep}|}
 \hline
 \textbf{Artefato} & \textbf{Hipótese específica} & \textbf{Teste / seção} & \textbf{Evidência produzida} \\ \hline
-\textbf{NPI} & Viabilidade da camada de \textit{middleware} de interoperabilidade entre nós. & Seções \ref{sec:resultadosSincronizacao} e \ref{subsec:resultadosSincIdempotencia} & \textit{Handshake} concluído, sincronização incremental e idempotência demonstradas (Quadros \ref{quad:resultadosSincExecucao} e \ref{quad:resultadosSincIdempotencia}). \\ \hline
-\textbf{IRIS} & Integração de aplicações generalistas ao padrão sem acoplamento ao tipo de biossinal. & Subseção \ref{subsec:resultadosSincCenario} & Operação completa do fluxo de pré-visualização e \textit{pull} via interface \textit{web}, sem dependência de processamento de sEMG. \\ \hline
-\textbf{IRIS Mobile} & Consumo do mesmo contrato do NPI por clientes em plataformas heterogêneas. & Seção \ref{subsec:resultadosSincCenario} & Captura do gerador de funções e envio ao NPI-A pelo aplicativo Android, materializada nos arquivos sincronizados (Codigos~\ref{codigo:resultadosSincPayloadJson} e \ref{codigo:resultadosSincCsvCabecalho}). \\ \hline
+\textbf{NPI} & Viabilidade da camada de \textit{middleware} de interoperabilidade entre nós. & Seções \ref{sec:resultadosSincExport} e \ref{sec:resultadosSincIdempotencia} & \textit{Handshake} concluído, sincronização incremental e idempotência demonstradas (Quadros \ref{quad:resultadosSincExecucao} e \ref{quad:resultadosSincIdempotencia}). \\ \hline
+\textbf{IRIS} & Integração de aplicações generalistas ao padrão sem acoplamento ao tipo de biossinal. & Seção \ref{sec:resultadosSincCenario} & Operação completa do fluxo de pré-visualização e \textit{pull} via interface \textit{web}, sem dependência de processamento de sEMG. \\ \hline
+\textbf{IRIS Mobile} & Consumo do mesmo contrato do NPI por clientes em plataformas heterogêneas. & Seção \ref{sec:resultadosSincCenario} & Captura do gerador de funções e envio ao NPI-A pelo aplicativo Android, materializada nos arquivos sincronizados (Codigos~\ref{codigo:resultadosSincPayloadJson} e \ref{codigo:resultadosSincCsvCabecalho}). \\ \hline
 \textbf{Neuro\newline Estimulator} & Adaptabilidade de dispositivos legados ao padrão via modificações de \textit{firmware}. & Seção \ref{sec:resultadosSincPayloadJson} & \textit{Streaming} contínuo a 215\,SPS estabilizado, com fidelidade quantificada na banda 10--50\,Hz (Figura \ref{fig:resultadosCadeiaResposta}). \\ \hline
 \end{tabular}
 \fonte{Autoria própria (2026)}
